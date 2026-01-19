@@ -1,6 +1,58 @@
 # 하나모아 (HanaMoa)
 <img width="512" height="134" alt="image" src="https://github.com/user-attachments/assets/401b8c48-a6f1-4b62-ae1c-5b33a22d9bcc" />
 
+<br>
+
+## 📌 Git convention
+
+### ✓ Commit Type
+```
+`feat` : 기능 추가
+`fix` : 에러 수정, 버그 수정
+`chore` : gradle 세팅, 빌드 업무 수정 등 이외의 모든 것
+`main` : 최종 배포, 메인 브랜치
+`refactor` : 코드 리팩토링
+`test` : 테스트 코드 추가
+`revert` : 이전 커밋 되돌리기
+`remove` : 파일 삭제
+`rename` : 파일 또는 폴더 이름 수정
+`ci` : CI 설정 파일 및 스크립트 변경 (ex. GitHub Actions, CircleCI 등)
+```
+
+### ✓ issue 이름 규칙
+```
+[커밋 타입] 이슈 제목
+```
+
+### ✓ branch 규칙
+
+#### branch 네이밍 규칙
+```
+- 영소문자 사용 : 모든 브랜치 이름은 영어 + 소문자로 작성합니다.
+- 하이픈(-) 사용 : 단어 구분은 하이픈(-)으로 합니다 (예: `feature-login`).
+- 간결하고 의미 있게 : 브랜치의 목적을 명확히 드러내도록 간결하게 짓습니다.
+```
+
+#### 기본 원칙
+```
+커밋 타입/브랜치명
+※ 단, hotfix일 경우, 이슈로 관리 → hotfix/#이슈번호/브랜치명
+
+* 예시 *
+기능 추가: feature/add-user-profile
+버그 수정: fix/fix-login-error
+문서 작업: docs/update-readme
+hotfix: fix/#1/hotfix-login-error
+```
+</aside>
+
+### ✓ commit 메시지 규칙
+```
+커밋 타입: 커밋 메시지
+
+→ `feat: 로그인 기능 추가`
+→ `refactor: 일부 코드 리팩토링`
+```
 
 <br>
 
@@ -32,7 +84,7 @@
 <img width="768" height="512" alt="image" src="https://github.com/user-attachments/assets/73587f8f-8883-4b93-8d10-0d40f752f4fe" />
 
 <br>
-
+<br>
 
 ## setting
 ```
