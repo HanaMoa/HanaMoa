@@ -3,7 +3,10 @@
 
 <br>
 
+
+
 ## 📌 Git convention
+
 ### ✓ Branch 구조
 ```
 main
@@ -13,6 +16,7 @@ main
 │  ├─ fix/app/login-add-user-profile
 │  ├─ hotfix/app/login-add-user-profile
 ```
+
 ### ✓ Commit Type
 ```
 `feat` : 기능 추가
@@ -27,10 +31,6 @@ main
 `ci` : CI 설정 파일 및 스크립트 변경 (ex. GitHub Actions, CircleCI 등)
 ```
 
-### ✓ issue 이름 규칙
-```
-[커밋 타입] 이슈 제목
-```
 
 ### ✓ branch 규칙
 
@@ -82,11 +82,20 @@ git checkout -b feature/app/login origin/dev
 → `refactor: 일부 코드 리팩토링`
 ```
 
+### ✓ issue 이름 규칙
+```
+[커밋 타입] 이슈 제목
+```
+
 <br>
+
+
 
 ## 📄 서비스 소개
 
 <br>
+
+
 
 ## 🛠️ Tech Stack
 <div>
@@ -108,14 +117,19 @@ git checkout -b feature/app/login origin/dev
 
 <br>
 
+
+
 ## ⚙️ 시스템 구성도
 <img width="768" height="512" alt="image" src="https://github.com/user-attachments/assets/73587f8f-8883-4b93-8d10-0d40f752f4fe" />
 
-<br>
-<br>
+<br
+
+
 
 ## ERD(0.2 version)
-<img width="1436" height="1406" alt="image" src="https://github.com/user-attachments/assets/5b0b9f92-ab77-4a32-b14f-add0312841f2" />
+<img width="718" height="703" alt="image" src="https://github.com/user-attachments/assets/5b0b9f92-ab77-4a32-b14f-add0312841f2" />
+
+
 
 ## setting
 ```
@@ -123,18 +137,24 @@ pnpm install
 → pnpm version : 10.21.0
 ```
 
-### prisma setting
+
+
+## prisma setting
 ```
 pnpm prisma generate
 pnpm prisma db push
 ```
 
-### DB 확인
+
+
+## DB 확인
 ```
 pnpm prisma studio
 ```
 
-### .env
+
+
+## .env
 ```
 DATABASE_URL="mysql://hanamoa:12345678@127.0.0.1:3333/hanamoadb"
 SHADOW_DATABASE_URL="mysql://root:root@127.0.0.1:3333/hanamoadb_shadow"
