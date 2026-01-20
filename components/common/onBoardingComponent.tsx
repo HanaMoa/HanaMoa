@@ -90,6 +90,7 @@ function OnboardingText({ step }: { step: number }) {
   }
 }
 
+// 인디케이터
 function Indicator({ current, total }: { current: number; total: number }) {
   return (
     <div className="flex items-center justify-center gap-2">
