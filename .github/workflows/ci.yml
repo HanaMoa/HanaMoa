@@ -16,61 +16,67 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # docker-compose 사용 가능하게
-      - name: Set up Docker
+      # docker compose 사용
+      - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      # MySQL 실행
       - name: Start MySQL with docker-compose
-        run: |
-          docker compose up -d mysql
+        run: docker compose up -d mysql
 
-      # MySQL 준비될 때까지 대기 -> docker loading 때문
       - name: Wait for MySQL
         run: |
+          set -e
           for i in {1..30}; do
             if docker exec hanamoa-mysql mysqladmin ping -h 127.0.0.1 -uhanamoa -p12345678 --silent; then
               echo "MySQL is ready"
-              break
+              exit 0
             fi
-            echo "Waiting for MySQL..."
+            echo "Waiting for MySQL... ($i/30)"
             sleep 2
           done
+          echo "MySQL did not become ready in time"
+          docker compose logs mysql
+          exit 1
 
-      - uses: actions/setup-node@v4
+      # Node는 LTS 권장 (Next/Prisma/Biome 호환 안정)
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
-          node-version: 24.11.0
-          cache: "pnpm"
+          node-version: 20
 
-      - uses: pnpm/action-setup@v4
+      # pnpm 커맨드 보장
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
         with:
           version: 10.21.0
+          run_install: false
+
+      # pnpm 캐시 활성화
+      - name: Enable pnpm cache
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
 
       - name: Install deps
         run: pnpm install --frozen-lockfile
 
-      # DB 배포시에 on
-      # # Prisma Client
+      # CI에서 Prisma 검증을 원하면 주석 해제 
       # - name: Prisma generate
       #   run: pnpm prisma generate
-
-      # # Prisma migration (migrate 관리 중일 때만)
+      #
       # - name: Prisma migrate deploy
       #   run: pnpm prisma migrate deploy
 
-      # Biome 검사
       - name: Biome check
         run: pnpm biome check .
 
-      # 테스트
       - name: Test
         run: pnpm test --if-present
 
-      # Next.js build
       - name: Build
         run: pnpm build
 
-      # CI 종료 후 컨테이너 정리
       - name: Stop docker compose
         if: always()
         run: docker compose down -v
