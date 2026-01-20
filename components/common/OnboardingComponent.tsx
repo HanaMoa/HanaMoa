@@ -20,7 +20,7 @@ export const OnboardingDatas: OnboardingData[] = [
 
 type Props = {
   data: OnboardingData;
-  current: number; // 몇번째 문구 및 사진인지
+  current: number; // 몇번째 문구 및 사진인지 나타내는 변수
   total: number;
 };
 
