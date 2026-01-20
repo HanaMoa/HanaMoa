@@ -20,9 +20,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className="min-h-dvh bg-[#F2F2F2]">
-        <div className="mx-auto min-h-dvh w-full max-w-[600px] bg-white">
+    <html lang="ko" className={pretendard.variable}>
+      <body className="bg-[#F2F2F2]">
+        {/* 앱 프레임: 화면을 넘지 않게 고정 */}
+        <div className="mx-auto flex h-full w-full max-w-[800px] flex-col bg-[#F6F7F9]">
           {children}
         </div>
       </body>
