@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '../ui/button';
 
@@ -7,7 +8,7 @@ import { Button } from '../ui/button';
 */
 
 type Props = {
-  label: string; // 버튼에 들어갈 텍스트
+  children: ReactNode;
   formAction?: (formData: FormData) => Promise<void>;
   onClick?: () => void;
   redirectTo?: string;
@@ -18,7 +19,7 @@ const BASE_STYLE = 'h-[49px] w-[285px] rounded-[10px] text-[16px]';
 const PRIMARY_STYLE = 'bg-[#00A998] text-[#F6F7F9] hover:bg-[#017F70]';
 
 export function SingleButton({
-  label,
+  children,
   formAction,
   onClick,
   redirectTo,
@@ -35,7 +36,7 @@ export function SingleButton({
         onClick={onClick}
         className={buttonClass}
       >
-        {label}
+        {children}
       </Button>
     );
   }
@@ -45,7 +46,7 @@ export function SingleButton({
     <form action={formAction}>
       <input type="hidden" name="redirectTo" value={redirectTo} />
       <Button variant="default" type="submit" className={buttonClass}>
-        {label}
+        {children}
       </Button>
     </form>
   );
