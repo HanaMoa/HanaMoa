@@ -9,55 +9,20 @@ jobs:
   ci:
     runs-on: ubuntu-latest
 
-    env:
-      DATABASE_URL: mysql://hanamoa:12345678@127.0.0.1:3333/hanamoadb
-      NODE_ENV: test
-
     steps:
       - uses: actions/checkout@v4
 
-      # docker compose 사용
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Start MySQL with docker-compose
-        run: docker compose up -d mysql
-
-      - name: Wait for MySQL
-        run: |
-          set -e
-          echo "Checking MySQL readiness..."
-          docker compose ps
-
-          # 최대 2분(60 * 2초) 대기
-          for i in {1..60}; do
-            if docker exec hanamoa-mysql mysqladmin ping -h 127.0.0.1 -uroot -proot --silent; then
-              echo "MySQL is ready"
-              exit 0
-            fi
-            echo "Waiting for MySQL... ($i/60)"
-            sleep 2
-          done
-
-          echo "MySQL did not become ready in time"
-          docker compose logs mysql
-          exit 1
-
-
-      # Node는 LTS 권장 (Next/Prisma/Biome 호환 안정)
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      # pnpm 커맨드 보장
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
           version: 10.21.0
           run_install: false
 
-      # pnpm 캐시 활성화
       - name: Enable pnpm cache
         uses: actions/setup-node@v4
         with:
@@ -67,13 +32,6 @@ jobs:
       - name: Install deps
         run: pnpm install --frozen-lockfile
 
-      # CI에서 Prisma 검증을 원하면 주석 해제 
-      # - name: Prisma generate
-      #   run: pnpm prisma generate
-      #
-      # - name: Prisma migrate deploy
-      #   run: pnpm prisma migrate deploy
-
       - name: Biome check
         run: pnpm biome check .
 
@@ -82,7 +40,3 @@ jobs:
 
       - name: Build
         run: pnpm build
-
-      - name: Stop docker compose
-        if: always()
-        run: docker compose down -v
