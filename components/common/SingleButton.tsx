@@ -14,6 +14,7 @@ export function SingleButton({
   redirectTo,
 }: Props) {
   if (onClick) {
+    // onClick일 경우
     return (
       <Button
         type="button"
@@ -26,6 +27,7 @@ export function SingleButton({
   }
 
   return (
+    // formAction일 경우
     <form action={formAction}>
       <input type="hidden" name="redirectTo" value={redirectTo} />
       <Button
