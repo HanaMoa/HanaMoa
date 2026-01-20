@@ -54,16 +54,21 @@ hotfix: fix/#1/hotfix-login-error
 ```
 
 #### ▶︎ 하위 브랜치 만드는 방법
-##### 1️⃣ develop 브랜치에서 시작
+##### 1️⃣ 로컬 dev 브랜치에서 pull 받아서 시작
 ```
-git checkout develop
+1️⃣ dev 브랜치에서 시작
+git checkout dev
 git pull
-```
-##### 2️⃣ feature 브랜치 생성
-```
-git checkout -b feature/login
+
+2️⃣ feature 브랜치 생성
+git checkout -b feature/app/login
 or
-git switch -c feature/login
+git switch -c feature/app/login
+```
+##### 2️⃣ 원격 dev 브랜치 가지고 오기
+```
+git checkout -b feature브랜치 원격브랜치
+git checkout -b feature/app/login origin/dev
 ```
 ⇒ 병합 끝나면 삭제.
 
