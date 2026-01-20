@@ -20,7 +20,7 @@ export const OnboardingDatas: OnboardingData[] = [
 
 type Props = {
   data: OnboardingData;
-  current: number; // 몇번째 문구 및 사진인지
+  current: number; // 몇번째 문구 및 사진인지 나타내는 변수
   total: number;
 };
 
@@ -90,6 +90,7 @@ function OnboardingText({ step }: { step: number }) {
   }
 }
 
+// 인디케이터
 function Indicator({ current, total }: { current: number; total: number }) {
   return (
     <div className="flex items-center justify-center gap-2">
