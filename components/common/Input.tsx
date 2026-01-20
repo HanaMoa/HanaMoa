@@ -5,7 +5,7 @@ import clsx from 'clsx';
 import { forwardRef, type ReactNode } from 'react';
 
 /**
- * Input 컴포넌트 Props
+ * Input 컴포넌트 props
  *
  * - label        : input 위에 표시될 텍스트 (선택)
  * - name         : form submit 시 사용될 input name (필수)
