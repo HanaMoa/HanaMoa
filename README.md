@@ -114,13 +114,35 @@ git checkout -b feature/app/login origin/dev
 <br>
 <br>
 
+## ERD(0.1 version)
+<img width="1596" height="1486" alt="image" src="https://github.com/user-attachments/assets/045876fd-8a00-450a-b8b0-38d5cf4a247d" />
+
+
 ## setting
 ```
 pnpm install
 → pnpm version : 10.21.0
 ```
 
+### prisma setting
+```
+pnpm prisma generate
+pnpm prisma db push
+```
+
+### DB 확인
+```
+pnpm prisma studio
+```
+
 ### .env
 ```
 DATABASE_URL="mysql://hanamoa:12345678@127.0.0.1:3333/hanamoadb"
+SHADOW_DATABASE_URL="mysql://root:root@127.0.0.1:3333/hanamoadb_shadow"
+
+DATABASE_HOST="127.0.0.1"
+DATABASE_PORT="3333"
+DATABASE_USER="hanamoa"
+DATABASE_PASSWORD="12345678"
+DATABASE_NAME="hanamoadb"
 ```
