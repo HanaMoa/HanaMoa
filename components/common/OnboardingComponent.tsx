@@ -1,5 +1,16 @@
 import Image from 'next/image';
 
+/*
+사용 예시
+  const [step, setStep] = useState(1);
+  const total = OnboardingDatas.length;
+  const data = OnboardingDatas[step - 1];
+
+  return (
+    <OnBoardingComponent data={data} current={step} total={total} />
+  )
+*/
+
 // 이미지 데이터
 export type OnboardingData = {
   imageSrc: string;
@@ -32,7 +43,9 @@ export default function OnBoardingComponent({ data, current, total }: Props) {
         <OnboardingText step={current} />
       </div>
 
-      {/* Image */}
+      {/* Image
+        크기 수정 필요
+      */}
       <div className="px-4 py-0">
         <div className="relative aspect-[1/1] w-full">
           <Image
