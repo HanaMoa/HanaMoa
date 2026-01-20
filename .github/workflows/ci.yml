@@ -26,17 +26,23 @@ jobs:
       - name: Wait for MySQL
         run: |
           set -e
-          for i in {1..30}; do
-            if docker exec hanamoa-mysql mysqladmin ping -h 127.0.0.1 -uhanamoa -p12345678 --silent; then
+          echo "Checking MySQL readiness..."
+          docker compose ps
+
+          # 최대 2분(60 * 2초) 대기
+          for i in {1..60}; do
+            if docker exec hanamoa-mysql mysqladmin ping -h 127.0.0.1 -uroot -proot --silent; then
               echo "MySQL is ready"
               exit 0
             fi
-            echo "Waiting for MySQL... ($i/30)"
+            echo "Waiting for MySQL... ($i/60)"
             sleep 2
           done
+
           echo "MySQL did not become ready in time"
           docker compose logs mysql
           exit 1
+
 
       # Node는 LTS 권장 (Next/Prisma/Biome 호환 안정)
       - name: Setup Node
