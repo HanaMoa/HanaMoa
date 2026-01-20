@@ -6,9 +6,9 @@
 ## 📌 Git convention
 ```
 main
-├─ feature
-│  ├─ feature/login
-│  ├─ feature/login/add-user-profile
+├─ dev
+│  ├─ feature/app/login-add-user-profile
+│  ├─ feature/components/login-form
 ├─ fix
 ```
 ### ✓ Commit Type
@@ -32,14 +32,14 @@ main
 
 ### ✓ branch 규칙
 
-#### branch 네이밍 규칙
+#### ▶︎ branch 네이밍 규칙
 ```
 - 영소문자 사용 : 모든 브랜치 이름은 영어 + 소문자로 작성합니다.
 - 하이픈(-) 사용 : 단어 구분은 하이픈(-)으로 합니다 (예: `feature-login`).
 - 간결하고 의미 있게 : 브랜치의 목적을 명확히 드러내도록 간결하게 짓습니다.
 ```
 
-#### 기본 원칙
+#### ▶︎ 기본 원칙
 ```
 커밋 타입/브랜치명
 ※ 단, hotfix일 경우, 이슈로 관리 → hotfix/#이슈번호/브랜치명
@@ -50,7 +50,22 @@ main
 문서 작업: docs/update-readme
 hotfix: fix/#1/hotfix-login-error
 ```
-</aside>
+
+#### ▶︎ 하위 브랜치 만드는 방법
+##### 1️⃣ develop 브랜치에서 시작
+```
+git checkout develop
+git pull
+```
+##### 2️⃣ feature 브랜치 생성
+```
+git checkout -b feature/login
+or
+git switch -c feature/login
+```
+⇒ 병합 끝나면 삭제.
+
+<br>
 
 ### ✓ commit 메시지 규칙
 ```
