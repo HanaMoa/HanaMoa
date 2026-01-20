@@ -9,7 +9,8 @@ main
 ├─ dev
 │  ├─ feature/app/login-add-user-profile
 │  ├─ feature/components/login-form
-├─ fix
+│  ├─ fix/app/login-add-user-profile
+│  ├─ hotfix/app/login-add-user-profile
 ```
 ### ✓ Commit Type
 ```
