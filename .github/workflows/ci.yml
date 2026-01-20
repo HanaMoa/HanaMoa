@@ -1,0 +1,76 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [dev]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    env:
+      DATABASE_URL: mysql://hanamoa:12345678@127.0.0.1:3333/hanamoadb
+      NODE_ENV: test
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # docker-compose 사용 가능하게
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v3
+
+      # MySQL 실행
+      - name: Start MySQL with docker-compose
+        run: |
+          docker compose up -d mysql
+
+      # MySQL 준비될 때까지 대기 -> docker loading 때문
+      - name: Wait for MySQL
+        run: |
+          for i in {1..30}; do
+            if docker exec hanamoa-mysql mysqladmin ping -h 127.0.0.1 -uhanamoa -p12345678 --silent; then
+              echo "MySQL is ready"
+              break
+            fi
+            echo "Waiting for MySQL..."
+            sleep 2
+          done
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.11.0
+          cache: "pnpm"
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.21.0
+
+      - name: Install deps
+        run: pnpm install --frozen-lockfile
+
+      # DB 배포시에 on
+      # # Prisma Client
+      # - name: Prisma generate
+      #   run: pnpm prisma generate
+
+      # # Prisma migration (migrate 관리 중일 때만)
+      # - name: Prisma migrate deploy
+      #   run: pnpm prisma migrate deploy
+
+      # Biome 검사
+      - name: Biome check
+        run: pnpm biome check .
+
+      # 테스트
+      - name: Test
+        run: pnpm test --if-present
+
+      # Next.js build
+      - name: Build
+        run: pnpm build
+
+      # CI 종료 후 컨테이너 정리
+      - name: Stop docker compose
+        if: always()
+        run: docker compose down -v
