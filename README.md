@@ -4,7 +4,13 @@
 <br>
 
 ## 📌 Git convention
-
+```
+main
+├─ feature
+│  ├─ feature/login
+│  ├─ feature/login/add-user-profile
+├─ fix
+```
 ### ✓ Commit Type
 ```
 `feat` : 기능 추가
