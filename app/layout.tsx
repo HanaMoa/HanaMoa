@@ -23,7 +23,7 @@ export default function RootLayout({
     <html lang="en" className={pretendard.variable}>
       <body className="bg-[#F2F2F2]">
         {/* 앱 프레임: 화면을 넘지 않게 고정 */}
-        <div className="mx-auto flex h-dvh w-full max-w-[600px] flex-col bg-white">
+        <div className="mx-auto flex h-dvh w-full max-w-[600px] flex-col bg-[#F6F7F9]">
           {children}
         </div>
       </body>
