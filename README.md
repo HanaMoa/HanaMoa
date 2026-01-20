@@ -4,6 +4,7 @@
 <br>
 
 ## 📌 Git convention
+### ✓ Branch 구조
 ```
 main
 ├─ dev
