@@ -21,8 +21,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${pretendard.variable}`}>
-        <div>{children}</div>
+      <body className="min-h-dvh bg-[#F2F2F2]">
+        <div className="mx-auto min-h-dvh w-full max-w-[600px] bg-white">
+          {children}
+        </div>
       </body>
     </html>
   );
