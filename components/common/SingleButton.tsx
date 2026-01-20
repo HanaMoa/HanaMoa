@@ -1,5 +1,10 @@
 import { Button } from '../ui/button';
 
+/*
+사용 예시
+<SingleButton label="다음" onClick={() => setStep(n => n < total ? n+1 : n)} />
+*/
+
 type Props = {
   label: string; // 버튼에 들어갈 텍스트
   formAction?: (formData: FormData) => Promise<void>;
