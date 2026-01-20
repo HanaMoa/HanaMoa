@@ -1,7 +1,7 @@
 # 하나모아 (HanaMoa)
 <img width="512" height="134" alt="image" src="https://github.com/user-attachments/assets/401b8c48-a6f1-4b62-ae1c-5b33a22d9bcc" />
 
-<br><br>
+<br>
 
 
 
@@ -87,13 +87,13 @@ git checkout -b feature/app/login origin/dev
 [커밋 타입] 이슈 제목
 ```
 
-<br><br>
+<br>
 
 
 
 ## 📄 서비스 소개
 
-<br><br>
+<br>
 
 
 
@@ -115,21 +115,19 @@ git checkout -b feature/app/login origin/dev
   <img src="https://img.shields.io/badge/Figma-8B5CF6" />
 </div>
 
-<br><br>
+<br>
 
 
 
 ## ⚙️ 시스템 구성도
 <img width="768" height="512" alt="image" src="https://github.com/user-attachments/assets/73587f8f-8883-4b93-8d10-0d40f752f4fe" />
 
-<br><br>
+<br
 
 
 
 ## ERD(0.2 version)
 <img width="718" height="703" alt="image" src="https://github.com/user-attachments/assets/5b0b9f92-ab77-4a32-b14f-add0312841f2" />
-
-<br><br>
 
 
 
@@ -139,8 +137,6 @@ pnpm install
 → pnpm version : 10.21.0
 ```
 
-<br><br>
-
 
 
 ## prisma setting
@@ -149,16 +145,12 @@ pnpm prisma generate
 pnpm prisma db push
 ```
 
-<br><br>
-
 
 
 ## DB 확인
 ```
 pnpm prisma studio
 ```
-
-<br><br>
 
 
 
@@ -173,5 +165,3 @@ DATABASE_USER="hanamoa"
 DATABASE_PASSWORD="12345678"
 DATABASE_NAME="hanamoadb"
 ```
-
-<br><br>
