@@ -96,3 +96,9 @@ hotfix: fix/#1/hotfix-login-error
 ```
 pnpm install
 → pnpm version : 10.21.0
+```
+
+### .env
+```
+DATABASE_URL="mysql://hanamoa:12345678@127.0.0.1:3333/hanamoadb"
+```
