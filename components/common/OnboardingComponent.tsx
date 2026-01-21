@@ -1,16 +1,5 @@
 import Image from 'next/image';
 
-/*
-사용 예시
-  const [step, setStep] = useState(1);
-  const total = OnboardingDatas.length;
-  const data = OnboardingDatas[step - 1];
-
-  return (
-    <OnBoardingComponent data={data} current={step} total={total} />
-  )
-*/
-
 // 이미지 데이터
 export type OnboardingData = {
   imageSrc: string;
@@ -19,13 +8,13 @@ export type OnboardingData = {
 // 사진 경로에 맞게 수정
 export const OnboardingDatas: OnboardingData[] = [
   {
-    imageSrc: '/images/onboarding/step1.png',
+    imageSrc: '/onboarding/step1.png',
   },
   {
-    imageSrc: '/images/onboarding/step2.png',
+    imageSrc: '/onboarding/step2.png',
   },
   {
-    imageSrc: '/images/onboarding/step3.png',
+    imageSrc: '/onboarding/step3.png',
   },
 ];
 
@@ -43,23 +32,20 @@ export default function OnBoardingComponent({ data, current, total }: Props) {
         <OnboardingText step={current} />
       </div>
 
-      {/* Image
-        수정 필요
-      */}
-      <div className="mt-6 flex flex-1 items-center justify-center px-4">
-        <div className="relative aspect-square w-full max-w-[320px]">
+      {/* Image */}
+      <div className="px-4 py-0">
+        <div className="relative aspect-[1/1] w-full">
           <Image
             src={data.imageSrc}
             alt="온보딩 이미지"
             fill
-            className="object-contain"
-            priority
+            className="object-cover"
           />
         </div>
       </div>
 
       {/* Indicator */}
-      <div className="py-3 pt-5 pb-18">
+      <div className="py-3">
         <Indicator current={current} total={total} />
       </div>
     </div>
@@ -72,16 +58,16 @@ function OnboardingText({ step }: { step: number }) {
     case 1:
       return (
         <>
-          <p className="font-bold text-[40px]">경조사,</p>
-          <p className="font-normal text-[40px]">아직도 흩어져 있지 않나요?</p>
+          <p className="font-bold text-[25px]">경조사,</p>
+          <p className="font-normal text-[25px]">아직도 흩어져 있지 않나요?</p>
         </>
       );
 
     case 2:
       return (
         <>
-          <p className="font-normal text-[40px]">이제 경조사를</p>
-          <p className="text-[40px]">
+          <p className="font-normal text-[25px]">이제 경조사를</p>
+          <p className="text-[25px]">
             <span className="font-bold">하나</span>
             <span className="font-normal">로 관리하세요</span>
           </p>
@@ -91,8 +77,8 @@ function OnboardingText({ step }: { step: number }) {
     case 3:
       return (
         <>
-          <p className="font-normal text-[40px]">모든 순간을</p>
-          <p className="text-[40px]">
+          <p className="font-normal text-[25px]">모든 순간을</p>
+          <p className="text-[25px]">
             <span className="font-bold">하나</span>
             <span className="font-normal">에</span>
           </p>

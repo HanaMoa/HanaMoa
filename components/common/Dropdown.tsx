@@ -37,7 +37,7 @@ export default function Dropdown({
     <Select value={value} onValueChange={onValueChange} disabled={disabled}>
       <SelectTrigger
         className={cn(
-          'flex min-h-8 cursor-pointer items-center gap-2 rounded-[10px] border border-gray-200 bg-white px-3 text-gray-700 text-sm shadow-sm hover:bg-gray-50 focus:ring-2 focus:ring-gray-200 focus:ring-offset-2 focus-visible:border-transparent focus-visible:ring-0 focus-visible:ring-offset-0',
+          'flex min-h-8 items-center gap-2 rounded-full border border-gray-200 bg-white px-3 text-gray-700 text-sm shadow-sm hover:bg-gray-50 focus:ring-2 focus:ring-gray-200 focus:ring-offset-2 focus-visible:border-transparent focus-visible:ring-0 focus-visible:ring-offset-0',
           triggerClassName,
         )}
       >
@@ -48,7 +48,7 @@ export default function Dropdown({
         position="popper"
         side="bottom"
         align="start"
-        className="rounded-[10px] border border-gray-200 bg-white shadow-lg"
+        className="rounded-xl border border-gray-200 bg-white shadow-lg"
       >
         {items.length === 0 ? (
           <div className="px-3 py-2 text-gray-500 text-sm">항목이 없습니다</div>
@@ -58,7 +58,7 @@ export default function Dropdown({
               key={item.value}
               value={item.value}
               disabled={item.disabled}
-              className="cursor-pointer rounded-[10px]"
+              className="cursor-pointer rounded-lg"
             >
               {item.label}
             </SelectItem>
