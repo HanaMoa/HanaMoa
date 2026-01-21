@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
+import { MainHeader } from '@/components/common/MainHeader';
+import { SubHeader } from '@/components/common/SubHeader';
 import './globals.css';
 
 const pretendard = localFont({
@@ -24,6 +26,20 @@ export default function RootLayout({
       <body className="bg-[#F2F2F2]">
         {/* 앱 프레임: 화면을 넘지 않게 고정 */}
         <div className="mx-auto flex min-h-dvh w-full max-w-[600px] flex-col bg-[#F6F7F9] md:max-w-[720px] lg:max-w-[800px]">
+          <SubHeader title="회원가입" />
+          <MainHeader
+            variant="default"
+            title="하나모아"
+            showHomeBtn={true}
+            showNotificationBtn={true}
+          />
+          <MainHeader
+            variant="dark"
+            title="라운지"
+            subtitle="故 도민준"
+            showCameraBtn={true}
+          />
+          <MainHeader variant="home" />
           {children}
         </div>
       </body>
