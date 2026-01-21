@@ -42,8 +42,9 @@ export function MainHeader({
   const iconClass = isMainHome ? 'text-[#017F70] opacity-40' : 'text-gray-700';
 
   return (
-    <header className={`safe-top w-full ${
-        isMainHome ? 'bg-[#017F70]/10' : 'border-black/10 border-b bg-white'
+    <header
+      className={`safe-top w-full ${
+        isMainHome ? 'bg-[#017F70]/10' : 'border-black/10 border-b bg-[#F6F7F9]'
       }`}
     >
       <div className="relative flex h-12 w-full items-center px-5">
@@ -68,18 +69,16 @@ export function MainHeader({
           )}
         </div>
 
-        {/* Center title */}
+        {/* Center : title */}
         {!isMainHome && (
           <div className="-translate-x-1/2 -translate-y-1/2 pointer-events-none absolute top-1/2 left-1/2 px-16">
-            <span className="font-semibold text-base text-gray-900">
-              {title}
-            </span>
+            <span className="font-semibold text-base text-black">{title}</span>
           </div>
         )}
 
         {/* Right */}
         <div className="ml-auto flex shrink-0 items-center gap-2">
-          {/* Home: 메인홈에서도 자리는 유지해서 Bell x축 고정 */}
+          {/* Home 버튼 */}
           <Button
             variant="ghost"
             size="icon"
@@ -92,6 +91,7 @@ export function MainHeader({
             <Home className={`h-6 w-6 ${iconClass}`} />
           </Button>
 
+          {/* 알림 버튼 */}
           <Button
             variant="ghost"
             size="icon"
@@ -101,7 +101,7 @@ export function MainHeader({
           >
             <Bell className={`h-6 w-6 ${iconClass}`} />
             {showBadge && (
-              <span className="pointer-events-none absolute top-2 right-2 z-10 h-2 w-2 rounded-full bg-red-500" />
+              <span className="pointer-events-none absolute top-2 right-2 z-10 h-2 w-2 rounded-full bg-[#F90000]" />
             )}
           </Button>
         </div>
