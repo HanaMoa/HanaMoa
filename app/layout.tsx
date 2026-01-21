@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import './globals.css';
-import { MainHeader } from '@/components/common/MainHeader';
 
 const pretendard = localFont({
   src: './fonts/pretendard/PretendardVariable.woff2',
@@ -25,8 +24,6 @@ export default function RootLayout({
       <body className="bg-[#F2F2F2]">
         {/* 앱 프레임: 화면을 넘지 않게 고정 */}
         <div className="mx-auto flex h-full w-full max-w-[800px] flex-col bg-[#F6F7F9]">
-          <MainHeader isMainHome={true} />
-          <MainHeader isMainHome={false} title="라운지" />
           {children}
         </div>
       </body>
