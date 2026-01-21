@@ -10,7 +10,7 @@ import { Button } from '../ui/button';
   />
 2. 서브 탭
   <HomeHeader
-    isMain={false}
+    isMainHome={false}
     title="라운지"
     showBadge={notificationCount > 0}   // 알림 갯수가 1개 이상이면, 표시
     onHomeClick={() => router.push("/")}
@@ -43,22 +43,20 @@ export function MainHeader({
 
   return (
     <header
-      className={`safe-top relative w-full border-black/10 border-b ${
-        isMainHome ? 'bg-[#017F70]/10' : 'bg-white'
+      className={`safe-top w-full ${
+        isMainHome ? 'bg-[#017F70]/10' : 'border-black/10 border-b bg-white'
       }`}
     >
-      <div className="flex h-12 w-full items-center px-5">
+      <div className="relative flex h-12 w-full items-center px-5">
         {/* Left */}
-        <div className="flex w-12 items-center">
+        <div className="flex shrink-0 items-center">
           {isMainHome ? (
-            /* 메인 홈: 로고 */
             <img
               src="/images/common/logo2.png"
               alt="하나모아"
               className="h-8 w-auto select-none"
             />
           ) : (
-            /* 서브 탭: back 버튼 */
             <Button
               variant="ghost"
               size="icon"
@@ -71,29 +69,30 @@ export function MainHeader({
           )}
         </div>
 
-        {/* Center (서브 탭 -> 타이틀 표출) */}
-        <div className="flex flex-1 items-center justify-center">
-          {isMainHome ? null : (
+        {/* Center title */}
+        {!isMainHome && (
+          <div className="-translate-x-1/2 -translate-y-1/2 pointer-events-none absolute top-1/2 left-1/2 px-16">
             <span className="font-semibold text-base text-gray-900">
               {title}
             </span>
-          )}
-        </div>
+          </div>
+        )}
 
-        {/* Right: Icons */}
-        <div className="flex w-24 items-center justify-end gap-2">
-          {/* Home 버튼 (메인 홈에서는 invisible) */}
+        {/* Right */}
+        <div className="ml-auto flex shrink-0 items-center gap-2">
+          {/* Home: 메인홈에서도 자리는 유지해서 Bell x축 고정 */}
           <Button
             variant="ghost"
             size="icon"
             onClick={onHomeClick}
             aria-label="홈"
-            className={`rounded-full ${hoverClass} ${isMainHome ? 'invisible' : 'visible'}`}
+            className={`rounded-full ${hoverClass} ${
+              isMainHome ? 'invisible' : 'visible'
+            }`}
           >
             <Home className={`h-6 w-6 ${iconClass}`} />
           </Button>
 
-          {/* Notification 버튼 */}
           <Button
             variant="ghost"
             size="icon"
@@ -102,9 +101,8 @@ export function MainHeader({
             className={`relative rounded-full ${hoverClass}`}
           >
             <Bell className={`h-6 w-6 ${iconClass}`} />
-
             {showBadge && (
-              <span className="pointer-events-none absolute top-1 right-2 z-10 h-2 w-2 rounded-full bg-red-500" />
+              <span className="pointer-events-none absolute top-2 right-2 z-10 h-2 w-2 rounded-full bg-red-500" />
             )}
           </Button>
         </div>
