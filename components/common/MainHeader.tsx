@@ -42,8 +42,7 @@ export function MainHeader({
   const iconClass = isMainHome ? 'text-[#017F70] opacity-40' : 'text-gray-700';
 
   return (
-    <header
-      className={`safe-top w-full ${
+    <header className={`safe-top w-full ${
         isMainHome ? 'bg-[#017F70]/10' : 'border-black/10 border-b bg-white'
       }`}
     >
