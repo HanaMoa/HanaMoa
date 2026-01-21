@@ -30,7 +30,7 @@ type MainHeaderProps = {
 export function MainHeader({
   isMainHome = false,
   title,
-  showBadge = true,
+  showBadge = false,
   onBackClick,
   onHomeClick,
   onNotificationClick,
