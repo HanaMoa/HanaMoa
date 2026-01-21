@@ -1,53 +1,34 @@
 import Image from 'next/image';
 
-/*
-사용 예시
-  const [step, setStep] = useState(1);
-  const total = OnboardingDatas.length;
-  const data = OnboardingDatas[step - 1];
-
-  return (
-    <OnBoardingComponent data={data} current={step} total={total} />
-  )
-*/
-
-// 이미지 데이터
 export type OnboardingData = {
   imageSrc: string;
 };
 
-// 사진 경로에 맞게 수정
 export const OnboardingDatas: OnboardingData[] = [
-  {
-    imageSrc: '/images/onboarding/step1.png',
-  },
-  {
-    imageSrc: '/images/onboarding/step2.png',
-  },
-  {
-    imageSrc: '/images/onboarding/step3.png',
-  },
+  { imageSrc: '/images/onboarding/step1.png' },
+  { imageSrc: '/images/onboarding/step2.png' },
+  { imageSrc: '/images/onboarding/step3.png' },
 ];
 
 type Props = {
   data: OnboardingData;
-  current: number; // 몇번째 문구 및 사진인지 나타내는 변수
+  current: number;
   total: number;
 };
 
 export default function OnBoardingComponent({ data, current, total }: Props) {
   return (
-    <div className="space-y-4">
-      {/* Text */}
-      <div className="mt-16 px-4 py-3 text-center">
+    // 부모( OnboardingPage의 flex-1 영역 ) 높이를 "꽉" 쓰면서 내부에서 분배
+    <section className="flex h-full min-h-0 flex-col">
+      {/* Text: 너무 큰 mt-16 제거하고, 안전한 패딩으로 */}
+      <div className="px-4 pt-10 pb-3 text-center md:pt-14">
         <OnboardingText step={current} />
       </div>
 
-      {/* Image
-        수정 필요
-      */}
-      <div className="mt-6 flex flex-1 items-center justify-center px-4">
-        <div className="relative aspect-square w-full max-w-[320px]">
+      {/* Image: 남는 높이를 먹는 구간 */}
+      <div className="flex min-h-0 flex-1 items-center justify-center px-4">
+        {/* 화면이 작은 경우를 위해 max를 조금 줄이고, shrink 허용 */}
+        <div className="relative aspect-square w-full max-w-[300px] md:max-w-[340px] lg:max-w-[400px]">
           <Image
             src={data.imageSrc}
             alt="온보딩 이미지"
@@ -58,53 +39,49 @@ export default function OnBoardingComponent({ data, current, total }: Props) {
         </div>
       </div>
 
-      {/* Indicator */}
-      <div className="py-3 pt-5 pb-18">
+      {/* Indicator: 하단에 붙게 */}
+      <div className="py-4">
         <Indicator current={current} total={total} />
       </div>
-    </div>
+    </section>
   );
 }
 
-// 문구
 function OnboardingText({ step }: { step: number }) {
+  const base = 'text-[28px] leading-tight md:text-[40px]';
   switch (step) {
     case 1:
       return (
         <>
-          <p className="font-bold text-[40px]">경조사,</p>
-          <p className="font-normal text-[40px]">아직도 흩어져 있지 않나요?</p>
+          <p className={`${base} font-bold`}>경조사,</p>
+          <p className={`${base} font-normal`}>아직도 흩어져 있지 않나요?</p>
         </>
       );
-
     case 2:
       return (
         <>
-          <p className="font-normal text-[40px]">이제 경조사를</p>
-          <p className="text-[40px]">
+          <p className={`${base} font-normal`}>이제 경조사를</p>
+          <p className={`${base}`}>
             <span className="font-bold">하나</span>
             <span className="font-normal">로 관리하세요</span>
           </p>
         </>
       );
-
     case 3:
       return (
         <>
-          <p className="font-normal text-[40px]">모든 순간을</p>
-          <p className="text-[40px]">
+          <p className={`${base} font-normal`}>모든 순간을</p>
+          <p className={`${base}`}>
             <span className="font-bold">하나</span>
             <span className="font-normal">에</span>
           </p>
         </>
       );
-
     default:
       return null;
   }
 }
 
-// 인디케이터
 function Indicator({ current, total }: { current: number; total: number }) {
   return (
     <div className="flex items-center justify-center gap-2">
@@ -112,6 +89,7 @@ function Indicator({ current, total }: { current: number; total: number }) {
         const active = i === current - 1;
         return (
           <span
+            // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
             key={i}
             className={`h-3 w-3 rounded-full ${
               active ? 'bg-[#1EA698]' : 'bg-[#DEDFE1]'
