@@ -4,7 +4,7 @@ import { Button } from '../ui/button';
 
 /*
 사용 예시
-<SingleButton label="다음" className="bg-red-200 text-black hover:bg-gray-400" onClick={() => setStep(n => n < total ? n+1 : n)} />
+<SingleButton className="bg-red-200 text-black hover:bg-gray-400" onClick={() => setStep(n => n < total ? n+1 : n)} />
 */
 
 type Props = {
@@ -15,7 +15,10 @@ type Props = {
   className?: string;
 };
 
-const BASE_STYLE = 'h-[49px] w-[285px] rounded-[10px] text-[16px]';
+const BASE_STYLE =
+  'h-[49px] w-[200px] rounded-[10px] text-[14px] ' +
+  'sm:h-[49px] sm:w-[240px] sm:text-[15px] ' +
+  'md:h-[49px] md:w-[285px] md:text-[16px]';
 const PRIMARY_STYLE = 'bg-[#00A998] text-[#F6F7F9] hover:bg-[#017F70]';
 
 export function SingleButton({

@@ -13,6 +13,8 @@ const user = mockUsers[step % mockUsers.length];
   )
 */
 
+import Image from 'next/image';
+
 export type User = {
   id: number; // BigInt → number or string (API 설계에 따라)
   name: string;
@@ -41,7 +43,7 @@ const COLORS = [
   '#FFCC4D',
 ];
 
-export function UserProfile({ user, size = 64 }: Props) {
+export function UserProfile({ user, size }: Props) {
   const initial = user.name.charAt(0);
 
   /** 동명이인 색 다르게 하기 위해서 userId 기반 색 부여 */
@@ -57,17 +59,12 @@ export function UserProfile({ user, size = 64 }: Props) {
   return (
     <div className="flex items-center gap-3">
       <div
-        className="flex items-center justify-center rounded-full font-semibold text-[#45413C]"
-        style={{
-          width: size,
-          height: size,
-          backgroundColor,
-          fontSize: size * 0.65,
-        }}
+        className="flex h-10 w-10 items-center justify-center rounded-full font-semibold text-[#45413C] text-[20px] sm:h-12 sm:w-12 sm:text-[24px] md:h-14 md:w-14 md:text-[28px] lg:h-16 lg:w-16 lg:text-[32px]"
+        style={{ backgroundColor }}
       >
         {/* 이미지 넣을 경우 */}
         {user.profileImageUrl ? (
-          <img
+          <Image
             src={user.profileImageUrl}
             alt="profile"
             className="h-full w-full rounded-full object-cover"

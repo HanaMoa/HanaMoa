@@ -61,15 +61,15 @@ export default function NotificationItem({
       onClick={onClick}
       className="w-full text-left active:bg-gray-100"
     >
-      <div className="flex items-center gap-4 px-4 py-5">
+      <div className="flex items-center gap-3 px-4 py-4 sm:gap-4 sm:py-5">
         {/* 왼쪽: 프로필 */}
         <div className="shrink-0">
-          <UserProfile user={user} size={72} />
+          <UserProfile user={user} />
         </div>
 
         {/* 가운데: 텍스트 */}
         <div className="min-w-0 flex-1">
-          <p className="truncate text-[#45413C] text-lg leading-snug">
+          <p className="truncate text-[#45413C] text-base leading-snug sm:text-lg">
             <span className="font-semibold">{user.name}</span>
             <span>님이 </span>
             <span>{message}</span>
@@ -80,18 +80,18 @@ export default function NotificationItem({
         public에서 이미지 가져오는 식으로
         */}
         <div className="flex shrink-0 items-center gap-3">
-          <span className="whitespace-nowrap text-[#B3B3B3] text-base">
+          <span className="whitespace-nowrap text-[#B3B3B3] text-xs sm:text-sm md:text-base">
             {timeText}
           </span>
 
           {type === 'video' && (
-            <div className="relative h-24 w-24 overflow-hidden rounded-lg bg-gray-200">
+            <div className="relative h-16 w-16 overflow-hidden rounded-lg bg-gray-200 sm:h-20 sm:w-20 md:h-24 md:w-24">
               <Image
                 src={thumbnailUrl}
                 alt="thumbnail"
                 fill
                 className="object-cover"
-                sizes="80px"
+                sizes="(max-width: 640px) 64px, (max-width: 768px) 80px, 96px"
                 priority={false}
               />
             </div>
