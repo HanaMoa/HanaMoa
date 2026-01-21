@@ -1,5 +1,6 @@
 import { Bell, Camera, ChevronLeft, Home } from 'lucide-react';
 import { Button } from '../ui/button';
+import Image from 'next/image';
 
 /*
 사용 예시
@@ -96,7 +97,7 @@ export function MainHeader({
         {/* Left */}
         <div className="flex shrink-0 items-center">
           {isMainHome ? (
-            <img
+            <Image
               src="/images/common/logo2.png"
               alt="하나모아"
               className="h-8 w-auto select-none"
