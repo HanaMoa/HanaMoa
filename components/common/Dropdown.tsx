@@ -22,7 +22,7 @@ type DropdownProps = {
   onValueChange: (value: string) => void;
   placeholder?: string;
   disabled?: boolean;
-  triggerClassName?: string;
+  triggerClassName?: string; // 크기 조절용
 };
 
 export default function Dropdown({
@@ -37,12 +37,8 @@ export default function Dropdown({
     <Select value={value} onValueChange={onValueChange} disabled={disabled}>
       <SelectTrigger
         className={cn(
-          // ✅ 스타일은 그대로 (색/보더/그림자/호버/포커스)
           'flex cursor-pointer items-center gap-2 rounded-[10px] border border-gray-200 bg-white text-gray-700 shadow-sm hover:bg-gray-50',
           'focus:ring-2 focus:ring-gray-200 focus:ring-offset-2 focus-visible:border-transparent focus-visible:ring-0 focus-visible:ring-offset-0',
-
-          // ✅ 반응형(px 명시) - 요구사항 방식
-          // 모바일(기본) -> sm -> md -> lg
           'h-[28px] px-[8px] text-[12px]',
           'sm:h-[32px] sm:px-[12px] sm:text-[13px]',
           'md:h-[36px] md:px-[14px] md:text-[14px]',
@@ -59,10 +55,7 @@ export default function Dropdown({
         side="bottom"
         align="start"
         className={cn(
-          // ✅ 스타일은 그대로
           'rounded-[10px] border border-gray-200 bg-white shadow-lg',
-
-          // ✅ 텍스트도 반응형(px 명시)
           'text-[12px] sm:text-[13px] md:text-[14px] lg:text-[15px]',
         )}
       >
@@ -76,7 +69,6 @@ export default function Dropdown({
               disabled={item.disabled}
               className={cn(
                 'cursor-pointer rounded-[10px]',
-                // ✅ 아이템 높이/패딩도 반응형(px 명시)
                 'px-[10px] py-[6px]',
                 'sm:px-[12px] sm:py-[7px]',
                 'md:px-[14px] md:py-[8px]',
