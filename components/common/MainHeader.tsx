@@ -44,7 +44,7 @@ export function MainHeader({
   return (
     <header
       className={`safe-top relative w-full border-black/10 border-b ${
-        isMainHome ? 'bg-[#017F70]/10' : 'bg-white'
+        isMainHome ? 'bg-[#017F70]/10' : 'bg-[#F6F7F9]'
       }`}
     >
       <div className="flex h-12 w-full items-center px-5">
@@ -74,9 +74,7 @@ export function MainHeader({
         {/* Center (서브 탭 -> 타이틀 표출) */}
         <div className="flex flex-1 items-center justify-center">
           {isMainHome ? null : (
-            <span className="font-semibold text-base text-gray-900">
-              {title}
-            </span>
+            <span className="font-semibold text-base text-black">{title}</span>
           )}
         </div>
 
@@ -104,7 +102,7 @@ export function MainHeader({
             <Bell className={`h-6 w-6 ${iconClass}`} />
 
             {showBadge && (
-              <span className="pointer-events-none absolute top-1 right-2 z-10 h-2 w-2 rounded-full bg-red-500" />
+              <span className="pointer-events-none absolute top-1 right-2 z-10 h-2 w-2 rounded-full bg-[#F90000]" />
             )}
           </Button>
         </div>
