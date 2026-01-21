@@ -1,5 +1,6 @@
 'use client';
 
+import { ChevronLeft } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import OnBoardingComponent, {
@@ -28,20 +29,43 @@ export default function OnboardingPage() {
     router.replace('/home'); // 건너뛰면 홈으로
   };
 
+  const onPrev = () => {
+    if (step > 1) {
+      setStep((prev) => prev - 1);
+      return;
+    }
+  };
+
   return (
     <main className="flex min-h-dvh flex-col px-6 pt-6">
-      {/* 상단: 건너뛰기 */}
-      <div className="flex justify-end">
+      {/* 상단 바 */}
+      <div className="flex items-center justify-between">
+        {/* 두번째 페이지부터 뒤로가기 표시 */}
+        {step > 1 ? (
+          <button
+            type="button"
+            onClick={onPrev}
+            aria-label="뒤로가기"
+            className="flex h-10 w-10 items-center justify-center rounded-lg"
+          >
+            <ChevronLeft className="h-7 w-7" />
+          </button>
+        ) : (
+          // 레이아웃 밀림 방지용 자리 유지
+          <div className="h-10 w-10" />
+        )}
+
+        {/* 건너뛰기 */}
         <button
           type="button"
           onClick={onSkip}
-          className="text-[#ADADAF] text-[20px]"
+          className="text-base text-gray-400"
         >
           건너뛰기
         </button>
       </div>
 
-      {/* 가운데: 온보딩 내용 */}
+      {/* 온보딩 내용(텍스트, 이미지, 인디케이터) */}
       <OnBoardingComponent data={data} current={step} total={total} />
 
       {/* 하단: 버튼 고정 */}
