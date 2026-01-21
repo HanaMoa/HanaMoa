@@ -7,7 +7,7 @@ import EventCard from '@/components/home/EventCard';
 import HomeBanner from '@/components/home/HomeBanner';
 import HomeMenuList from '@/components/home/HomeMenuList';
 
-// TODO: 이후에 router 경로 수정해야 함 && userName 받아오는 것도 수정해야 함
+// TODO: 이후에 router 경로 수정해야 함 && userName 수정 && 로그인 안했으면 로그인 모달창 뜨게
 export default function HomePage() {
   const router = useRouter();
   const [userName, setUserName] = useState<string>('비회원');
@@ -16,7 +16,7 @@ export default function HomePage() {
     <div className="flex flex-col">
       {/*메인 헤더 */}
       <MainHeader
-        isMainHome={true}
+        variant="home"
         onNotificationClick={() => router.push('/notice')}
       />
 
