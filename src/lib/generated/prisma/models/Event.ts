@@ -220,8 +220,8 @@ export type EventWhereInput = {
   date?: Prisma.DateTimeFilter<"Event"> | Date | string
   location?: Prisma.StringFilter<"Event"> | string
   message?: Prisma.StringNullableFilter<"Event"> | string | null
-  user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   eventHosts?: Prisma.EventHostListRelationFilter
+  user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   transactions?: Prisma.TransactionListRelationFilter
 }
 
@@ -231,8 +231,8 @@ export type EventOrderByWithRelationInput = {
   date?: Prisma.SortOrder
   location?: Prisma.SortOrder
   message?: Prisma.SortOrderInput | Prisma.SortOrder
-  user?: Prisma.UserOrderByWithRelationInput
   eventHosts?: Prisma.EventHostOrderByRelationAggregateInput
+  user?: Prisma.UserOrderByWithRelationInput
   transactions?: Prisma.TransactionOrderByRelationAggregateInput
   _relevance?: Prisma.EventOrderByRelevanceInput
 }
@@ -246,8 +246,8 @@ export type EventWhereUniqueInput = Prisma.AtLeast<{
   date?: Prisma.DateTimeFilter<"Event"> | Date | string
   location?: Prisma.StringFilter<"Event"> | string
   message?: Prisma.StringNullableFilter<"Event"> | string | null
-  user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   eventHosts?: Prisma.EventHostListRelationFilter
+  user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   transactions?: Prisma.TransactionListRelationFilter
 }, "id">
 
@@ -280,8 +280,8 @@ export type EventCreateInput = {
   date?: Date | string
   location: string
   message?: string | null
-  user: Prisma.UserCreateNestedOneWithoutEventsInput
   eventHosts?: Prisma.EventHostCreateNestedManyWithoutEventInput
+  user: Prisma.UserCreateNestedOneWithoutEventsInput
   transactions?: Prisma.TransactionCreateNestedManyWithoutEventInput
 }
 
@@ -300,8 +300,8 @@ export type EventUpdateInput = {
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   location?: Prisma.StringFieldUpdateOperationsInput | string
   message?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  user?: Prisma.UserUpdateOneRequiredWithoutEventsNestedInput
   eventHosts?: Prisma.EventHostUpdateManyWithoutEventNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutEventsNestedInput
   transactions?: Prisma.TransactionUpdateManyWithoutEventNestedInput
 }
 
@@ -586,8 +586,8 @@ export type EventCreateWithoutTransactionsInput = {
   date?: Date | string
   location: string
   message?: string | null
-  user: Prisma.UserCreateNestedOneWithoutEventsInput
   eventHosts?: Prisma.EventHostCreateNestedManyWithoutEventInput
+  user: Prisma.UserCreateNestedOneWithoutEventsInput
 }
 
 export type EventUncheckedCreateWithoutTransactionsInput = {
@@ -620,8 +620,8 @@ export type EventUpdateWithoutTransactionsInput = {
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   location?: Prisma.StringFieldUpdateOperationsInput | string
   message?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  user?: Prisma.UserUpdateOneRequiredWithoutEventsNestedInput
   eventHosts?: Prisma.EventHostUpdateManyWithoutEventNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutEventsNestedInput
 }
 
 export type EventUncheckedUpdateWithoutTransactionsInput = {
@@ -711,8 +711,8 @@ export type EventSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   date?: boolean
   location?: boolean
   message?: boolean
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   eventHosts?: boolean | Prisma.Event$eventHostsArgs<ExtArgs>
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   transactions?: boolean | Prisma.Event$transactionsArgs<ExtArgs>
   _count?: boolean | Prisma.EventCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["event"]>
@@ -729,8 +729,8 @@ export type EventSelectScalar = {
 
 export type EventOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "date" | "location" | "message", ExtArgs["result"]["event"]>
 export type EventInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   eventHosts?: boolean | Prisma.Event$eventHostsArgs<ExtArgs>
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   transactions?: boolean | Prisma.Event$transactionsArgs<ExtArgs>
   _count?: boolean | Prisma.EventCountOutputTypeDefaultArgs<ExtArgs>
 }
@@ -738,8 +738,8 @@ export type EventInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs =
 export type $EventPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Event"
   objects: {
-    user: Prisma.$UserPayload<ExtArgs>
     eventHosts: Prisma.$EventHostPayload<ExtArgs>[]
+    user: Prisma.$UserPayload<ExtArgs>
     transactions: Prisma.$TransactionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -1088,8 +1088,8 @@ readonly fields: EventFieldRefs;
  */
 export interface Prisma__EventClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   eventHosts<T extends Prisma.Event$eventHostsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Event$eventHostsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EventHostPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   transactions<T extends Prisma.Event$transactionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Event$transactionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.

@@ -131,8 +131,6 @@ export default function MemorialWeddingDbAddPage() {
                   >
                     <option value="결혼식">결혼식</option>
                     <option value="장례식">장례식</option>
-                    <option value="돌잔치">돌잔치</option>
-                    <option value="기타">기타</option>
                   </select>
 
                   <ChevronDown className="-translate-y-1/2 pointer-events-none absolute top-1/2 right-3 h-5 w-5 text-gray-400" />

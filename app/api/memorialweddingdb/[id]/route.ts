@@ -10,6 +10,15 @@ function toJSON<T>(data: T) {
 // 지금은 임시 유저(시드로 넣은 temp 유저 id=1)로 고정
 const TEMP_USER_ID = BigInt(1);
 
+const categoryMap = {
+  결혼식: 'WEDDING',
+  장례식: 'FUNERAL',
+  돌잔치: 'BIRTHDAY',
+  기타: 'ETC',
+} as const;
+
+type CategoryValue = (typeof categoryMap)[keyof typeof categoryMap];
+
 export async function GET(
   _req: Request,
   ctx: { params: Promise<{ id: string }> },
@@ -63,7 +72,19 @@ export async function PUT(
 
     const name = String(body?.name ?? '').trim(); // eventHost.name
     const relation = String(body?.relation ?? '').trim(); // transaction.relation
-    const eventType = String(body?.eventType ?? '').trim(); // event.location에 저장(임시 매핑)
+    const eventType = String(body?.eventType ?? '').trim();
+    const category = categoryMap[eventType as keyof typeof categoryMap] as
+      | CategoryValue
+      | undefined;
+
+    // category check
+    if (!category) {
+      return NextResponse.json(
+        { ok: false, message: 'eventType 값이 올바르지 않습니다.' },
+        { status: 400 },
+      );
+    }
+
     const datetime = String(body?.datetime ?? '').trim();
     const message = body?.message ? String(body.message) : null;
     const amountBigInt = parseAmount(body?.amount);
@@ -111,7 +132,7 @@ export async function PUT(
               event: {
                 update: {
                   date: sentAt,
-                  location: eventType,
+                  category,
                   message,
                 },
               },
@@ -131,7 +152,14 @@ export async function PUT(
       },
       include: {
         event: {
-          select: { id: true, date: true, location: true, message: true },
+          select: {
+            id: true,
+            date: true,
+            name: true,
+            category: true,
+            location: true,
+            message: true,
+          },
         },
         eventHost: { select: { id: true, name: true } },
       },

@@ -10,6 +10,13 @@ function toJSON<T>(data: T) {
   );
 }
 
+const categoryMap = {
+  결혼식: 'WEDDING',
+  장례식: 'FUNERAL',
+} as const;
+
+type CategoryValue = (typeof categoryMap)[keyof typeof categoryMap];
+
 function parseAmount(amount: unknown) {
   const s = String(amount ?? '');
   const onlyNum = s.replace(/[^\d]/g, '');
@@ -35,6 +42,8 @@ export async function GET() {
           select: {
             id: true,
             date: true,
+            name: true,
+            category: true,
             location: true,
             message: true,
           },
@@ -69,6 +78,17 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { name, amount, datetime, eventType, relation, message } = body;
 
+    const category = categoryMap[eventType as keyof typeof categoryMap] as
+      | CategoryValue
+      | undefined;
+
+    if (!category) {
+      return NextResponse.json(
+        { ok: false, message: 'eventType 값이 올바르지 않습니다.' },
+        { status: 400 },
+      );
+    }
+
     if (!name || !amount || !datetime || !eventType || !relation) {
       return NextResponse.json(
         { ok: false, message: '필수 값 누락' },
@@ -84,6 +104,8 @@ export async function POST(req: Request) {
       data: {
         userId: TEMP_USER_ID,
         date: sentAt,
+        name: `${name} ${eventType}`,
+        category,
         location: eventType, // 임시 매핑
         message: message ?? null,
       },
@@ -112,7 +134,9 @@ export async function POST(req: Request) {
         sentAt,
       },
       include: {
-        event: { select: { location: true } },
+        event: {
+          select: { id: true, name: true, category: true, location: true },
+        },
         eventHost: { select: { name: true } },
       },
     });
