@@ -1,11 +1,13 @@
 'use client';
 
-import { Play, Plus } from 'lucide-react';
+import { CirclePlay, Plus, Trash2 } from 'lucide-react';
 import Image from 'next/image';
-import { useParams, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
 import { MainHeader } from '@/components/common/MainHeader';
+import GalleryModal from '@/components/event/GalleryModal';
+import GalleryUploadModal from '@/components/event/GalleryUploadModal';
 import { Button } from '@/components/ui/button';
 
 type ImageItem = {
@@ -50,15 +52,21 @@ const PAGE_SIZE = 6;
 
 export default function WeddingGalleryPage() {
   const router = useRouter();
-  const { eventId } = useParams<{ eventId: string }>();
+  // const { eventId } = useParams<{ eventId: string }>();
 
   const [allItems, setAllItems] = useState<GalleryItem[]>([]);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
 
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+
   const loaderRef = useRef<HTMLDivElement | null>(null);
   const fetchingRef = useRef(false);
+
+  const isHost = true;
+
+  const [uploadOpen, setUploadOpen] = useState(false);
 
   useEffect(() => {
     const expanded = Array.from({ length: REPEAT }).flatMap((_, idx) =>
@@ -103,6 +111,43 @@ export default function WeddingGalleryPage() {
     return () => observer.disconnect();
   }, [loading, hasMore, allItems.length]);
 
+  const handleDeleteItem = (id: string) => {
+    setAllItems((prev) => prev.filter((item) => item.id !== id));
+
+    // 모달 열려 있으면 닫기
+    setSelectedIndex(null);
+
+    // visibleCount 보정
+    setVisibleCount((prev) =>
+      Math.max(PAGE_SIZE, Math.min(prev - 1, allItems.length - 1)),
+    );
+  };
+
+  const handleAddItem = (items: { type: 'image' | 'video'; src: string }[]) => {
+    const newItems: GalleryItem[] = items.map((item) => {
+      const id = `upload-${Date.now()}-${Math.random()}`;
+
+      if (item.type === 'image') {
+        return {
+          id,
+          type: 'image',
+          src: item.src,
+        };
+      }
+
+      // video는 poster 필수
+      return {
+        id,
+        type: 'video',
+        src: item.src,
+        poster: item.src, // 더미 poster (추후 서버 썸네일로 교체)
+      };
+    });
+
+    setAllItems((prev) => [...newItems, ...prev]);
+    setVisibleCount((prev) => prev + newItems.length);
+  };
+
   return (
     <>
       <MainHeader
@@ -129,10 +174,8 @@ export default function WeddingGalleryPage() {
           <Button
             size="sm"
             variant="ghost"
-            className="border bg-white px-2 text-sm"
-            onClick={() =>
-              router.push(`/event/wedding/${eventId}/gallery/upload`)
-            }
+            className="cursor-pointer border bg-white px-2 text-sm"
+            onClick={() => setUploadOpen(true)}
           >
             사진·영상 추가하기
             <Plus className="h-4 w-4 text-[#017F70]" />
@@ -142,21 +185,49 @@ export default function WeddingGalleryPage() {
 
       <div className="scrollbar-hidden h-[calc(100vh-140px)] overflow-y-auto px-5">
         <div className="columns-2 gap-2 sm:columns-3">
-          {visibleItems.map((item) => (
+          {visibleItems.map((item, index) => (
+            // biome-ignore lint/a11y/useSemanticElements: 에러가 아닌 접근성 린트 경고 (button 태그로 더 단순하게 쓸 수 있다는 제안이지만, button 태그로 바꾸면 HTML 스펙 위반 => 무시해도 무방)
             <div
               key={item.id}
-              className="mb-2 break-inside-avoid overflow-hidden rounded-lg bg-black/5"
+              role="button"
+              aria-label="Open gallery item"
+              tabIndex={0}
+              onClick={() => setSelectedIndex(index)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  setSelectedIndex(index);
+                }
+              }}
+              className="group relative mb-2 block w-full cursor-pointer break-inside-avoid overflow-hidden rounded-lg focus:outline-none"
             >
               {item.type === 'image' ? (
-                <Image
-                  src={item.src}
-                  alt="gallery image"
-                  width={600}
-                  height={800}
-                  className="h-auto w-full object-cover"
-                />
+                <>
+                  <Image
+                    src={item.src}
+                    alt="gallery image"
+                    width={600}
+                    height={800}
+                    className="h-auto w-full object-cover"
+                  />
+
+                  <div className="pointer-events-none absolute inset-0 bg-black/0 transition-colors group-hover:bg-black/30" />
+
+                  {isHost && (
+                    <button
+                      type="button"
+                      aria-label="Delete item"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteItem(item.id);
+                      }}
+                      className="absolute top-2 right-2 hidden cursor-pointer rounded-full bg-red-600 p-1 text-white shadow-md transition hover:bg-red-700 group-hover:block"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  )}
+                </>
               ) : (
-                <div className="relative">
+                <>
                   <Image
                     src={item.poster}
                     alt="video thumbnail"
@@ -164,10 +235,27 @@ export default function WeddingGalleryPage() {
                     height={800}
                     className="h-auto w-full object-cover"
                   />
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/30">
-                    <Play className="h-10 w-10 text-white" />
+
+                  <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/40">
+                    <CirclePlay className="h-8 w-8 text-white" />
                   </div>
-                </div>
+
+                  <div className="pointer-events-none absolute inset-0 bg-black/0 transition-colors group-hover:bg-black/30" />
+
+                  {isHost && (
+                    <button
+                      type="button"
+                      aria-label="Delete item"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteItem(item.id);
+                      }}
+                      className="absolute top-2 right-2 hidden cursor-pointer rounded-full bg-red-600 p-1 text-white shadow-md transition hover:bg-red-700 group-hover:block"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  )}
+                </>
               )}
             </div>
           ))}
@@ -180,7 +268,33 @@ export default function WeddingGalleryPage() {
             불러오는 중...
           </p>
         )}
+
+        {uploadOpen && (
+          <GalleryUploadModal
+            onClose={() => setUploadOpen(false)}
+            onAdd={handleAddItem}
+          />
+        )}
       </div>
+
+      {selectedIndex !== null && (
+        <GalleryModal
+          item={visibleItems[selectedIndex]}
+          onClose={() => setSelectedIndex(null)}
+          onPrev={
+            selectedIndex > 0
+              ? () =>
+                  setSelectedIndex((prev) => (prev === null ? prev : prev - 1))
+              : undefined
+          }
+          onNext={
+            selectedIndex < visibleItems.length - 1
+              ? () =>
+                  setSelectedIndex((prev) => (prev === null ? prev : prev + 1))
+              : undefined
+          }
+        />
+      )}
     </>
   );
 }
