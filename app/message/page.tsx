@@ -115,7 +115,7 @@ export default function MessageEntryPage() {
             </button>
           </div>
           <div className="pt-4 text-center text-slate-400 text-xs">
-            원하는 방식으로 선택하면 다음 화면으로 이동해요.
+            원하는 방식을 선택하면 다음 화면으로 이동해요.
           </div>
         </div>
       </div>

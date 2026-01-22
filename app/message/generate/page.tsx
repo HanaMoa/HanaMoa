@@ -29,7 +29,7 @@ const toneItems = toItems(['격식', '따뜻한', '담백한', '친근한'] as c
 const lengthItems: DropdownItem[] = [
   { value: '짧게', label: '짧게 (1문장)' },
   { value: '보통', label: '보통 (2~3문장)' },
-  { value: '길게', label: '길게 (3~5문장)' },
+  { value: '길게', label: '길게 (4~5문장)' },
 ];
 
 export default function MessageGeneratePage() {
