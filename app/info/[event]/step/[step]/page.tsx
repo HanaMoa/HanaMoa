@@ -1,7 +1,8 @@
 'use client';
 
 import { notFound, useParams, useRouter } from 'next/navigation';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { DatePlaceForm } from '@/components/info/DatePlaceForm';
 import { DeathForm } from '@/components/info/DeathForm';
 import { InfoLayout } from '@/components/info/InfoLayout';
 import { InfoTitle } from '@/components/info/InfoTitle';
@@ -46,6 +47,10 @@ export default function Page() {
   if (!event) notFound();
   if (!Number.isFinite(step) || !validSteps.includes(step)) notFound();
 
+  useEffect(() => {
+    setCanNext(false);
+  }, [event, step]);
+
   const config = infoConfig[event];
 
   const stepCfg: StepCfg | null = (() => {
@@ -71,7 +76,7 @@ export default function Page() {
   };
 
   const onNext = () => {
-    const allowNext = step >= 4 ? true : canNext;
+    const allowNext = canNext;
     if (!allowNext) return;
 
     if (step < totalSteps) router.push(`/info/${event}/step/${step + 1}`);
@@ -99,12 +104,15 @@ export default function Page() {
       );
     }
 
-    // step4 - 장소 및 시간, step5 - 웨딩 사진 업로드
+    if (step === 4) {
+      return <DatePlaceForm onValidChange={setCanNext} />;
+    }
+    // step5 - 웨딩 사진 업로드
+
     return <div className="text-center text-black/50">미리보기(추후)</div>;
   })();
 
-  // step2/3만 canNext로 막고, step4/5는 항상 가능(임시)
-  const nextDisabled = step >= 4 ? false : !canNext;
+  const nextDisabled = !canNext;
 
   return (
     <InfoLayout

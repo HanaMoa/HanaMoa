@@ -23,6 +23,14 @@ function displayKoreanDate(yyyyMMdd: string) {
   return `${y}년 ${m}월 ${d}일`;
 }
 
+function displayKoreanTime(time24: string) {
+  if (!time24) return '';
+  const [hh, mm] = time24.split(':').map(Number);
+  const period = hh >= 12 ? '오후' : '오전';
+  const h12 = ((hh + 11) % 12) + 1;
+  return `${period} ${String(h12).padStart(2, '0')} : ${String(mm).padStart(2, '0')}`;
+}
+
 export function DatePlaceForm({ onValidChange }: Props) {
   const [date, setDate] = useState(''); // 'YYYY-MM-DD'
 
@@ -77,7 +85,7 @@ export function DatePlaceForm({ onValidChange }: Props) {
           className="-translate-y-1/2 absolute top-1/2 right-2 rounded-lg p-2"
           aria-label="날짜 선택"
         >
-          <CalendarIcon className="h-5 w-5 text-[#B3B3B3]" />
+          <CalendarIcon className="h-6 w-6 text-[#B3B3B3]" />
         </button>
       </div>
 
