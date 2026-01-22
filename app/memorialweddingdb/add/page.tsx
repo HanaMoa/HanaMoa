@@ -1,16 +1,21 @@
+// 10-2-1. DB 내역 추가
 'use client';
 
+import AlertModal from '@/components/common/AlertModal';
+import { Input } from '@/components/common/Input';
+import { SingleButton } from '@/components/common/SingleButton';
+import { Card } from '@/components/ui/card';
 import { Calendar, ChevronDown } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useMemo, useState } from 'react';
-import AlertModal from '@/components/common/AlertModal';
-import { Card } from '@/components/ui/card';
+import { useMemo, useRef, useState } from 'react';
 
 export default function MemorialWeddingDbAddPage() {
   const router = useRouter();
   // 확인 모달창 인자
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [confirmType, setConfirmType] = useState<'yes' | 'no' | null>(null);
+  // input format
+  const formRef = useRef<HTMLFormElement | null>(null);
 
   // 초기값: PDF 예시와 비슷하게 세팅 (원하면 비워도 됨)
   const [name, setName] = useState('박성원');
@@ -31,191 +36,202 @@ export default function MemorialWeddingDbAddPage() {
     setAmount(onlyNum);
   };
 
-  const handleYes = () => {
-    // TODO: 여기서 DB 저장/POST 연결
-    // 예: await fetch("/api/...", { method:"POST", body: ... })
-    console.log('submit', { name, amount, datetime, eventType, relation });
+  const handleYes = async () => {
+    const form = formRef.current;
+    if (!form) return;
 
-    // 저장 후 목록으로 복귀
+    const fd = new FormData(form);
+
+    const name = String(fd.get('name') ?? '').trim();
+    const amountRaw = String(fd.get('amount') ?? '');
+    const amount = amountRaw.replace(/[^\d]/g, ''); // 숫자만
+    const datetime = String(fd.get('datetime') ?? '');
+    const eventType = String(fd.get('eventType') ?? '');
+    const relation = String(fd.get('relation') ?? '');
+
+    const res = await fetch('/api/memorialweddingdb', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, amount, datetime, eventType, relation }),
+    });
+
+    if (!res.ok) {
+      alert('저장 실패');
+      return;
+    }
+
     router.push('/memorialweddingdb');
   };
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-md flex-col bg-white px-6 pt-6">
-      {/* 상단 헤더 */}
-      <div className="flex items-center gap-2">
-        <button
-          type="button"
-          onClick={() => router.back()}
-          className="rounded-full p-2 hover:bg-gray-100"
-          aria-label="뒤로가기"
-        >
-          ←
-        </button>
-      </div>
-
-      <div className="mt-6 flex flex-col gap-4">
-        <h2 className="text-center font-bold text-gray-900 text-xl">
-          경조사 내역 추가
-        </h2>
-
-        <Card className="rounded-2xl border-0 bg-gray-50 p-5 shadow-none">
-          {/* 이름/금액 2열 */}
-          <div className="grid grid-cols-2 gap-3">
-            <div className="flex flex-col gap-2">
-              <label className="font-semibold text-gray-800 text-sm">
-                이름
-              </label>
-              <input
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="h-11 rounded-xl border border-gray-200 bg-white px-3 text-sm outline-none focus:border-[#1EA698]"
-                placeholder="이름"
-              />
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <label className="font-semibold text-gray-800 text-sm">
-                금액
-              </label>
-              <input
-                value={amountFormatted}
-                onChange={(e) => handleAmountChange(e.target.value)}
-                inputMode="numeric"
-                className="h-11 rounded-xl border border-gray-200 bg-white px-3 text-sm outline-none focus:border-[#1EA698]"
-                placeholder="0"
-              />
-            </div>
-          </div>
-
-          {/* 날짜 및 시간 */}
-          <div className="mt-4 flex flex-col gap-2">
-            <label className="font-semibold text-gray-800 text-sm">
-              날짜 및 시간
-            </label>
-
-            <div className="relative">
-              <input
-                type="datetime-local"
-                value={datetime}
-                onChange={(e) => setDatetime(e.target.value)}
-                className="h-11 w-full rounded-xl border border-gray-200 bg-white px-3 pr-11 text-sm outline-none focus:border-[#1EA698]"
-              />
-              <Calendar className="-translate-y-1/2 pointer-events-none absolute top-1/2 right-3 h-5 w-5 text-gray-400" />
-            </div>
-          </div>
-
-          {/* 경조사 종류 */}
-          <div className="mt-4 flex flex-col gap-2">
-            <label className="font-semibold text-gray-800 text-sm">
-              경조사 종류
-            </label>
-            <div className="relative">
-              <select
-                value={eventType}
-                onChange={(e) => setEventType(e.target.value)}
-                className="h-11 w-full appearance-none rounded-xl border border-gray-200 bg-white px-3 pr-10 text-sm outline-none focus:border-[#1EA698]"
-              >
-                <option value="결혼식">결혼식</option>
-                <option value="장례식">장례식</option>
-                <option value="돌잔치">돌잔치</option>
-                <option value="기타">기타</option>
-              </select>
-              <ChevronDown className="-translate-y-1/2 pointer-events-none absolute top-1/2 right-3 h-5 w-5 text-gray-400" />
-            </div>
-          </div>
-
-          {/* 관계 */}
-          <div className="mt-4 flex flex-col gap-2">
-            <label className="font-semibold text-gray-800 text-sm">관계</label>
-            <div className="relative">
-              <select
-                value={relation}
-                onChange={(e) => setRelation(e.target.value)}
-                className="h-11 w-full appearance-none rounded-xl border border-gray-200 bg-white px-3 pr-10 text-sm outline-none focus:border-[#1EA698]"
-              >
-                <option value="친구">친구</option>
-                <option value="가족">가족</option>
-                <option value="직장">직장</option>
-                <option value="지인">지인</option>
-              </select>
-              <ChevronDown className="-translate-y-1/2 pointer-events-none absolute top-1/2 right-3 h-5 w-5 text-gray-400" />
-            </div>
-          </div>
-        </Card>
-
-        {/* 확인 영역 */}
-        <div className="mt-2 text-center font-extrabold text-gray-900 text-xl">
-          추가하시겠습니까?
-        </div>
-
-        <div className="mt-2 grid grid-cols-2 gap-3">
+    <div className="mx-auto h-dvh w-full max-w-[600px] overflow-hidden bg-[#F6F7F9] md:max-w-[720px] lg:max-w-[800px]">
+      <main className="flex h-full w-full flex-col bg-white px-6 pt-6">
+        {/* 상단 헤더 */}
+        <div className="flex items-center gap-2">
           <button
             type="button"
-            onClick={() => {
-              setConfirmType('yes');
-              setConfirmOpen(true);
-            }}
-            className="h-12 rounded-xl bg-[#1EA698] font-semibold text-white"
+            onClick={() => router.back()}
+            className="rounded-full p-2 hover:bg-gray-100"
+            aria-label="뒤로가기"
           >
-            예
-          </button>
-
-          <button
-            type="button"
-            onClick={() => {
-              setConfirmType('no');
-              setConfirmOpen(true);
-            }}
-            className="h-12 rounded-xl bg-[#1EA698] font-semibold text-white"
-          >
-            아니오
+            ←
           </button>
         </div>
-      </div>
 
-      <div className="h-10" />
-      <AlertModal
-        open={confirmOpen}
-        onClose={() => setConfirmOpen(false)}
-        title={
-          confirmType === 'yes'
-            ? '정말 추가하시겠습니까?'
-            : '추가를 취소하시겠습니까?'
-        }
-        description={
-          confirmType === 'yes'
-            ? '입력한 내용이 저장됩니다.'
-            : '입력한 내용이 저장되지 않았습니다.'
-        }
-        action={
-          <div className="flex gap-3">
-            <button
-              type="button"
-              className="h-12 w-28 rounded-xl bg-gray-200 font-semibold text-gray-700"
-              onClick={() => setConfirmOpen(false)}
-            >
-              취소
-            </button>
+        <div className="mt-6 flex flex-col gap-4">
+          <h2 className="text-center font-bold text-gray-900 text-xl">
+            경조사 내역 추가
+          </h2>
 
-            <button
-              type="button"
-              className="h-12 w-28 rounded-xl bg-[#1EA698] font-semibold text-white"
+          <form ref={formRef}>
+            <Card className="rounded-2xl border-0 bg-gray-50 p-5 shadow-none">
+              {/* 이름/금액 2열 */}
+              <div className="grid grid-cols-2 gap-3">
+                <Input label="이름" name="name" placeholder="이름" />
+
+                <Input
+                  label="금액"
+                  name="amount"
+                  placeholder="0"
+                  rightElement={
+                    <span className="text-gray-400 text-sm">원</span>
+                  }
+                />
+              </div>
+
+              {/* 날짜 및 시간 */}
+              <div className="mt-4 flex flex-col gap-2">
+                <label className="font-semibold text-gray-800 text-sm">
+                  날짜 및 시간
+                </label>
+
+                <div className="relative">
+                  <input
+                    type="datetime-local"
+                    name="datetime"
+                    defaultValue={datetime}
+                    className="h-[49px] w-full rounded-[10px] border px-4 pr-12 text-[16px]"
+                  />
+                  <Calendar className="-translate-y-1/2 pointer-events-none absolute top-1/2 right-3 h-5 w-5 text-gray-400" />
+                </div>
+              </div>
+
+              {/* 경조사 종류 */}
+              <div className="mt-4 flex flex-col gap-2">
+                <label className="font-semibold text-gray-800 text-sm">
+                  경조사 종류
+                </label>
+
+                <div className="relative">
+                  <select
+                    name="eventType"
+                    defaultValue={eventType}
+                    className="h-[49px] w-full appearance-none rounded-[10px] border px-4 pr-10 text-[16px]"
+                  >
+                    <option value="결혼식">결혼식</option>
+                    <option value="장례식">장례식</option>
+                    <option value="돌잔치">돌잔치</option>
+                    <option value="기타">기타</option>
+                  </select>
+
+                  <ChevronDown className="-translate-y-1/2 pointer-events-none absolute top-1/2 right-3 h-5 w-5 text-gray-400" />
+                </div>
+              </div>
+
+              {/* 관계 */}
+              <div className="mt-4 flex flex-col gap-2">
+                <label className="font-semibold text-gray-800 text-sm">
+                  관계
+                </label>
+
+                <div className="relative">
+                  <select
+                    name="relation"
+                    defaultValue={relation}
+                    className="h-[49px] w-full appearance-none rounded-[10px] border px-4 pr-10 text-[16px]"
+                  >
+                    <option value="친구">친구</option>
+                    <option value="가족">가족</option>
+                    <option value="직장">직장</option>
+                    <option value="지인">지인</option>
+                  </select>
+
+                  <ChevronDown className="-translate-y-1/2 pointer-events-none absolute top-1/2 right-3 h-5 w-5 text-gray-400" />
+                </div>
+              </div>
+            </Card>
+          </form>
+
+          {/* 확인 영역 */}
+          <div className="mt-2 text-center font-extrabold text-gray-900 text-xl">
+            추가하시겠습니까?
+          </div>
+
+          {/* 예 / 아니오 버튼 */}
+          <div className="mt-2 flex justify-center gap-3">
+            <SingleButton
               onClick={() => {
-                setConfirmOpen(false);
-
-                if (confirmType === 'yes') {
-                  handleYes(); // 저장 로직
-                } else {
-                  router.back(); // 취소(뒤로가기)
-                }
+                setConfirmType('yes');
+                setConfirmOpen(true);
               }}
             >
-              확인
-            </button>
+              예
+            </SingleButton>
+
+            <SingleButton
+              onClick={() => {
+                setConfirmType('no');
+                setConfirmOpen(true);
+              }}
+            >
+              아니오
+            </SingleButton>
           </div>
-        }
-      />
-    </main>
+        </div>
+
+        <div className="h-10" />
+        <AlertModal
+          open={confirmOpen}
+          onClose={() => setConfirmOpen(false)}
+          title={
+            confirmType === 'yes'
+              ? '정말 추가하시겠습니까?'
+              : '추가를 취소하시겠습니까?'
+          }
+          description={
+            confirmType === 'yes'
+              ? '입력한 내용이 저장됩니다.'
+              : '입력한 내용이 저장되지 않았습니다.'
+          }
+          action={
+            <div className="flex gap-3">
+              <button
+                type="button"
+                className="h-12 w-28 rounded-xl bg-gray-200 font-semibold text-gray-700"
+                onClick={() => setConfirmOpen(false)}
+              >
+                취소
+              </button>
+
+              <button
+                type="button"
+                className="h-12 w-28 rounded-xl bg-[#1EA698] font-semibold text-white"
+                onClick={() => {
+                  setConfirmOpen(false);
+
+                  if (confirmType === 'yes') {
+                    handleYes(); // 저장 로직
+                  } else {
+                    router.back(); // 취소(뒤로가기)
+                  }
+                }}
+              >
+                확인
+              </button>
+            </div>
+          }
+        />
+      </main>
+    </div>
   );
 }
