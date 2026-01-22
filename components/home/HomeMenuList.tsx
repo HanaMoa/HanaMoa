@@ -25,7 +25,7 @@ export default function HomeMenuList() {
       titleMain: '초대장',
       titleSub: '만들기',
       desc: '새로운 행사를\n준비하시나요?',
-      href: '/invite',
+      href: '/info',
       className: 'col-start-1 row-start-1 row-span-5',
       image: '/images/home/invite.png',
       imgSize: 72,
