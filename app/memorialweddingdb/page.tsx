@@ -4,7 +4,7 @@
 
 import { Download, Plus, Search } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Card } from '@/components/ui/card';
 
 export default function HanamoaPage() {
@@ -12,6 +12,7 @@ export default function HanamoaPage() {
   const [selectedPeriod, setSelectedPeriod] = useState('6개월');
   const searchParams = useSearchParams();
   const [items, setItems] = useState<any[]>([]);
+  const refreshKey = searchParams.get('r') ?? ''; // Card 계좌 re랜더링 인자
 
   useEffect(() => {
     (async () => {
@@ -20,7 +21,29 @@ export default function HanamoaPage() {
       const data = await res.json();
       if (data?.ok) setItems(data.items ?? []);
     })();
-  }, []);
+  }, [refreshKey]); // refreshKey : r 받을때 rerendering
+
+  const fetchItems = async () => {
+    const res = await fetch('/api/memorialweddingdb', { cache: 'no-store' });
+    if (!res.ok) return;
+    const data = await res.json();
+    if (data?.ok) setItems(data.items ?? []);
+  };
+
+  const totalAmount = useMemo(() => {
+    return items.reduce((acc: bigint, it: any) => {
+      try {
+        return acc + BigInt(String(it?.amount ?? '0'));
+      } catch {
+        return acc;
+      }
+    }, BigInt(0));
+  }, [items]);
+
+  const totalAmountLabel = useMemo(() => {
+    const s = totalAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    return `${s} 원`;
+  }, [totalAmount]);
 
   return (
     <div className="mx-auto h-dvh w-full max-w-[600px] overflow-hidden bg-[#F6F7F9] md:max-w-[720px] lg:max-w-[800px]">
@@ -37,7 +60,9 @@ export default function HanamoaPage() {
                   하나 1004-4827-2829
                 </p>
                 <div className="my-2 w-full border-black border-t" />
-                <p className="mt-2 font-bold text-3xl text-black">570,000 원</p>
+                <p className="mt-2 font-bold text-3xl text-black">
+                  {totalAmountLabel}
+                </p>
               </div>
             </Card>
           </div>

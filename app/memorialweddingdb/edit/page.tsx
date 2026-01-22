@@ -61,7 +61,8 @@ export default function MemorialWeddingDbEditPage() {
       return;
     }
 
-    router.push('/memorialweddingdb');
+    // 계좌 push 성공시 파라미터 r 붙이기
+    router.push(`/memorialweddingdb?r=${Date.now()}`);
   };
 
   useEffect(() => {

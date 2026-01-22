@@ -1,13 +1,13 @@
 // 10-2-1. DB 내역 추가
 'use client';
 
+import { Calendar, ChevronDown } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useMemo, useRef, useState } from 'react';
 import AlertModal from '@/components/common/AlertModal';
 import { Input } from '@/components/common/Input';
 import { SingleButton } from '@/components/common/SingleButton';
 import { Card } from '@/components/ui/card';
-import { Calendar, ChevronDown } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { useMemo, useRef, useState } from 'react';
 
 export default function MemorialWeddingDbAddPage() {
   const router = useRouter();
@@ -60,7 +60,8 @@ export default function MemorialWeddingDbAddPage() {
       return;
     }
 
-    router.push('/memorialweddingdb');
+    // 계좌 push 성공시 파라미터 r 붙이기
+    router.push(`/memorialweddingdb?r=${Date.now()}`);
   };
 
   return (
