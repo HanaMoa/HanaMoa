@@ -122,14 +122,12 @@ git checkout -b feature/app/login origin/dev
 ## ⚙️ 시스템 구성도
 <img width="768" height="512" alt="image" src="https://github.com/user-attachments/assets/73587f8f-8883-4b93-8d10-0d40f752f4fe" />
 
-<br
+<br>
 
 
 
-## ERD(0.2 version)
-<img width="718" height="703" alt="image" src="https://github.com/user-attachments/assets/5b0b9f92-ab77-4a32-b14f-add0312841f2" />
-
-
+## ERD(0.3 version)
+<img width="1596" height="1506" alt="image" src="https://github.com/user-attachments/assets/f5ea38a6-0c70-4da1-9b61-a03199006c71" />
 
 ## setting
 ```
