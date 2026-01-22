@@ -137,17 +137,21 @@ pnpm install
 → pnpm version : 10.21.0
 ```
 
+### docker
+```
+docker compose up -d
+```
 
-
-## prisma setting
+### prisma setting
 ```
 pnpm prisma generate
 pnpm prisma db push
+pnpm prisma db seed
 ```
 
 
 
-## DB 확인
+### DB 확인
 ```
 pnpm prisma studio
 ```
