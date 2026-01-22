@@ -74,7 +74,7 @@ export default function Page() {
         onBackClick={() => router.push('/home')}
       />
 
-      <section className="mx-auto w-full max-w-[300px] flex-1 px-5 pt-4 md:max-w-[360px] lg:max-w-[420px]">
+      <section className="mx-auto w-full max-w-[360px] flex-1 px-5 pt-4 md:max-w-[420px] lg:max-w-[480px]">
         {/* 인디케이터 */}
         <div className="px-4 py-3">
           <StepIndicator
