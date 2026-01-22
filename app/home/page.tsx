@@ -26,7 +26,10 @@ export default function HomePage() {
 
         {/*진행 중인 행사 카드 */}
         <div className="px-6 py-3 md:px-7 lg:px-8">
-          <EventCard count={3} onClick={() => router.push('/event')} />
+          <EventCard
+            count={3}
+            onClick={() => router.push('/event/memorial/1')}
+          />
         </div>
 
         {/*한눈에 메뉴 */}
