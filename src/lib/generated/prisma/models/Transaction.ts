@@ -276,10 +276,10 @@ export type TransactionWhereInput = {
   relation?: Prisma.StringFilter<"Transaction"> | string
   sentAt?: Prisma.DateTimeFilter<"Transaction"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"Transaction"> | Date | string
-  account?: Prisma.XOR<Prisma.AccountNullableScalarRelationFilter, Prisma.AccountWhereInput> | null
-  eventHost?: Prisma.XOR<Prisma.EventHostNullableScalarRelationFilter, Prisma.EventHostWhereInput> | null
-  event?: Prisma.XOR<Prisma.EventNullableScalarRelationFilter, Prisma.EventWhereInput> | null
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  event?: Prisma.XOR<Prisma.EventNullableScalarRelationFilter, Prisma.EventWhereInput> | null
+  eventHost?: Prisma.XOR<Prisma.EventHostNullableScalarRelationFilter, Prisma.EventHostWhereInput> | null
+  account?: Prisma.XOR<Prisma.AccountNullableScalarRelationFilter, Prisma.AccountWhereInput> | null
 }
 
 export type TransactionOrderByWithRelationInput = {
@@ -293,10 +293,10 @@ export type TransactionOrderByWithRelationInput = {
   relation?: Prisma.SortOrder
   sentAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  account?: Prisma.AccountOrderByWithRelationInput
-  eventHost?: Prisma.EventHostOrderByWithRelationInput
-  event?: Prisma.EventOrderByWithRelationInput
   user?: Prisma.UserOrderByWithRelationInput
+  event?: Prisma.EventOrderByWithRelationInput
+  eventHost?: Prisma.EventHostOrderByWithRelationInput
+  account?: Prisma.AccountOrderByWithRelationInput
   _relevance?: Prisma.TransactionOrderByRelevanceInput
 }
 
@@ -314,10 +314,10 @@ export type TransactionWhereUniqueInput = Prisma.AtLeast<{
   relation?: Prisma.StringFilter<"Transaction"> | string
   sentAt?: Prisma.DateTimeFilter<"Transaction"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"Transaction"> | Date | string
-  account?: Prisma.XOR<Prisma.AccountNullableScalarRelationFilter, Prisma.AccountWhereInput> | null
-  eventHost?: Prisma.XOR<Prisma.EventHostNullableScalarRelationFilter, Prisma.EventHostWhereInput> | null
-  event?: Prisma.XOR<Prisma.EventNullableScalarRelationFilter, Prisma.EventWhereInput> | null
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  event?: Prisma.XOR<Prisma.EventNullableScalarRelationFilter, Prisma.EventWhereInput> | null
+  eventHost?: Prisma.XOR<Prisma.EventHostNullableScalarRelationFilter, Prisma.EventHostWhereInput> | null
+  account?: Prisma.XOR<Prisma.AccountNullableScalarRelationFilter, Prisma.AccountWhereInput> | null
 }, "id">
 
 export type TransactionOrderByWithAggregationInput = {
@@ -361,10 +361,10 @@ export type TransactionCreateInput = {
   relation: string
   sentAt?: Date | string
   createdAt?: Date | string
-  account?: Prisma.AccountCreateNestedOneWithoutTransactionsInput
-  eventHost?: Prisma.EventHostCreateNestedOneWithoutTransactionsInput
-  event?: Prisma.EventCreateNestedOneWithoutTransactionsInput
   user: Prisma.UserCreateNestedOneWithoutTransactionsInput
+  event?: Prisma.EventCreateNestedOneWithoutTransactionsInput
+  eventHost?: Prisma.EventHostCreateNestedOneWithoutTransactionsInput
+  account?: Prisma.AccountCreateNestedOneWithoutTransactionsInput
 }
 
 export type TransactionUncheckedCreateInput = {
@@ -387,10 +387,10 @@ export type TransactionUpdateInput = {
   relation?: Prisma.StringFieldUpdateOperationsInput | string
   sentAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  account?: Prisma.AccountUpdateOneWithoutTransactionsNestedInput
-  eventHost?: Prisma.EventHostUpdateOneWithoutTransactionsNestedInput
-  event?: Prisma.EventUpdateOneWithoutTransactionsNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutTransactionsNestedInput
+  event?: Prisma.EventUpdateOneWithoutTransactionsNestedInput
+  eventHost?: Prisma.EventHostUpdateOneWithoutTransactionsNestedInput
+  account?: Prisma.AccountUpdateOneWithoutTransactionsNestedInput
 }
 
 export type TransactionUncheckedUpdateInput = {
@@ -697,9 +697,9 @@ export type TransactionCreateWithoutUserInput = {
   relation: string
   sentAt?: Date | string
   createdAt?: Date | string
-  account?: Prisma.AccountCreateNestedOneWithoutTransactionsInput
-  eventHost?: Prisma.EventHostCreateNestedOneWithoutTransactionsInput
   event?: Prisma.EventCreateNestedOneWithoutTransactionsInput
+  eventHost?: Prisma.EventHostCreateNestedOneWithoutTransactionsInput
+  account?: Prisma.AccountCreateNestedOneWithoutTransactionsInput
 }
 
 export type TransactionUncheckedCreateWithoutUserInput = {
@@ -763,9 +763,9 @@ export type TransactionCreateWithoutEventInput = {
   relation: string
   sentAt?: Date | string
   createdAt?: Date | string
-  account?: Prisma.AccountCreateNestedOneWithoutTransactionsInput
-  eventHost?: Prisma.EventHostCreateNestedOneWithoutTransactionsInput
   user: Prisma.UserCreateNestedOneWithoutTransactionsInput
+  eventHost?: Prisma.EventHostCreateNestedOneWithoutTransactionsInput
+  account?: Prisma.AccountCreateNestedOneWithoutTransactionsInput
 }
 
 export type TransactionUncheckedCreateWithoutEventInput = {
@@ -813,9 +813,9 @@ export type TransactionCreateWithoutEventHostInput = {
   relation: string
   sentAt?: Date | string
   createdAt?: Date | string
-  account?: Prisma.AccountCreateNestedOneWithoutTransactionsInput
-  event?: Prisma.EventCreateNestedOneWithoutTransactionsInput
   user: Prisma.UserCreateNestedOneWithoutTransactionsInput
+  event?: Prisma.EventCreateNestedOneWithoutTransactionsInput
+  account?: Prisma.AccountCreateNestedOneWithoutTransactionsInput
 }
 
 export type TransactionUncheckedCreateWithoutEventHostInput = {
@@ -863,9 +863,9 @@ export type TransactionCreateWithoutAccountInput = {
   relation: string
   sentAt?: Date | string
   createdAt?: Date | string
-  eventHost?: Prisma.EventHostCreateNestedOneWithoutTransactionsInput
-  event?: Prisma.EventCreateNestedOneWithoutTransactionsInput
   user: Prisma.UserCreateNestedOneWithoutTransactionsInput
+  event?: Prisma.EventCreateNestedOneWithoutTransactionsInput
+  eventHost?: Prisma.EventHostCreateNestedOneWithoutTransactionsInput
 }
 
 export type TransactionUncheckedCreateWithoutAccountInput = {
@@ -925,9 +925,9 @@ export type TransactionUpdateWithoutUserInput = {
   relation?: Prisma.StringFieldUpdateOperationsInput | string
   sentAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  account?: Prisma.AccountUpdateOneWithoutTransactionsNestedInput
-  eventHost?: Prisma.EventHostUpdateOneWithoutTransactionsNestedInput
   event?: Prisma.EventUpdateOneWithoutTransactionsNestedInput
+  eventHost?: Prisma.EventHostUpdateOneWithoutTransactionsNestedInput
+  account?: Prisma.AccountUpdateOneWithoutTransactionsNestedInput
 }
 
 export type TransactionUncheckedUpdateWithoutUserInput = {
@@ -973,9 +973,9 @@ export type TransactionUpdateWithoutEventInput = {
   relation?: Prisma.StringFieldUpdateOperationsInput | string
   sentAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  account?: Prisma.AccountUpdateOneWithoutTransactionsNestedInput
-  eventHost?: Prisma.EventHostUpdateOneWithoutTransactionsNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutTransactionsNestedInput
+  eventHost?: Prisma.EventHostUpdateOneWithoutTransactionsNestedInput
+  account?: Prisma.AccountUpdateOneWithoutTransactionsNestedInput
 }
 
 export type TransactionUncheckedUpdateWithoutEventInput = {
@@ -1021,9 +1021,9 @@ export type TransactionUpdateWithoutEventHostInput = {
   relation?: Prisma.StringFieldUpdateOperationsInput | string
   sentAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  account?: Prisma.AccountUpdateOneWithoutTransactionsNestedInput
-  event?: Prisma.EventUpdateOneWithoutTransactionsNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutTransactionsNestedInput
+  event?: Prisma.EventUpdateOneWithoutTransactionsNestedInput
+  account?: Prisma.AccountUpdateOneWithoutTransactionsNestedInput
 }
 
 export type TransactionUncheckedUpdateWithoutEventHostInput = {
@@ -1069,9 +1069,9 @@ export type TransactionUpdateWithoutAccountInput = {
   relation?: Prisma.StringFieldUpdateOperationsInput | string
   sentAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  eventHost?: Prisma.EventHostUpdateOneWithoutTransactionsNestedInput
-  event?: Prisma.EventUpdateOneWithoutTransactionsNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutTransactionsNestedInput
+  event?: Prisma.EventUpdateOneWithoutTransactionsNestedInput
+  eventHost?: Prisma.EventHostUpdateOneWithoutTransactionsNestedInput
 }
 
 export type TransactionUncheckedUpdateWithoutAccountInput = {
@@ -1111,10 +1111,10 @@ export type TransactionSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   relation?: boolean
   sentAt?: boolean
   createdAt?: boolean
-  account?: boolean | Prisma.Transaction$accountArgs<ExtArgs>
-  eventHost?: boolean | Prisma.Transaction$eventHostArgs<ExtArgs>
-  event?: boolean | Prisma.Transaction$eventArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  event?: boolean | Prisma.Transaction$eventArgs<ExtArgs>
+  eventHost?: boolean | Prisma.Transaction$eventHostArgs<ExtArgs>
+  account?: boolean | Prisma.Transaction$accountArgs<ExtArgs>
 }, ExtArgs["result"]["transaction"]>
 
 
@@ -1134,19 +1134,19 @@ export type TransactionSelectScalar = {
 
 export type TransactionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "eventId" | "eventHostId" | "accountId" | "amount" | "message" | "relation" | "sentAt" | "createdAt", ExtArgs["result"]["transaction"]>
 export type TransactionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  account?: boolean | Prisma.Transaction$accountArgs<ExtArgs>
-  eventHost?: boolean | Prisma.Transaction$eventHostArgs<ExtArgs>
-  event?: boolean | Prisma.Transaction$eventArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  event?: boolean | Prisma.Transaction$eventArgs<ExtArgs>
+  eventHost?: boolean | Prisma.Transaction$eventHostArgs<ExtArgs>
+  account?: boolean | Prisma.Transaction$accountArgs<ExtArgs>
 }
 
 export type $TransactionPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Transaction"
   objects: {
-    account: Prisma.$AccountPayload<ExtArgs> | null
-    eventHost: Prisma.$EventHostPayload<ExtArgs> | null
-    event: Prisma.$EventPayload<ExtArgs> | null
     user: Prisma.$UserPayload<ExtArgs>
+    event: Prisma.$EventPayload<ExtArgs> | null
+    eventHost: Prisma.$EventHostPayload<ExtArgs> | null
+    account: Prisma.$AccountPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: bigint
@@ -1499,10 +1499,10 @@ readonly fields: TransactionFieldRefs;
  */
 export interface Prisma__TransactionClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  account<T extends Prisma.Transaction$accountArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Transaction$accountArgs<ExtArgs>>): Prisma.Prisma__AccountClient<runtime.Types.Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-  eventHost<T extends Prisma.Transaction$eventHostArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Transaction$eventHostArgs<ExtArgs>>): Prisma.Prisma__EventHostClient<runtime.Types.Result.GetResult<Prisma.$EventHostPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-  event<T extends Prisma.Transaction$eventArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Transaction$eventArgs<ExtArgs>>): Prisma.Prisma__EventClient<runtime.Types.Result.GetResult<Prisma.$EventPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  event<T extends Prisma.Transaction$eventArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Transaction$eventArgs<ExtArgs>>): Prisma.Prisma__EventClient<runtime.Types.Result.GetResult<Prisma.$EventPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  eventHost<T extends Prisma.Transaction$eventHostArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Transaction$eventHostArgs<ExtArgs>>): Prisma.Prisma__EventHostClient<runtime.Types.Result.GetResult<Prisma.$EventHostPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  account<T extends Prisma.Transaction$accountArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Transaction$accountArgs<ExtArgs>>): Prisma.Prisma__AccountClient<runtime.Types.Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1885,22 +1885,22 @@ export type TransactionDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.I
 }
 
 /**
- * Transaction.account
+ * Transaction.event
  */
-export type Transaction$accountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type Transaction$eventArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the Account
+   * Select specific fields to fetch from the Event
    */
-  select?: Prisma.AccountSelect<ExtArgs> | null
+  select?: Prisma.EventSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the Account
+   * Omit specific fields from the Event
    */
-  omit?: Prisma.AccountOmit<ExtArgs> | null
+  omit?: Prisma.EventOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.AccountInclude<ExtArgs> | null
-  where?: Prisma.AccountWhereInput
+  include?: Prisma.EventInclude<ExtArgs> | null
+  where?: Prisma.EventWhereInput
 }
 
 /**
@@ -1923,22 +1923,22 @@ export type Transaction$eventHostArgs<ExtArgs extends runtime.Types.Extensions.I
 }
 
 /**
- * Transaction.event
+ * Transaction.account
  */
-export type Transaction$eventArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type Transaction$accountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the Event
+   * Select specific fields to fetch from the Account
    */
-  select?: Prisma.EventSelect<ExtArgs> | null
+  select?: Prisma.AccountSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the Event
+   * Omit specific fields from the Account
    */
-  omit?: Prisma.EventOmit<ExtArgs> | null
+  omit?: Prisma.AccountOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.EventInclude<ExtArgs> | null
-  where?: Prisma.EventWhereInput
+  include?: Prisma.AccountInclude<ExtArgs> | null
+  where?: Prisma.AccountWhereInput
 }
 
 /**
