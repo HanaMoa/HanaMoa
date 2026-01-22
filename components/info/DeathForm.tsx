@@ -1,6 +1,6 @@
 'use client';
 
-import { PlusIcon } from 'lucide-react';
+import { ImagePlus } from 'lucide-react';
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 
@@ -108,7 +108,7 @@ export function DeathForm({
               </>
             ) : (
               <span className="text-[12px] text-gray-400">
-                <PlusIcon />
+                <ImagePlus />
               </span>
             )}
           </button>
