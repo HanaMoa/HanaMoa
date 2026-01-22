@@ -79,9 +79,9 @@ export const UserScalarFieldEnum = {
   name: 'name',
   userId: 'userId',
   password: 'password',
-  relation: 'relation',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  relation: 'relation'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -89,8 +89,6 @@ export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof User
 
 export const EventScalarFieldEnum = {
   id: 'id',
-  name: 'name',
-  category: 'category',
   userId: 'userId',
   date: 'date',
   location: 'location',
@@ -164,7 +162,6 @@ export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 
 
 export const EventOrderByRelevanceFieldEnum = {
-  name: 'name',
   location: 'location',
   message: 'message'
 } as const

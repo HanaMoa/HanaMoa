@@ -9,9 +9,7 @@
 * 🟢 You can import this file directly.
 */
 
-export const EventCategory = {
-  WEDDING: 'WEDDING',
-  FUNERAL: 'FUNERAL'
-} as const
 
-export type EventCategory = (typeof EventCategory)[keyof typeof EventCategory]
+
+// This file is empty because there are no enums in the schema.
+export {}
