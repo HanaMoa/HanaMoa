@@ -48,7 +48,7 @@ export function StickyButton({
 }: Props) {
   const buttonClass = cn(BASE_STYLE, PRIMARY_STYLE, PADDING, className);
 
-  // 2. children이 있으면 children을, 없으면 DEFAULT_CONTENT를 사용
+  // children이 있으면 children을, 없으면 DEFAULT_CONTENT를 사용
   const finalContent = children || DEFAULT_CONTENT;
 
   if (onClick) {

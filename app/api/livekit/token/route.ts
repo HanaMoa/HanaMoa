@@ -1,10 +1,10 @@
 // app/api/livekit/token/route.ts
 
-import { AccessToken } from "livekit-server-sdk";
-import { NextResponse } from "next/server";
+import { AccessToken } from 'livekit-server-sdk';
+import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
-  const { roomName, identity, role } = await req.json();
+  const { room, identity, role } = await req.json();
 
   const apiKey = process.env.LIVEKIT_API_KEY!;
   const apiSecret = process.env.LIVEKIT_API_SECRET!;
@@ -12,9 +12,9 @@ export async function POST(req: Request) {
   const at = new AccessToken(apiKey, apiSecret, { identity });
 
   at.addGrant({
-    room: roomName,
+    room,
     roomJoin: true,
-    canPublish: role === "publisher",
+    canPublish: role === 'host',
     canSubscribe: true,
   });
 
