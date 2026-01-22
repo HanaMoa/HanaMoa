@@ -12,6 +12,7 @@ type Props = {
   formAction?: (formData: FormData) => Promise<void>;
   onClick?: () => void;
   redirectTo?: string;
+  disabled?: boolean;
   className?: string;
 };
 
@@ -21,14 +22,18 @@ const BASE_STYLE =
   'md:h-[49px] md:w-[285px] md:text-[16px]';
 const PRIMARY_STYLE = 'bg-[#00A998] text-[#F6F7F9] hover:bg-[#017F70]';
 
+// 선택 안했을 때 사용 못하는 것을 시각적으로
+const DISABLED_STYLE = 'bg-black/10 text-black/35 hover:bg-black/10';
+
 export function SingleButton({
   children,
   formAction,
   onClick,
   redirectTo,
+  disabled = false,
   className,
 }: Props) {
-  const buttonClass = cn(BASE_STYLE, PRIMARY_STYLE, className);
+  const buttonClass = cn(BASE_STYLE, PRIMARY_STYLE, disabled, className);
 
   if (onClick) {
     // onClick일 경우
@@ -37,6 +42,7 @@ export function SingleButton({
         variant="default"
         type="button"
         onClick={onClick}
+        disabled={disabled}
         className={buttonClass}
       >
         {children}
@@ -48,7 +54,12 @@ export function SingleButton({
     // formAction일 경우
     <form action={formAction}>
       <input type="hidden" name="redirectTo" value={redirectTo} />
-      <Button variant="default" type="submit" className={buttonClass}>
+      <Button
+        variant="default"
+        type="submit"
+        disabled={disabled}
+        className={buttonClass}
+      >
         {children}
       </Button>
     </form>

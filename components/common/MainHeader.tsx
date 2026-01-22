@@ -119,7 +119,7 @@ export function MainHeader({
 
         {/* Center : title */}
         {!isMainHome && (
-          <div className="-translate-x-1/2 -translate-y-1/2 pointer-events-none absolute top-1/2 left-1/2 px-20 text-center">
+          <div className="-translate-x-1/2 -translate-y-1/2 pointer-events-none absolute top-1/2 left-1/2 text-center">
             <div className={`font-semibold text-[19px] text-base ${textColor}`}>
               {title}
             </div>
