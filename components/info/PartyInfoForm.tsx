@@ -8,7 +8,7 @@ import { BankSelectModal } from '../common/BankSelectModal';
 import { AddMemberModal, type PartyMemberPayload } from './AddMemberModal';
 
 type Props = {
-  role: string;
+  role?: string;
   addLabel: string;
   onValidChange?: (ok: boolean) => void;
 };

@@ -10,16 +10,23 @@ import { PartyInfoForm } from '@/components/info/PartyInfoForm';
 
 type EventType = 'funeral' | 'wedding';
 
+type StepCfg = {
+  indicator: string;
+  title: string;
+  subtitle: string;
+  role?: string;
+  addLabel?: string;
+};
+
 export default function Page() {
   const router = useRouter();
   const params = useParams<{ event: string; step: string }>();
   const [canNext, setCanNext] = useState(false);
 
-  // 1) params 파싱 (훅 위반 없도록, 아래에서 notFound 처리)
+  // params 파싱
   const eventParam = params?.event;
   const step = Number(params?.step);
 
-  // 2) event 정규화
   const event: EventType | null =
     eventParam === 'funeral'
       ? 'funeral'
@@ -27,33 +34,34 @@ export default function Page() {
         ? 'wedding'
         : null;
 
-  // 3) totalSteps도 안전하게 계산 (event가 null이어도 값은 고정)
   const totalSteps = event === 'wedding' ? 5 : event === 'funeral' ? 4 : 0;
 
-  // 4) validSteps는 훅으로 항상 계산 (event invalid면 빈 배열)
+  // event invalid면 빈 배열
   const validSteps = useMemo(() => {
     if (totalSteps <= 1) return [];
     return Array.from({ length: totalSteps - 1 }, (_, i) => i + 2);
   }, [totalSteps]);
 
-  // 5) 여기서부터 가드: 잘못된 라우트면 notFound()
+  // 잘못된 라우트면 notFound()
   if (!event) notFound();
   if (!Number.isFinite(step) || !validSteps.includes(step)) notFound();
 
   const config = infoConfig[event];
 
-  const stepCfg =
-    step === 2
-      ? config.step2
-      : step === 3
-        ? config.step3
-        : step === 4
-          ? config.step4
-          : step === 5
-            ? 'step5' in config
-              ? config.step5
-              : null
-            : null;
+  const stepCfg: StepCfg | null = (() => {
+    switch (step) {
+      case 2:
+        return config.step2 as StepCfg;
+      case 3:
+        return config.step3 as StepCfg;
+      case 4:
+        return config.step4 as StepCfg;
+      case 5:
+        return 'step5' in config ? (config.step5 as StepCfg) : null;
+      default:
+        return null;
+    }
+  })();
 
   if (!stepCfg && step < totalSteps) notFound();
 
@@ -81,11 +89,11 @@ export default function Page() {
       (event === 'funeral' && step === 3) ||
       (event === 'wedding' && (step === 2 || step === 3))
     ) {
-      const party = stepCfg as any; // TODO: step4, step5 추가되면 수정하기
+      // TODO: step4, step5 추가되면 수정하기
       return (
         <PartyInfoForm
-          role={party?.role}
-          addLabel={party?.addLabel ?? '추가'}
+          role={stepCfg?.role}
+          addLabel={stepCfg?.addLabel ?? '추가'}
           onValidChange={setCanNext}
         />
       );
