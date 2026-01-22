@@ -1,7 +1,12 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { Drawer, DrawerContent } from '@/components/ui/drawer';
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+} from '@/components/ui/drawer';
 
 type Props = {
   isOpen: boolean;
@@ -11,10 +16,13 @@ type Props = {
 };
 
 export function ModalBottomSheet({ isOpen, title, onClose, children }: Props) {
+  const a11yTitle = title?.trim() ? title : '모달'; // title 없을 때 대비
+
   return (
     <Drawer open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DrawerContent className="!rounded-t-[40px] bottom-[80px] mx-auto h-[60vh] w-full max-w-[600px] md:bottom-[88px] lg:bottom-[96px]">
-        <div className="flex h-full flex-col px-[38px] pt-2 md:px-[42px] md:pt-3 lg:px-[46px] lg:pt-4">
+      <DrawerContent className="!rounded-t-[40px] bottom-[80px] mx-auto h-[60vh] w-full max-w-[800px] md:bottom-[88px] lg:bottom-[96px]">
+        {/* 내부를 h-full + flex-col 로 만들고 스크롤은 한 곳에서만 */}
+        <div className="flex h-full flex-col px-[38px] pt-6 md:px-[42px] md:pt-8 lg:px-[46px] lg:pt-10">
           <div className="flex justify-end">
             <button
               type="button"
@@ -25,15 +33,14 @@ export function ModalBottomSheet({ isOpen, title, onClose, children }: Props) {
             </button>
           </div>
 
-          {title && (
-            <div className="mt-2 flex justify-center">
-              <h2 className="font-bold text-[20px] md:text-[22px] lg:text-[24px]">
-                {title}
-              </h2>
-            </div>
-          )}
+          {/* 제목 영역 - 정렬은 justify-center로 조절 */}
+          <DrawerHeader className="flex items-center justify-center p-0">
+            <DrawerTitle className="font-bold text-[20px] md:text-[22px] lg:text-[24px]">
+              {a11yTitle}
+            </DrawerTitle>
+          </DrawerHeader>
 
-          {/* 스크롤 */}
+          {/* 콘텐츠 영역 - 길어지면 스크롤 */}
           <div className="mt-2 min-h-0 flex-1 overflow-y-auto pb-6 [scrollbar-width:none] md:mt-3 lg:mt-4 [&::-webkit-scrollbar]:hidden">
             {children}
           </div>
