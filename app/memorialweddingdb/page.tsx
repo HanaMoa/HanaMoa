@@ -116,7 +116,9 @@ export default function HanamoaPage() {
               <button
                 key={it.id}
                 type="button"
-                onClick={() => router.push('/memorialweddingdb/edit')}
+                onClick={() =>
+                  router.push(`/memorialweddingdb/edit?id=${it.id}`)
+                }
                 className="w-full text-left"
               >
                 <Card className="relative cursor-pointer rounded-2xl border-0 bg-gray-50 p-5 shadow-none outline-none transition hover:bg-gray-100 focus:ring-2 focus:ring-[#1EA698]/40">
