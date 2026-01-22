@@ -16,13 +16,13 @@ type Props = {
 };
 
 export function ModalBottomSheet({ isOpen, title, onClose, children }: Props) {
-  const a11yTitle = title?.trim() ? title : '모달'; // title 없을 때 대비
+  const a11yTitle = title?.trim() ? title : ''; // title 없을 때 대비
 
   return (
     <Drawer open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DrawerContent className="!rounded-t-[40px] bottom-[80px] mx-auto h-[60vh] w-full max-w-[800px] md:bottom-[88px] lg:bottom-[96px]">
+      <DrawerContent className="!rounded-t-[40px] bottom-[80px] mx-auto h-[60vh] w-full max-w-[600px] md:bottom-[88px] lg:bottom-[96px]">
         {/* 내부를 h-full + flex-col 로 만들고 스크롤은 한 곳에서만 */}
-        <div className="flex h-full flex-col px-[38px] pt-6 md:px-[42px] md:pt-8 lg:px-[46px] lg:pt-10">
+        <div className="flex h-full flex-col px-[38px] pt-3 md:px-[42px] md:pt-4 lg:px-[46px] lg:pt-6">
           <div className="flex justify-end">
             <button
               type="button"

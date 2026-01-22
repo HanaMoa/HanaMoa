@@ -26,11 +26,11 @@ export function BankSelectModal({
   return (
     <ModalBottomSheet isOpen={isOpen} title="" onClose={onClose}>
       <div className="w-full">
-        <h2 className="pb-1 text-center font-bold text-[18px] md:text-[20px] lg:text-[22px]">
+        <h2 className="pb-3 text-center font-bold text-[18px] md:text-[20px] lg:text-[22px]">
           {title}
         </h2>
 
-        <div className="mt-2 grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-3 gap-3 pb-4">
           {banks.map((b) => {
             const selected = value?.key === b.key;
 
@@ -38,10 +38,7 @@ export function BankSelectModal({
               <button
                 key={b.key}
                 type="button"
-                onClick={() => {
-                  onChange(b);
-                  onClose();
-                }}
+                onClick={() => onChange(b)}
                 className={[
                   'relative flex h-[115px] flex-col items-center justify-center rounded-2xl',
                   'bg-[#F3F4F6] transition active:scale-[0.99]',
