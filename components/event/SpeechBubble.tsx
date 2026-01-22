@@ -1,20 +1,32 @@
+import Link from 'next/link';
 import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
+
+/*
+사용 예시
+<SpeechBubble title="결혼식 축의 참여" desc="눌러서 페이지 이동" href="/event/wedding" />;
+*/
 
 type Props = {
   title: string;
   desc?: string;
+  href?: string;
   className?: string;
 };
 
-export default function SpeechBubble({ title, desc, className }: Props) {
-  return (
+export default function SpeechBubble({ title, desc, href, className }: Props) {
+  const content = (
     <Card
       className={cn(
-        'relative inline-flex w-fit flex-col items-center rounded-2xl border-0 bg-white px-5 py-2 text-center',
+        'relative inline-flex w-fit cursor-pointer flex-col items-center rounded-2xl border-0 bg-white px-5 py-2 text-center',
         'shadow-[0_4px_8px_rgba(0,0,0,0.2)]',
-        'max-sm:px-3 max-sm:py-1 max-md:px-4 max-md:py-1.5',
 
+        // hover & active 효과
+        'transition-shadow transition-transform duration-200 ease-out',
+        'hover:scale-[1.03] hover:shadow-[0_6px_12px_rgba(0,0,0,0.25)]',
+        'active:scale-[0.98]',
+
+        'max-sm:px-3 max-sm:py-1 max-md:px-4 max-md:py-1.5',
         className,
       )}
     >
@@ -32,7 +44,6 @@ export default function SpeechBubble({ title, desc, className }: Props) {
 
       {/* 꼬리 */}
       <span className="-translate-x-1/2 pointer-events-none absolute top-full left-1/2">
-        {/* 꼬리 그림자 */}
         <span
           className={cn(
             '-translate-x-1/2 absolute top-[1px] left-1/2 h-0 w-0',
@@ -42,10 +53,7 @@ export default function SpeechBubble({ title, desc, className }: Props) {
             'border-t-black/20 border-r-transparent border-l-transparent',
             'blur-[0.5px]',
           )}
-          aria-hidden="true"
         />
-
-        {/* 꼬리 본체 */}
         <span
           className={cn(
             'relative block h-0 w-0',
@@ -54,9 +62,10 @@ export default function SpeechBubble({ title, desc, className }: Props) {
             'max-sm:border-t-[6px] max-sm:border-r-[6px] max-sm:border-l-[6px]',
             'border-t-white border-r-transparent border-l-transparent',
           )}
-          aria-hidden="true"
         />
       </span>
     </Card>
   );
+
+  return href ? <Link href={href}>{content}</Link> : content;
 }
