@@ -124,3 +124,15 @@
     font-family: var(--font-pretendard), system-ui, sans-serif;
   }
 }
+
+@layer utilities {
+  /* 스크롤은 되지만 바는 숨김 */
+  .scrollbar-hidden {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE, Edge */
+  }
+
+  .scrollbar-hidden::-webkit-scrollbar {
+    display: none; /* Chrome, Safari */
+  }
+}
