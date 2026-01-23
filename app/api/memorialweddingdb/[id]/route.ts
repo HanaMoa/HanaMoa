@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import type { EventCategory } from '@/lib/generated/prisma/client/client';
 import { prisma } from '@/lib/prisma';
 
 function toJSON<T>(data: T) {
@@ -10,14 +11,11 @@ function toJSON<T>(data: T) {
 // 지금은 임시 유저(시드로 넣은 temp 유저 id=1)로 고정
 const TEMP_USER_ID = BigInt(1);
 
-const categoryMap = {
+const categoryMap: Record<string, EventCategory> = {
   결혼식: 'WEDDING',
   장례식: 'FUNERAL',
   돌잔치: 'BIRTHDAY',
-  기타: 'ETC',
 } as const;
-
-type CategoryValue = (typeof categoryMap)[keyof typeof categoryMap];
 
 export async function GET(
   _req: Request,
@@ -73,9 +71,7 @@ export async function PUT(
     const name = String(body?.name ?? '').trim(); // eventHost.name
     const relation = String(body?.relation ?? '').trim(); // transaction.relation
     const eventType = String(body?.eventType ?? '').trim();
-    const category = categoryMap[eventType as keyof typeof categoryMap] as
-      | CategoryValue
-      | undefined;
+    const category = categoryMap[eventType]; // 타입: EventCategory | undefined
 
     // category check
     if (!category) {
