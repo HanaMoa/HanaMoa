@@ -17,7 +17,7 @@ export type PartyMemberPayload = {
 
 type Props = {
   isOpen: boolean;
-  onClose: () => void; // 닫기
+  onClose: () => void; // 취소/닫기
   title?: string;
   onSubmit: (payload: PartyMemberPayload) => void; // 저장
 };
@@ -36,19 +36,33 @@ export function AddMemberModal({
   const [bank, setBank] = useState<Bank | null>(null);
   const [isBankOpen, setIsBankOpen] = useState(false);
 
+  const [error, setError] = useState(''); // ✅ 옵션: 미입력 안내
+
   const canSubmit = useMemo(() => {
     return (
-      name.trim() &&
-      phone.trim() &&
-      account.trim() &&
-      relation.trim() &&
+      name.trim().length > 0 &&
+      phone.trim().length > 0 &&
+      account.trim().length > 0 &&
+      relation.trim().length > 0 &&
       Boolean(bank)
     );
   }, [name, phone, account, relation, bank]);
 
-  // 유효하면 저장, 아니면 그냥 닫지 않기
-  const handleConfirm = () => {
-    if (!canSubmit || !bank) return; // 유효하지 않으면 아무것도 안 함(닫히지 않음)
+  const reset = () => {
+    setName('');
+    setPhone('');
+    setAccount('');
+    setRelation('');
+    setBank(null);
+    setError('');
+  };
+
+  const onConfirm = () => {
+    if (!canSubmit || !bank) {
+      setError('모든 항목을 입력해주세요.');
+      return; // 유효하지 않으면 닫히지 않음
+    }
+
     onSubmit({
       name: name.trim(),
       phone: phone.trim(),
@@ -57,18 +71,29 @@ export function AddMemberModal({
       bank,
     });
 
-    // 초기화 후 닫기
-    setName('');
-    setPhone('');
-    setAccount('');
-    setRelation('');
-    setBank(null);
+    reset();
+    onClose();
+  };
+
+  const onClear = () => {
+    // 취소로 닫을 때 초기화할지/유지할지 선택
+    reset();
     onClose();
   };
 
   return (
-    <ModalBottomSheet isOpen={isOpen} title={title} onClose={handleConfirm}>
-      <div className="flex flex-col gap-6">
+    <ModalBottomSheet
+      isOpen={isOpen}
+      title={title}
+      onClose={onClear} // 취소/닫기
+      onConfirm={onConfirm} // 확인=저장
+    >
+      <div className="flex flex-col gap-2">
+        {/* 에러 메시지 */}
+        {error && (
+          <p className="font-semibold text-[13px] text-red-500">{error}</p>
+        )}
+
         <label className="mt-2 flex flex-col gap-1">
           <span className="font-semibold text-black text-sm md:text-base lg:text-lg">
             성함
@@ -76,7 +101,10 @@ export function AddMemberModal({
           <input
             className="h-[45px] rounded-lg border border-[#E6E6E6] bg-white px-4 text-sm md:text-base lg:text-lg"
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={(e) => {
+              setName(e.target.value);
+              if (error) setError('');
+            }}
             placeholder="이름"
           />
         </label>
@@ -88,8 +116,12 @@ export function AddMemberModal({
           <input
             className="h-[45px] rounded-lg border border-[#E6E6E6] bg-white px-4 text-sm md:text-base lg:text-lg"
             value={phone}
-            onChange={(e) => setPhone(e.target.value)}
+            onChange={(e) => {
+              setPhone(e.target.value);
+              if (error) setError('');
+            }}
             placeholder="010-1234-5678"
+            inputMode="tel"
           />
         </label>
 
@@ -102,7 +134,7 @@ export function AddMemberModal({
             <button
               type="button"
               onClick={() => setIsBankOpen(true)}
-              className="flex h-[45px] w-[140px] shrink-0 items-center justify-between rounded-lg border border-[#E6E6E6] bg-white px-3 text-sm md:text-base lg:text-lg"
+              className="flex h-[45px] w-[140px] shrink-0 items-center justify-between rounded-lg border border-[#E6E6E6] bg-white px-3 text-sm focus-visible:outline-none md:text-base lg:text-lg"
               aria-label="은행 선택"
             >
               <span className={bank ? 'text-black' : 'text-[#B2B2B2]'}>
@@ -114,7 +146,10 @@ export function AddMemberModal({
             <input
               className="h-[45px] flex-1 rounded-lg border border-[#E6E6E6] bg-white px-4 text-sm md:text-base lg:text-lg"
               value={account}
-              onChange={(e) => setAccount(e.target.value)}
+              onChange={(e) => {
+                setAccount(e.target.value);
+                if (error) setError('');
+              }}
               placeholder="222222-222-222222"
               inputMode="numeric"
             />
@@ -125,7 +160,10 @@ export function AddMemberModal({
             onClose={() => setIsBankOpen(false)}
             banks={BANKS}
             value={bank}
-            onChange={(b: Bank) => setBank(b)}
+            onChange={(b: Bank) => {
+              setBank(b);
+              if (error) setError('');
+            }}
           />
         </label>
 
@@ -136,7 +174,10 @@ export function AddMemberModal({
           <input
             className="h-[45px] rounded-lg border border-[#E6E6E6] bg-white px-4 text-sm md:text-base lg:text-lg"
             value={relation}
-            onChange={(e) => setRelation(e.target.value)}
+            onChange={(e) => {
+              setRelation(e.target.value);
+              if (error) setError('');
+            }}
             placeholder="예: 배우자, 아들/딸, 며느리/사위, 손주"
           />
         </label>
