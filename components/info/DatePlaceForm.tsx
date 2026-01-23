@@ -96,12 +96,15 @@ export function DatePlaceForm({ onValidChange }: Props) {
         onClose={() => setDateOpen(false)}
         onConfirm={confirmDate}
       >
-        <div className="mt-2 flex justify-center">
-          <Calendar
-            mode="single"
-            selected={draftDate ?? undefined}
-            onSelect={(d) => setDraftDate(d ?? null)} // 선택해도 안 닫히게
-          />
+        <div className="flex justify-center">
+          <div className="w-full max-w-[420px]">
+            <Calendar
+              mode="single"
+              selected={draftDate ?? undefined}
+              onSelect={(d) => setDraftDate(d ?? null)}
+              className="w-full"
+            />
+          </div>
         </div>
       </ModalBottomSheet>
     </section>

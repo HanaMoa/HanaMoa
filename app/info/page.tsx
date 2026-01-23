@@ -70,7 +70,7 @@ export default function Page() {
       {/* 공통 헤더 사용 */}
       <MainHeader
         variant="default"
-        title="초대장 생성"
+        title="안내장 생성"
         onBackClick={() => router.push('/home')}
       />
 
