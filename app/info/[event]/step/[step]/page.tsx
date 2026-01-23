@@ -2,12 +2,13 @@
 
 import { notFound, useParams, useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
-import { DeathForm } from '@/components/info/peopleInfo/DeathForm';
 import { InfoLayout } from '@/components/info/InfoLayout';
 import { InfoTitle } from '@/components/info/InfoTitle';
 import { infoConfig } from '@/components/info/infoConfig';
+import { DeathForm } from '@/components/info/peopleInfo/DeathForm';
 import { PartyInfoForm } from '@/components/info/peopleInfo/PartyInfoForm';
 import { DatePlaceForm } from '@/components/info/placeInfo/DatePlaceForm';
+import { WeddingPhotoForm } from '@/components/info/weddingInfo/WeddingPhotoForm';
 
 type EventType = 'funeral' | 'wedding';
 
@@ -94,7 +95,6 @@ export default function Page() {
       (event === 'funeral' && step === 3) ||
       (event === 'wedding' && (step === 2 || step === 3))
     ) {
-      // TODO: step4, step5 추가되면 수정하기
       return (
         <PartyInfoForm
           role={stepCfg?.role}
@@ -108,8 +108,9 @@ export default function Page() {
       return <DatePlaceForm onValidChange={setCanNext} />;
     }
     // step5 - 웨딩 사진 업로드
-
-    return <div className="text-center text-black/50">미리보기(추후)</div>;
+    if (event === 'wedding' && step === 5) {
+      return <WeddingPhotoForm onValidChange={setCanNext} />;
+    }
   })();
 
   const nextDisabled = !canNext;
