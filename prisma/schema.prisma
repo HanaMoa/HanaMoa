@@ -1,7 +1,7 @@
 
 generator client {
   provider = "prisma-client"
-  output   = "../src/lib/generated/prisma"
+  output   = "../lib/generated/prisma/client"
 }
 
 datasource db {
@@ -11,6 +11,7 @@ datasource db {
 enum EventCategory {
   WEDDING   // 결혼식
   FUNERAL   // 장례식
+  BIRTHDAY
 }
 
 model User {

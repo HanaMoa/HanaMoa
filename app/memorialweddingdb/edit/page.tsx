@@ -19,7 +19,7 @@ export default function MemorialWeddingDbEditPage() {
   const formRef = useRef<HTMLFormElement | null>(null);
 
   // 초기값: PDF 예시와 비슷하게 세팅 (원하면 비워도 됨)
-  //   const [name, setName] = useState('박성원');
+  const [name, setName] = useState('박성원');
   //   const [amount, setAmount] = useState('100000');
   //   const [datetime, setDatetime] = useState('2026-01-15T13:00');
   //   const [eventType, setEventType] = useState('장례식');
@@ -199,8 +199,6 @@ export default function MemorialWeddingDbEditPage() {
                   >
                     <option value="결혼식">결혼식</option>
                     <option value="장례식">장례식</option>
-                    <option value="돌잔치">돌잔치</option>
-                    <option value="기타">기타</option>
                   </select>
 
                   <ChevronDown className="-translate-y-1/2 pointer-events-none absolute top-1/2 right-3 h-5 w-5 text-gray-400" />
