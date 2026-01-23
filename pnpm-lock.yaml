@@ -23,6 +23,9 @@ importers:
       '@dnd-kit/utilities':
         specifier: ^3.2.2
         version: 3.2.2(react@19.2.3)
+      '@ncdai/react-wheel-picker':
+        specifier: ^1.1.0
+        version: 1.1.0(react@19.2.3)
       '@prisma/adapter-mariadb':
         specifier: ^7.2.0
         version: 7.2.0
@@ -692,6 +695,11 @@ packages:
   '@mrleebo/prisma-ast@0.12.1':
     resolution: {integrity: sha512-JwqeCQ1U3fvccttHZq7Tk0m/TMC6WcFAQZdukypW3AzlJYKYTGNVd1ANU2GuhKnv4UQuOFj3oAl0LLG/gxFN1w==}
     engines: {node: '>=16'}
+
+  '@ncdai/react-wheel-picker@1.1.0':
+    resolution: {integrity: sha512-c6zFfO0lVlJCnmBufBbmpq7GFYFrLi1wpt11wZDP5EukWMLKd3lrBNQ1Mofv8fsxEsM0PqksMCvxwJg3NrOBgQ==}
+    peerDependencies:
+      react: ^16.8 || ^17.0 || ^18.0 || ^19.0.0 || ^19.0.0-rc
 
   '@next/env@16.1.2':
     resolution: {integrity: sha512-r6TpLovDTvWtzw11UubUQxEK6IduT8rSAHbGX68yeFpA/1Oq9R4ovi5nqMUMgPN0jr2SpfeyFRbTZg3Inuuv3g==}
@@ -2631,6 +2639,10 @@ snapshots:
     dependencies:
       chevrotain: 10.5.0
       lilconfig: 2.1.0
+
+  '@ncdai/react-wheel-picker@1.1.0(react@19.2.3)':
+    dependencies:
+      react: 19.2.3
 
   '@next/env@16.1.2': {}
 
