@@ -22,7 +22,7 @@ export default function HomeMenuList() {
   const items: MenuItem[] = [
     {
       key: 'invite',
-      titleMain: '초대장',
+      titleMain: '안내장',
       titleSub: '만들기',
       desc: '새로운 행사를\n준비하시나요?',
       href: '/info',
