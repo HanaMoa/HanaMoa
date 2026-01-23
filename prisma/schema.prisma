@@ -32,7 +32,7 @@ model User {
 model Event {
   id        BigInt   @id @default(autoincrement())
   name      String @default("이벤트")
-  category  EventCategory @default(WEDDING)
+  ategory  EventCategory @default(WEDDING)
 
   userId    BigInt   @map("user_id")
   date      DateTime @default(now())

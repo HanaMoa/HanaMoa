@@ -20,7 +20,7 @@ export default function SplashPage() {
       <div className="flex flex-1 flex-col items-center justify-center">
         {/* 로고 */}
         <Image
-          src="/logo.png"
+          src="/images/common/logo1.png"
           alt="하나모아 로고"
           width={150}
           height={150}
