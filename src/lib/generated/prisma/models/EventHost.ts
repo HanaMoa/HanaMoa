@@ -204,8 +204,8 @@ export type EventHostWhereInput = {
   id?: Prisma.BigIntFilter<"EventHost"> | bigint | number
   name?: Prisma.StringFilter<"EventHost"> | string
   eventId?: Prisma.BigIntFilter<"EventHost"> | bigint | number
-  accounts?: Prisma.AccountListRelationFilter
   event?: Prisma.XOR<Prisma.EventScalarRelationFilter, Prisma.EventWhereInput>
+  accounts?: Prisma.AccountListRelationFilter
   transactions?: Prisma.TransactionListRelationFilter
 }
 
@@ -213,8 +213,8 @@ export type EventHostOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   eventId?: Prisma.SortOrder
-  accounts?: Prisma.AccountOrderByRelationAggregateInput
   event?: Prisma.EventOrderByWithRelationInput
+  accounts?: Prisma.AccountOrderByRelationAggregateInput
   transactions?: Prisma.TransactionOrderByRelationAggregateInput
   _relevance?: Prisma.EventHostOrderByRelevanceInput
 }
@@ -226,8 +226,8 @@ export type EventHostWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.EventHostWhereInput | Prisma.EventHostWhereInput[]
   name?: Prisma.StringFilter<"EventHost"> | string
   eventId?: Prisma.BigIntFilter<"EventHost"> | bigint | number
-  accounts?: Prisma.AccountListRelationFilter
   event?: Prisma.XOR<Prisma.EventScalarRelationFilter, Prisma.EventWhereInput>
+  accounts?: Prisma.AccountListRelationFilter
   transactions?: Prisma.TransactionListRelationFilter
 }, "id">
 
@@ -254,8 +254,8 @@ export type EventHostScalarWhereWithAggregatesInput = {
 export type EventHostCreateInput = {
   id?: bigint | number
   name: string
-  accounts?: Prisma.AccountCreateNestedManyWithoutEventHostInput
   event: Prisma.EventCreateNestedOneWithoutEventHostsInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutEventHostInput
   transactions?: Prisma.TransactionCreateNestedManyWithoutEventHostInput
 }
 
@@ -270,8 +270,8 @@ export type EventHostUncheckedCreateInput = {
 export type EventHostUpdateInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  accounts?: Prisma.AccountUpdateManyWithoutEventHostNestedInput
   event?: Prisma.EventUpdateOneRequiredWithoutEventHostsNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutEventHostNestedInput
   transactions?: Prisma.TransactionUpdateManyWithoutEventHostNestedInput
 }
 
@@ -522,8 +522,8 @@ export type EventHostUncheckedUpdateWithoutAccountsInput = {
 export type EventHostCreateWithoutTransactionsInput = {
   id?: bigint | number
   name: string
-  accounts?: Prisma.AccountCreateNestedManyWithoutEventHostInput
   event: Prisma.EventCreateNestedOneWithoutEventHostsInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutEventHostInput
 }
 
 export type EventHostUncheckedCreateWithoutTransactionsInput = {
@@ -552,8 +552,8 @@ export type EventHostUpdateToOneWithWhereWithoutTransactionsInput = {
 export type EventHostUpdateWithoutTransactionsInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  accounts?: Prisma.AccountUpdateManyWithoutEventHostNestedInput
   event?: Prisma.EventUpdateOneRequiredWithoutEventHostsNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutEventHostNestedInput
 }
 
 export type EventHostUncheckedUpdateWithoutTransactionsInput = {
@@ -631,8 +631,8 @@ export type EventHostSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   id?: boolean
   name?: boolean
   eventId?: boolean
-  accounts?: boolean | Prisma.EventHost$accountsArgs<ExtArgs>
   event?: boolean | Prisma.EventDefaultArgs<ExtArgs>
+  accounts?: boolean | Prisma.EventHost$accountsArgs<ExtArgs>
   transactions?: boolean | Prisma.EventHost$transactionsArgs<ExtArgs>
   _count?: boolean | Prisma.EventHostCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["eventHost"]>
@@ -647,8 +647,8 @@ export type EventHostSelectScalar = {
 
 export type EventHostOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "eventId", ExtArgs["result"]["eventHost"]>
 export type EventHostInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  accounts?: boolean | Prisma.EventHost$accountsArgs<ExtArgs>
   event?: boolean | Prisma.EventDefaultArgs<ExtArgs>
+  accounts?: boolean | Prisma.EventHost$accountsArgs<ExtArgs>
   transactions?: boolean | Prisma.EventHost$transactionsArgs<ExtArgs>
   _count?: boolean | Prisma.EventHostCountOutputTypeDefaultArgs<ExtArgs>
 }
@@ -656,8 +656,8 @@ export type EventHostInclude<ExtArgs extends runtime.Types.Extensions.InternalAr
 export type $EventHostPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "EventHost"
   objects: {
-    accounts: Prisma.$AccountPayload<ExtArgs>[]
     event: Prisma.$EventPayload<ExtArgs>
+    accounts: Prisma.$AccountPayload<ExtArgs>[]
     transactions: Prisma.$TransactionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -1004,8 +1004,8 @@ readonly fields: EventHostFieldRefs;
  */
 export interface Prisma__EventHostClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  accounts<T extends Prisma.EventHost$accountsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EventHost$accountsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   event<T extends Prisma.EventDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EventDefaultArgs<ExtArgs>>): Prisma.Prisma__EventClient<runtime.Types.Result.GetResult<Prisma.$EventPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  accounts<T extends Prisma.EventHost$accountsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EventHost$accountsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   transactions<T extends Prisma.EventHost$transactionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EventHost$transactionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
