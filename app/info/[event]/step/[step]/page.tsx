@@ -2,12 +2,12 @@
 
 import { notFound, useParams, useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
-import { DatePlaceForm } from '@/components/info/DatePlaceForm';
-import { DeathForm } from '@/components/info/DeathForm';
+import { DeathForm } from '@/components/info/peopleInfo/DeathForm';
 import { InfoLayout } from '@/components/info/InfoLayout';
 import { InfoTitle } from '@/components/info/InfoTitle';
 import { infoConfig } from '@/components/info/infoConfig';
-import { PartyInfoForm } from '@/components/info/PartyInfoForm';
+import { PartyInfoForm } from '@/components/info/peopleInfo/PartyInfoForm';
+import { DatePlaceForm } from '@/components/info/placeInfo/DatePlaceForm';
 
 type EventType = 'funeral' | 'wedding';
 

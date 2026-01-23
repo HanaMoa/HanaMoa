@@ -107,6 +107,9 @@ importers:
       react:
         specifier: 19.2.3
         version: 19.2.3
+      react-daum-postcode:
+        specifier: ^3.2.0
+        version: 3.2.0(react@19.2.3)
       react-day-picker:
         specifier: ^9.13.0
         version: 9.13.0(react@19.2.3)
@@ -1994,6 +1997,11 @@ packages:
   rc9@2.1.2:
     resolution: {integrity: sha512-btXCnMmRIBINM2LDZoEmOogIZU7Qe7zn4BpomSKZ/ykbLObuBdvG+mFq11DL6fjH1DRwHhrlgtYWG96bJiC7Cg==}
 
+  react-daum-postcode@3.2.0:
+    resolution: {integrity: sha512-NHY8TUicZXMqykbKYT8kUo2PEU7xu1DFsdRmyWJrLEUY93Xhd3rEdoJ7vFqrvs+Grl9wIm9Byxh3bI+eZxepMQ==}
+    peerDependencies:
+      react: '>=16.8.0'
+
   react-day-picker@9.13.0:
     resolution: {integrity: sha512-euzj5Hlq+lOHqI53NiuNhCP8HWgsPf/bBAVijR50hNaY1XwjKjShAnIe8jm8RD2W9IJUvihDIZ+KrmqfFzNhFQ==}
     engines: {node: '>=18'}
@@ -3844,6 +3852,10 @@ snapshots:
     dependencies:
       defu: 6.1.4
       destr: 2.0.5
+
+  react-daum-postcode@3.2.0(react@19.2.3):
+    dependencies:
+      react: 19.2.3
 
   react-day-picker@9.13.0(react@19.2.3):
     dependencies:

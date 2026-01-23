@@ -7,7 +7,7 @@ import {
   WheelPicker,
   type WheelPickerOption,
   WheelPickerWrapper,
-} from '../wheel-picker';
+} from '../../wheel-picker';
 
 type Meridiem = '오전' | '오후';
 
