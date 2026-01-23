@@ -4,7 +4,7 @@ import { ChevronDown, PlusIcon, XIcon } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import type { Bank } from '@/lib/bank';
 import { BANKS } from '@/lib/bank';
-import { BankSelectModal } from '../common/BankSelectModal';
+import { BankSelectModal } from '../../common/BankSelectModal';
 import { AddMemberModal, type PartyMemberPayload } from './AddMemberModal';
 
 type Props = {
