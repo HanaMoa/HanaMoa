@@ -2,10 +2,22 @@
 
 import { ChevronLeft } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
+import { useState } from 'react';
+
+import MessageModal from '@/components/dashboard/MessageModal';
 import PaginationBar from '@/components/dashboard/PaginationBar';
 import RibbonItem from '@/components/dashboard/RibbonItem';
 import { cn } from '@/lib/utils';
+
 import { useMemorialDashboard } from './_hook/useMemorialDashboard';
+
+export type DashboardMessage = {
+  id: string;
+  senderName: string;
+  badge: string;
+  content: string;
+  createdAt: string;
+};
 
 function DividerLine({ className }: { className?: string }) {
   return (
@@ -31,11 +43,15 @@ function DividerLine({ className }: { className?: string }) {
 
 export default function MemorialDashboardPage() {
   const router = useRouter();
-  const params = useParams<{ eventId: string }>();
-  const eventId = params.eventId;
+  const { eventId } = useParams<{ eventId: string }>();
 
+  // 데이터 로딩/페이지네이션은 훅에서 관리
   const { isLoading, errorMsg, page, totalPages, gridRows, fetchDashboard } =
     useMemorialDashboard(eventId);
+
+  // 모달 상태는 page에서
+  const [selectedMessage, setSelectedMessage] =
+    useState<DashboardMessage | null>(null);
 
   return (
     <div className="flex min-h-dvh flex-col bg-[#DCDAD9]">
@@ -55,12 +71,8 @@ export default function MemorialDashboardPage() {
         </div>
       </header>
 
-      {/* main: 리본만 스크롤 */}
+      {/* main (리본 영역만 스크롤) */}
       <main className="flex-1 overflow-y-auto px-5 pt-6 pb-6">
-        {isLoading ? (
-          <div className="text-center text-black/50 text-sm">불러오는 중…</div>
-        ) : null}
-
         {errorMsg ? (
           <div className="rounded-xl bg-black/10 p-4 text-center text-sm">
             {errorMsg}
@@ -68,66 +80,49 @@ export default function MemorialDashboardPage() {
         ) : null}
 
         {!isLoading && !errorMsg ? (
-          <div className="flex flex-col gap-4">
-            {/* 1줄 */}
-            {gridRows[0].length > 0 ? (
-              <div className="relative">
-                <DividerLine className="top-[30px]" />
-                <div className="flex w-full justify-center gap-15 pt-4">
-                  {gridRows[0].map((msg, idx) => (
-                    <RibbonItem
-                      key={msg.id}
-                      msg={msg}
-                      index={0 * 10 + idx}
-                      className={
-                        gridRows[0].length === 3 && idx === 1
-                          ? 'translate-y-3'
-                          : undefined
-                      }
-                    />
-                  ))}
-                </div>
+          gridRows.every((r) => r.length === 0) ? (
+            <div className="mt-8 rounded-3xl bg-white/40 p-6 text-center">
+              <div className="font-semibold text-[15px] text-black/80">
+                아직 메시지가 없어요
               </div>
-            ) : null}
-
-            {/* 2줄 */}
-            {gridRows[1].length > 0 ? (
-              <div className="relative">
-                <DividerLine className="top-[30px]" />
-                <div className="flex w-full justify-center gap-15 pt-4">
-                  {gridRows[1].map((msg, idx) => (
-                    <RibbonItem key={msg.id} msg={msg} index={1 * 10 + idx} />
-                  ))}
-                </div>
+              <div className="mt-2 text-[13px] text-black/50">
+                첫 추모 메시지를 남겨보세요.
               </div>
-            ) : null}
-
-            {/* 3줄 */}
-            {gridRows[2].length > 0 ? (
-              <div className="relative">
-                <DividerLine className="top-[30px]" />
-                <div className="flex w-full justify-center gap-15 pt-4">
-                  {gridRows[2].map((msg, idx) => (
-                    <RibbonItem
-                      key={msg.id}
-                      msg={msg}
-                      index={2 * 10 + idx}
-                      className={
-                        gridRows[2].length === 3 && idx === 1
-                          ? 'translate-y-3'
-                          : undefined
-                      }
-                    />
-                  ))}
-                </div>
-              </div>
-            ) : null}
-          </div>
+            </div>
+          ) : (
+            // 기존 리본 UI
+            <div className="flex flex-col gap-4">
+              {gridRows.map((row, rowIdx) =>
+                row.length ? (
+                  // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+                  <div key={rowIdx} className="relative mb-2">
+                    <DividerLine className="top-[30px]" />
+                    <div className="flex w-full justify-center gap-15 pt-4">
+                      {row.map((msg, idx) => (
+                        <RibbonItem
+                          key={msg.id}
+                          msg={msg}
+                          index={rowIdx * 10 + idx}
+                          seed={page}
+                          className={
+                            row.length === 3 && idx === 1
+                              ? 'translate-y-3'
+                              : undefined
+                          }
+                          onClick={() => setSelectedMessage(msg)}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                ) : null,
+              )}
+            </div>
+          )
         ) : null}
       </main>
 
-      {/* pagination: 고정 영역 */}
-      <div className="shrink-0 px-5 pt-5 pb-3">
+      {/* pagination (고정 영역) */}
+      <div className="shrink-0 px-5 pt-2 pb-3">
         <PaginationBar
           page={page}
           totalPages={totalPages}
@@ -137,16 +132,23 @@ export default function MemorialDashboardPage() {
         />
       </div>
 
-      {/* CTA */}
+      {/* CTA (고정 영역) */}
       <div className="shrink-0 px-5 pb-6">
         <button
           type="button"
-          className="mt-2 h-[52px] w-full rounded-2xl bg-black font-semibold text-[15px] text-white"
-          onClick={() => router.push(`/event/memorial/${eventId}/message`)}
+          className="h-[52px] w-full cursor-pointer rounded-2xl bg-black font-semibold text-[15px] text-white"
+          onClick={() => router.push(`/message`)}
         >
           추모 메시지 보내기
         </button>
       </div>
+
+      {/* modal (selectedMessage만 있으면 open) */}
+      <MessageModal
+        open={selectedMessage !== null}
+        message={selectedMessage}
+        onClose={() => setSelectedMessage(null)}
+      />
     </div>
   );
 }
