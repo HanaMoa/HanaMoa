@@ -82,10 +82,10 @@ export async function GET(
 
     const skip = page * pageSize;
 
-    // 3) 현재 페이지 최대 8개 조회 (ASC)
+    // 3) 현재 페이지 최대 8개 조회
     const rows: DashboardRow[] = await prisma.transaction.findMany({
       where: whereCondition,
-      orderBy: { createdAt: 'asc' },
+      orderBy: { createdAt: 'desc' },
       skip,
       take: pageSize, // 최대 몇개 가져올지
       select: {
