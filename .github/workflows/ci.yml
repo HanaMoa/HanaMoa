@@ -33,6 +33,10 @@ jobs:
 
       - name: Install deps
         run: pnpm install --frozen-lockfile
+      
+      # Prisma generate
+      - name: Prisma generate
+        run: pnpm prisma generate
 
       # Biome check
       - name: Biome check

@@ -13,9 +13,17 @@ type Props = {
   title?: string;
   onClose: () => void;
   children: ReactNode;
+
+  onConfirm?: () => void;
 };
 
-export function ModalBottomSheet({ isOpen, title, onClose, children }: Props) {
+export function ModalBottomSheet({
+  isOpen,
+  title,
+  onClose,
+  children,
+  onConfirm,
+}: Props) {
   const a11yTitle = title?.trim() ? title : ''; // title 없을 때 대비
 
   return (
@@ -26,7 +34,7 @@ export function ModalBottomSheet({ isOpen, title, onClose, children }: Props) {
           <div className="flex justify-end">
             <button
               type="button"
-              onClick={onClose}
+              onClick={onConfirm ?? onClose}
               className="font-semibold text-[#1EA698] text-[14px] md:text-[15px] lg:text-[16px]"
             >
               확인
