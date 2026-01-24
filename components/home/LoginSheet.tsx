@@ -1,56 +1,46 @@
 'use client';
 
-import Image from 'next/image';
-import { useRouter } from 'next/navigation';
-import { signIn } from 'next-auth/react';
-import { useState } from 'react';
 import { ModalBottomSheet } from '@/components/common/ModalBottomSheet';
+import { loginCredentials, loginKakao } from '@/lib/server/login.action';
+import type { ValidError } from '@/lib/validator';
+import Image from 'next/image';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useActionState } from 'react';
 import { SingleButton } from '../common/SingleButton';
 
 type Props = {
   isOpen: boolean;
-  onClose?: () => void; // 강제로그인이면 안 쓰셔도 됨
+  onClose?: () => void; // 강제로그인이면 안 써도 됨
 };
 
 export function LoginSheet({ isOpen, onClose }: Props) {
   const router = useRouter();
-  const [userId, setUserId] = useState('');
-  const [password, setPassword] = useState('');
-  const [pending, setPending] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get('callbackUrl') || '/home';
 
-  const onCredentialsLogin = async () => {
-    if (pending) return;
-    setPending(true);
-    setError(null);
+  const [state, login, isPending] = useActionState(
+    async (_: ValidError | undefined, formData: FormData) => {
+      try {
+        formData.set('redirectTo', redirectTo);
 
-    const res = await signIn('credentials', {
-      redirect: false,
-      userId,
-      password,
-    });
+        // 서버 액션 호출(실패 시 throw or 리턴 형태에 맞춰 처리)
+        const [err] = await loginCredentials(formData);
+        if (err) {
+          return err as ValidError;
+        }
 
-    setPending(false);
-
-    if (!res?.ok) {
-      setError('아이디 또는 비밀번호가 올바르지 않습니다.');
-      return;
-    }
-
-    router.refresh(); // 서버 auth() 다시 실행 → isLoggedIn true
-    // onClose?.();   // 선택: HomeClient가 isLoggedIn으로 자동 닫게 하면 굳이 안 닫아도 됨
-  };
-
-  const onKakaoLogin = async () => {
-    if (pending) return;
-    setPending(true);
-    setError(null);
-
-    // 카카오는 redirect 방식이라 성공하면 callbackUrl로 이동됨
-    await signIn('kakao', { callbackUrl: '/home' });
-
-    setPending(false);
-  };
+        return undefined;
+      } catch {
+        return {
+          error: { userId: '아이디 또는 비밀번호가 올바르지 않습니다.' },
+          data: {
+            userId: String(formData.get('userId') ?? ''),
+          },
+        } as unknown as ValidError;
+      }
+    },
+    undefined,
+  );
 
   return (
     <ModalBottomSheet
@@ -82,36 +72,37 @@ export function LoginSheet({ isOpen, onClose }: Props) {
         </div>
 
         {/* 입력 */}
-        <div className="mt-5 space-y-2">
+        <form action={login} className="mt-5 space-y-2">
+          <input type="hidden" name="redirectTo" value={redirectTo} />
           <input
-            value={userId}
-            onChange={(e) => setUserId(e.target.value)}
+            name="userId"
             placeholder="아이디"
+            disabled={isPending}
             className="h-[45px] w-full rounded-lg border border-black/5 bg-white px-4 text-[14px] outline-none placeholder:text-[#B3B3B3]"
           />
           <input
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            name="password"
             placeholder="비밀번호"
             type="password"
-            className="h-[46px] w-full rounded-[12px] border border-black/5 bg-white px-4 text-[14px] outline-none placeholder:text-[#B3B3B3]"
+            disabled={isPending}
+            className="h-[45px] w-full rounded-lg border border-black/5 bg-white px-4 text-[14px] outline-none placeholder:text-[#B3B3B3]"
           />
-        </div>
 
-        {error && (
-          <p className="mt-4 text-center font-medium text-[12px] text-red-500">
-            {error}
-          </p>
-        )}
+          {state?.error?.userId && (
+            <p className="mt-2 text-center font-medium text-[12px] text-red-500">
+              {state.error.userId}
+            </p>
+          )}
 
-        {/* 로그인 버튼 */}
-        <SingleButton
-          disabled={pending || !userId.trim() || !password.trim()}
-          onClick={onCredentialsLogin}
-          className="mt-3 w-full md:w-full lg:w-full"
-        >
-          {pending ? '로그인 중' : '로그인'}{' '}
-        </SingleButton>
+          {/* 로그인 버튼 */}
+          <SingleButton
+            type="submit"
+            disabled={isPending}
+            className="mt-3 w-full md:w-full lg:w-full"
+          >
+            {isPending ? '로그인 중' : '로그인'}
+          </SingleButton>
+        </form>
 
         {/* 회원가입 | 계정 찾기 */}
         <div className="mt-4 flex items-center justify-center gap-3 text-[#8A8A8A] text-[12px]">
@@ -132,11 +123,13 @@ export function LoginSheet({ isOpen, onClose }: Props) {
         </div>
 
         {/* 소셜 버튼 */}
-        <div className="mt-4 flex items-center justify-center gap-6">
+        <form
+          action={loginKakao}
+          className="mt-4 flex items-center justify-center gap-6"
+        >
           <button
-            type="button"
-            onClick={onKakaoLogin}
-            disabled={pending}
+            type="submit"
+            disabled={isPending}
             className="grid h-[44px] w-[44px] place-items-center rounded-full disabled:opacity-50"
             aria-label="카카오 로그인"
           >
@@ -162,7 +155,7 @@ export function LoginSheet({ isOpen, onClose }: Props) {
               height={22}
             />
           </button> */}
-        </div>
+        </form>
       </div>
     </ModalBottomSheet>
   );
