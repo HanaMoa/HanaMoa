@@ -1,11 +1,11 @@
 'use client';
 
-import { ModalBottomSheet } from '@/components/common/ModalBottomSheet';
-import { loginCredentials, loginKakao } from '@/lib/server/login.action';
-import type { ValidError } from '@/lib/validator';
 import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useActionState } from 'react';
+import { ModalBottomSheet } from '@/components/common/ModalBottomSheet';
+import { loginCredentials, loginKakao } from '@/lib/server/login.action';
+import type { ValidError } from '@/lib/validator';
 import { SingleButton } from '../common/SingleButton';
 
 type Props = {
@@ -24,7 +24,9 @@ export function LoginSheet({ isOpen, onClose }: Props) {
         formData.set('redirectTo', redirectTo);
 
         // 서버 액션 호출(실패 시 throw or 리턴 형태에 맞춰 처리)
-        const [err] = await loginCredentials(formData);
+        const res = await loginCredentials(formData);
+        if (!res) return undefined;
+        const err = res[0];
         if (err) {
           return err as ValidError;
         }
@@ -106,7 +108,11 @@ export function LoginSheet({ isOpen, onClose }: Props) {
 
         {/* 회원가입 | 계정 찾기 */}
         <div className="mt-4 flex items-center justify-center gap-3 text-[#8A8A8A] text-[12px]">
-          <button type="button" className="hover:underline">
+          <button
+            type="button"
+            className="hover:underline"
+            onClick={() => router.push('/register')}
+          >
             회원가입
           </button>
           <span className="text-[#D9D9D9]">|</span>

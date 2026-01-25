@@ -1,5 +1,6 @@
 'use server';
 
+import { isRedirectError } from 'next/dist/client/components/redirect-error';
 import { AuthError } from 'next-auth';
 import z from 'zod';
 import { signIn, signOut } from '@/lib/auth';
@@ -33,9 +34,9 @@ export const loginCredentials = async (formData: FormData) => {
       password: data.password,
       redirectTo: data.redirectTo ?? '/home',
     });
-
-    return [undefined, data];
   } catch (err) {
+    if (isRedirectError(err)) throw err;
+
     console.log('🚀 ~ err:', err, err instanceof AuthError);
     if (err instanceof AuthError) {
       return [{ error: { userId: err.type ?? 'CredentialsSignin' }, data }];
