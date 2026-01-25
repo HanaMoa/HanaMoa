@@ -8,7 +8,6 @@ import { validate } from '../validator';
 
 export type Provider = 'kakao' | 'google' | 'credentials';
 
-// TODO 리다이렉트 경로 확인
 export const logout = async () => {
   await signOut({ redirectTo: '/home' });
 };
