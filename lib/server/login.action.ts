@@ -6,7 +6,7 @@ import z from 'zod';
 import { signIn, signOut } from '@/lib/auth';
 import { validate } from '../validator';
 
-export type Provider = 'kakao' | 'credentials';
+export type Provider = 'kakao' | 'google' | 'credentials';
 
 // TODO 리다이렉트 경로 확인
 export const logout = async () => {
@@ -47,4 +47,8 @@ export const loginCredentials = async (formData: FormData) => {
 
 export const loginKakao = async (formData: FormData) => {
   return await login('kakao', formData);
+};
+
+export const loginGoogle = async (formData: FormData) => {
+  return await login('google', formData);
 };

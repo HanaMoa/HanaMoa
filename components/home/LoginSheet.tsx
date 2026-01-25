@@ -4,7 +4,11 @@ import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useActionState } from 'react';
 import { ModalBottomSheet } from '@/components/common/ModalBottomSheet';
-import { loginCredentials, loginKakao } from '@/lib/server/login.action';
+import {
+  loginCredentials,
+  loginGoogle,
+  loginKakao,
+} from '@/lib/server/login.action';
 import type { ValidError } from '@/lib/validator';
 import { SingleButton } from '../common/SingleButton';
 
@@ -67,8 +71,8 @@ export function LoginSheet({ isOpen, onClose }: Props) {
         </div>
 
         {/* 타이틀 */}
-        <div className="pt-6 text-center">
-          <p className="font-bold text-black text-xl">
+        <div className="pt-7 text-center">
+          <p className="font-bold text-2xl text-black">
             로그인 후 이용 가능합니다
           </p>
         </div>
@@ -122,46 +126,52 @@ export function LoginSheet({ isOpen, onClose }: Props) {
         </div>
 
         {/* 간편로그인 구분선 */}
-        <div className="mt-5 flex items-center gap-3">
+        <div className="mt-6 flex items-center gap-3">
           <div className="h-px flex-1 bg-black/10" />
           <span className="text-[#8A8A8A] text-[12px]">간편로그인</span>
           <div className="h-px flex-1 bg-black/10" />
         </div>
 
         {/* 소셜 버튼 */}
-        <form
-          action={loginKakao}
-          className="mt-4 flex items-center justify-center gap-6"
-        >
-          <button
-            type="submit"
-            disabled={isPending}
-            className="grid h-[44px] w-[44px] place-items-center rounded-full disabled:opacity-50"
-            aria-label="카카오 로그인"
+        <div className="mt-2 flex items-center justify-center gap-6">
+          <form
+            action={loginKakao}
+            className="mt-4 flex items-center justify-center gap-6"
           >
-            <Image
-              src="/images/home/kakao_login.png"
-              alt="kakao"
-              width={50}
-              height={50}
-            />
-          </button>
+            <button
+              type="submit"
+              disabled={isPending}
+              className="grid h-[44px] w-[44px] place-items-center rounded-full disabled:opacity-50"
+              aria-label="카카오 로그인"
+            >
+              <Image
+                src="/images/home/kakao_login.png"
+                alt="kakao"
+                width={50}
+                height={50}
+              />
+            </button>
+          </form>
 
-          {/* <button
-            type="button"
-            onClick={handleGoogleLogin}
-            disabled={pending}
-            className="grid h-[44px] w-[44px] place-items-center rounded-full border border-black/5 bg-white disabled:opacity-50"
-            aria-label="구글 로그인"
+          <form
+            action={loginGoogle}
+            className="mt-4 flex items-center justify-center gap-6"
           >
-            <Image
-              src="/images/login/google.png"
-              alt="google"
-              width={22}
-              height={22}
-            />
-          </button> */}
-        </form>
+            <button
+              type="submit"
+              disabled={isPending}
+              className="grid h-[44px] w-[44px] place-items-center rounded-full border border-black/5 bg-white disabled:opacity-50"
+              aria-label="구글 로그인"
+            >
+              <Image
+                src="/images/home/google_login.png"
+                alt="google"
+                width={50}
+                height={50}
+              />
+            </button>
+          </form>
+        </div>
       </div>
     </ModalBottomSheet>
   );
