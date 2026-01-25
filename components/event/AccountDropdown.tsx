@@ -63,14 +63,6 @@ export default function AccountDropdown({
           'border border-black/10',
         ].join(' ')}
       >
-        {/* Header */}
-        <div className="flex items-center justify-between px-4 pt-3 pb-2">
-          <div className="font-extrabold text-[18px] leading-none">
-            계좌 선택
-          </div>
-          <ChevronDown className="h-5 w-5 text-black/60" />
-        </div>
-
         {/* List */}
         <div className="pb-2">
           {accounts.map((a) => (
