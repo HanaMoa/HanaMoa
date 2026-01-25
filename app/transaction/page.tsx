@@ -31,6 +31,12 @@ export default function TransactionPage() {
     setAccountNumber((prev) => prev.slice(0, -1));
   };
 
+  // 스킵버튼 function
+  const handleSkip = () => {
+    // ✅ 건너뛰기 시 어디로 갈지 정하면 됨 (예시: 홈)
+    router.push('/home');
+  };
+
   const canSubmit = useMemo(() => {
     return accountNumber.length >= 8 && !!selectedBank;
   }, [accountNumber, selectedBank]);
@@ -64,6 +70,15 @@ export default function TransactionPage() {
         <h1 className="-translate-x-1/2 absolute left-1/2 font-semibold text-[17px]">
           누구에게 보낼까요?
         </h1>
+
+        {/* ✅ 오른쪽: 건너뛰기 */}
+        <button
+          type="button"
+          onClick={handleSkip}
+          className="ml-auto text-[14px] text-gray-500"
+        >
+          건너뛰기
+        </button>
       </header>
 
       {/* 본문 */}
