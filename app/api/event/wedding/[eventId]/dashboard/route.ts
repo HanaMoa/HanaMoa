@@ -14,7 +14,6 @@ function toJSON<T>(data: T) {
   ) as T;
 }
 
-// 오너먼트 개수 = 10개
 const DEFAULT_PAGE_SIZE = 10;
 
 function parsePage(v: string | null): 'last' | number {
@@ -26,15 +25,12 @@ function parsePage(v: string | null): 'last' | number {
   return Math.floor(n);
 }
 
-// pageSize 파싱 (기본 10, 최대 안전장치 50)
 function parsePageSize(v: string | null) {
   const n = Number(v);
   if (!Number.isFinite(n) || n <= 0) return DEFAULT_PAGE_SIZE;
-
   return Math.min(Math.floor(n), 50);
 }
 
-// 오너먼트 타입 목록
 const ORNAMENT_TYPES = [
   'dashboard_couple',
   'dashboard_firecracker',
@@ -57,13 +53,12 @@ export async function GET(
   try {
     const { eventId } = await ctx.params;
 
-    // eventId는 BigInt PK
     let eventKey: bigint;
     try {
       eventKey = BigInt(eventId);
     } catch {
       return NextResponse.json(
-        { ok: false, message: 'eventId 형식이 올바르지 않습니다.' },
+        { ok: false, errorMessage: 'eventId 형식이 올바르지 않습니다.' },
         { status: 400 },
       );
     }
@@ -72,21 +67,17 @@ export async function GET(
     const pageParam = parsePage(url.searchParams.get('page'));
     const pageSize = parsePageSize(url.searchParams.get('pageSize'));
 
-    // 메시지가 있는 거레만 오너먼트
+    // 메시지가 있는 거래만 오너먼트
     const whereCondition = {
       eventId: eventKey,
       message: { not: null },
     };
 
-    // 1) 전체 개수 -> totalPages 계산용
     const totalCount = await prisma.transaction.count({
       where: whereCondition,
     });
-
-    // 메시지 0개여도 최소 1페이지 유지
     const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
 
-    // 2) 현재 페이지 결정
     const page =
       pageParam === 'last'
         ? Math.max(totalPages - 1, 0)
@@ -94,7 +85,6 @@ export async function GET(
 
     const skip = page * pageSize;
 
-    // 3) 현재 페이지 최대 10개 조회 (asc)
     const rows: DashboardRow[] = await prisma.transaction.findMany({
       where: whereCondition,
       orderBy: { createdAt: 'asc' },
@@ -108,21 +98,19 @@ export async function GET(
       },
     });
 
-    // 4) 프론트에서 쓰기 좋은 형태로 가공 (+ornamentType 추가)
-    const message = rows.map((row, idx) => {
+    const messages = rows.map((row, idx) => {
       const senderName = row.user?.name ?? '익명';
       const badge = senderName.trim().slice(0, 1) || '익';
 
-      // 페이지마다 오너먼트가 섞이도록 !! (seed = page)
       const ornamentType: OrnamentType =
         ORNAMENT_TYPES[(idx + page) % ORNAMENT_TYPES.length];
 
       return {
-        id: row.id,
+        id: row.id, // BigInt -> toJSON에서 string 처리
         senderName,
         badge,
         content: row.message ?? '',
-        createAt: row.createdAt,
+        createdAt: row.createdAt,
         ornamentType,
       };
     });
@@ -134,13 +122,13 @@ export async function GET(
         pageSize,
         totalCount,
         totalPages,
-        message,
+        messages,
       }),
     );
   } catch (e: any) {
     console.error(e);
     return NextResponse.json(
-      { ok: false, message: e?.message ?? '서버 오류' },
+      { ok: false, errorMessage: e?.message ?? '서버 오류' },
       { status: 500 },
     );
   }
