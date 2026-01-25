@@ -35,11 +35,17 @@ export default function TransactionPage() {
     return accountNumber.length >= 8 && !!selectedBank;
   }, [accountNumber, selectedBank]);
 
+  // amount page router.push
   const handleDone = () => {
     if (!canSubmit) return;
 
-    // TODO: 다음 단계 이동 / API 호출로 변경
-    alert(`전송 대상: ${selectedBank?.name} / ${accountNumber}`);
+    const params = new URLSearchParams({
+      toName: '정그린', // TODO: 받는 사람 이름 입력 UI가 생기면 그 값으로 교체
+      bank: selectedBank!.name,
+      account: accountNumber,
+    });
+
+    router.push(`/transaction/amount?${params.toString()}`);
   };
 
   return (

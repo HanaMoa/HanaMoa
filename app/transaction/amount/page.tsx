@@ -1,0 +1,178 @@
+'use client';
+
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useMemo, useState } from 'react';
+import NumberKeypad from '@/components/common/NumberKeypad';
+
+function formatWon(n: string) {
+  const onlyNum = n.replace(/[^\d]/g, '');
+  if (!onlyNum) return '0';
+  return onlyNum.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
+function addAmount(prev: string, add: number) {
+  const p = Number(prev || '0');
+  const next = p + add;
+  return String(next);
+}
+
+export default function TransferAmountPage() {
+  const router = useRouter();
+  const sp = useSearchParams();
+
+  // ✅ 이전 “계좌번호 입력” 페이지에서 넘어오는 값들 (없으면 기본값)
+  const toName = sp.get('toName') ?? '정그린';
+  const bank = sp.get('bank') ?? '국민은행';
+  const account = sp.get('account') ?? '55990204144435';
+
+  // 금액(숫자 문자열)
+  const [amount, setAmount] = useState('0');
+
+  const amountLabel = useMemo(() => `${formatWon(amount)}원`, [amount]);
+
+  // 완료 가능 조건(0원은 불가)
+  const canSubmit = useMemo(() => {
+    const n = Number(amount.replace(/[^\d]/g, ''));
+    return Number.isFinite(n) && n > 0;
+  }, [amount]);
+
+  // ✅ 키패드 입력(숫자만 허용, "+*#"는 무시)
+  const handleInput = (v: string) => {
+    if (!/^\d$/.test(v)) return;
+
+    setAmount((prev) => {
+      const next = (prev === '0' ? '' : prev) + v;
+      // 너무 커지는 것 방지(원하면 자리수 조정)
+      return next.slice(0, 12) || '0';
+    });
+  };
+
+  const handleDelete = () => {
+    setAmount((prev) => {
+      const next = prev.slice(0, -1);
+      return next.length ? next : '0';
+    });
+  };
+
+  const handleDone = () => {
+    if (!canSubmit) return;
+
+    const params = new URLSearchParams({
+      toName, // 받는 사람 이름
+      bank, // 은행명
+      account, // 계좌번호
+      amount, // 금액 (숫자 문자열)
+    });
+
+    router.push(`/transaction/event?${params.toString()}`);
+  };
+
+  return (
+    <div className="mx-auto h-dvh w-full max-w-[600px] overflow-y-auto bg-white px-6 pt-10 pb-[420px]">
+      {/* 상단 헤더 */}
+      <header className="relative flex h-14 items-center px-4">
+        <h1 className="-translate-x-1/2 absolute left-1/2 font-semibold text-[16px]">
+          이체
+        </h1>
+
+        <button
+          type="button"
+          onClick={() => router.back()}
+          className="ml-auto text-[14px] text-gray-500"
+        >
+          취소
+        </button>
+      </header>
+
+      {/* 받는 사람/계좌 정보 */}
+      <section className="px-6 pt-2">
+        <div className="font-semibold text-[14px] text-gray-900">
+          {toName}님에게
+        </div>
+        <div className="mt-1 text-[12px] text-gray-500">
+          {bank} {account}
+        </div>
+      </section>
+
+      {/* 메인 질문 */}
+      <section className="px-6 pt-10">
+        <h2 className="text-center font-extrabold text-[24px] text-gray-900">
+          얼마를 보낼까요?
+        </h2>
+
+        {/* 금액 표시 영역 */}
+        <div className="mx-auto mt-8 w-full max-w-[520px] rounded-2xl bg-[#F3F4F6] px-5 py-4">
+          <div className="flex items-center justify-between">
+            <div className="font-semibold text-[13px] text-gray-700">
+              {bank} {account}
+            </div>
+            <button
+              type="button"
+              className="rounded-full bg-white px-3 py-1 font-semibold text-[11px] text-gray-700"
+              onClick={() => alert('잔액조회(임시)')}
+            >
+              잔액조회
+            </button>
+          </div>
+
+          <div className="mt-2 font-extrabold text-[22px] text-gray-900">
+            {amountLabel}
+          </div>
+        </div>
+      </section>
+
+      {/* ✅ 하단 고정 영역 */}
+      <div className="-translate-x-1/2 fixed bottom-0 left-1/2 z-50 w-full max-w-[550px] bg-white">
+        {/* 빠른 금액 버튼 */}
+        <div className="border-gray-200 border-t bg-gray-50 px-4 pt-3">
+          <div className="mx-auto grid max-w-[520px] grid-cols-5 gap-2">
+            {[
+              { label: '1만', add: 10_000 },
+              { label: '5만', add: 50_000 },
+              { label: '10만', add: 100_000 },
+              { label: '100만', add: 1_000_000 },
+            ].map((b) => (
+              <button
+                key={b.label}
+                type="button"
+                onClick={() => setAmount((p) => addAmount(p, b.add))}
+                className="h-10 rounded-xl bg-[#F3F4F6] font-semibold text-[13px] text-gray-800 active:scale-[0.98]"
+              >
+                {b.label}
+              </button>
+            ))}
+
+            <button
+              type="button"
+              onClick={() => setAmount('0')}
+              className="h-10 rounded-xl bg-[#F3F4F6] font-semibold text-[13px] text-gray-800 active:scale-[0.98]"
+            >
+              전액
+            </button>
+          </div>
+        </div>
+
+        {/* 완료 바 */}
+        <div className="flex items-center justify-end bg-gray-50 px-4 py-2">
+          <button
+            type="button"
+            onClick={handleDone}
+            disabled={!canSubmit}
+            className={`rounded-full px-3 py-1 font-semibold text-[14px] ${
+              canSubmit ? 'text-[#1EA698]' : 'text-gray-300'
+            }`}
+          >
+            완료
+          </button>
+        </div>
+
+        {/* 키패드 */}
+        <div className="bg-gray-50 pb-[env(safe-area-inset-bottom)]">
+          <div className="mx-auto max-w-[400px] px-3 py-2">
+            <NumberKeypad onInput={handleInput} onDelete={handleDelete} />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
