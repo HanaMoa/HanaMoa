@@ -14,6 +14,7 @@ export default function EventCard({ count, onClick }: Props) {
         진행 중인 행사
       </span>
 
+      {/* count 값 처리 고민해보기 */}
       <span className="font-bold tracking-wider">
         <span className="text-[#017F70] text-xl md:text-2xl lg:text-3xl">
           {count}

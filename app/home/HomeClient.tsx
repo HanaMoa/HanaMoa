@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { MainHeader } from '@/components/common/MainHeader';
 import EventCard from '@/components/home/EventCard';
 import HomeBanner from '@/components/home/HomeBanner';
@@ -13,11 +13,6 @@ type Props = { isLoggedIn: boolean; userName: string };
 export default function HomeClient({ isLoggedIn, userName }: Props) {
   const router = useRouter();
   const [loginOpen, setLoginOpen] = useState(false);
-
-  // 로그인 상태 변화에 따라 모달 자동 제어
-  useEffect(() => {
-    setLoginOpen(!isLoggedIn);
-  }, [isLoggedIn]);
 
   return (
     <div className="flex flex-col">
@@ -34,7 +29,7 @@ export default function HomeClient({ isLoggedIn, userName }: Props) {
 
         <div className="px-6 py-3 md:px-7 lg:px-8">
           <EventCard
-            count={3}
+            count={0}
             onClick={() => {
               if (!isLoggedIn) return setLoginOpen(true);
               router.push('/event');
@@ -42,14 +37,19 @@ export default function HomeClient({ isLoggedIn, userName }: Props) {
           />
         </div>
 
-        <HomeMenuList />
+        <HomeMenuList
+          onMenuClick={(href) => {
+            if (!isLoggedIn) return setLoginOpen(true);
+            router.push(href);
+          }}
+        />
       </main>
 
       <LoginSheet
         isOpen={loginOpen}
         // 강제로그인이면 닫기 막기: onClose에서 아무것도 안 함
         onClose={() => {
-          /* optional: setLoginOpen(false) */
+          setLoginOpen(false);
         }}
       />
     </div>
