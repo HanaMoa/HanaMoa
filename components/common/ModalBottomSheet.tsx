@@ -7,6 +7,7 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from '@/components/ui/drawer';
+import { cn } from '@/lib/utils';
 
 type Props = {
   isOpen: boolean;
@@ -15,6 +16,7 @@ type Props = {
   children: ReactNode;
 
   onConfirm?: () => void;
+  allowOverflow?: boolean;
 };
 
 export function ModalBottomSheet({
@@ -23,12 +25,18 @@ export function ModalBottomSheet({
   onClose,
   children,
   onConfirm,
+  allowOverflow = false,
 }: Props) {
   const a11yTitle = title?.trim() ? title : ''; // title 없을 때 대비
 
   return (
     <Drawer open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DrawerContent className="!rounded-t-[40px] bottom-[80px] mx-auto h-[60vh] w-full max-w-[600px] md:bottom-[88px] lg:bottom-[96px]">
+      <DrawerContent
+        className={cn(
+          '!rounded-t-[40px] bottom-[80px] mx-auto h-[60vh] w-full max-w-[600px] md:bottom-[88px] lg:bottom-[96px]',
+          allowOverflow && 'overflow-visible',
+        )}
+      >
         {/* 내부를 h-full + flex-col 로 만들고 스크롤은 한 곳에서만 */}
         <div className="flex h-full flex-col px-[38px] pt-3 md:px-[42px] md:pt-4 lg:px-[46px] lg:pt-6">
           <div className="flex justify-end">
@@ -49,7 +57,12 @@ export function ModalBottomSheet({
           </DrawerHeader>
 
           {/* 콘텐츠 영역 - 길어지면 스크롤 */}
-          <div className="mt-2 min-h-0 flex-1 overflow-y-auto pb-6 [scrollbar-width:none] md:mt-3 lg:mt-4 [&::-webkit-scrollbar]:hidden">
+          <div
+            className={cn(
+              'mt-2 min-h-0 flex-1 pb-6 [scrollbar-width:none] md:mt-3 lg:mt-4 [&::-webkit-scrollbar]:hidden',
+              allowOverflow ? 'overflow-visible' : 'overflow-y-auto',
+            )}
+          >
             {children}
           </div>
         </div>
