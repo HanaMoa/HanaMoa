@@ -1,13 +1,14 @@
+// components/live/GuestStage/GuestStage.tsx
 /**
  * GuestStage
  * - 결혼식 라이브 화면 하단에 노출되는 "하객 스테이지" 영역
  * - 배경 이미지 위에 하객 아바타를 골고루 분산 배치하여
  *   실제 결혼식 하객석처럼 보이도록 연출한다.
  */
-import { pickDistributedSlots } from "@/app/utils/pickDistributeSlots";
-import GuestAvatar from "./GuestAvatar";
-import { AVATAR_COUNT, avatarSrc } from "./avatar.constants";
-import { GUEST_POSITIONS } from "./guestPositions";
+import { pickDistributedSlots } from '@/app/utils/pickDistributeSlots';
+import { AVATAR_COUNT, avatarSrc } from './avatar.constants';
+import GuestAvatar from './GuestAvatar';
+import { GUEST_POSITIONS } from './guestPositions';
 
 export default function GuestStage() {
   // TODO: LiveKit / WebSocket 연동 후 실시간 입장 인원으로 대체 예정
@@ -19,13 +20,13 @@ export default function GuestStage() {
 
   const visibleSlots = pickDistributedSlots(GUEST_POSITIONS, guestCount);
   return (
-    <section className="relative flex flex-1 flex-col w-full overflow-y-auto bg-[#F6F7F9]">
+    <section className="relative flex w-full flex-1 flex-col overflow-y-auto bg-[#F6F7F9]">
       {/* 배경 이미지 */}
       <div className="relative w-full">
         <img
           src="/images/live/wedding.png"
           alt="결혼식 하객 공간"
-          className="w-full block"
+          className="block w-full"
         />
         {/* 하객 아바타 배치 */}
         {visibleSlots.map((pos, idx) => (

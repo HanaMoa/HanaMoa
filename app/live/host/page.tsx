@@ -1,37 +1,40 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import GuestStage from '@/components/live/GuestStage/GuestStage';
 import LiveShell from '@/components/live/LiveShell';
 import { fetchToken } from '@/lib/live/fetchToken';
 
 export default function HostLivePage() {
   const [token, setToken] = useState<string | null>(null);
-  const [identity] = useState(() => `host-${crypto.randomUUID()}`);
   const roomName = 'demo-room';
 
-  useEffect(() => {
-    let mounted = true;
-
-    fetchToken(roomName, identity, 'host')
-      .then((t) => {
-        if (mounted) setToken(t);
-      })
-      .catch((err) => {
-        console.error('❌ failed to fetch host token', err);
-      });
-
-    return () => {
-      mounted = false;
-    };
-  }, [identity]);
+  const start = async () => {
+    const t = await fetchToken(roomName, `host-${crypto.randomUUID()}`, 'host');
+    setToken(t);
+  };
 
   if (!token) {
     return (
-      <div className="flex h-full items-center justify-center text-white">
-        Live 연결 중...
+      <div className="flex flex-1 items-center justify-center p-6">
+        <button
+          className="rounded-xl bg-black px-4 py-2 text-white"
+          onClick={start}
+        >
+          방송 시작
+        </button>
       </div>
     );
   }
 
-  return <LiveShell token={token} roomName={roomName} userRole="host" />;
+  return (
+    <LiveShell
+      token={token}
+      roomName={roomName}
+      userRole="host"
+      frameMaxWidth={560}
+    >
+      <GuestStage />
+    </LiveShell>
+  );
 }

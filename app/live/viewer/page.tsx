@@ -1,37 +1,41 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import GuestStage from '@/components/live/GuestStage/GuestStage';
 import LiveShell from '@/components/live/LiveShell';
 import { fetchToken } from '@/lib/live/fetchToken';
 
 export default function ViewerLivePage() {
   const [token, setToken] = useState<string | null>(null);
-  const [identity] = useState(() => `viewer-${crypto.randomUUID()}`);
   const roomName = 'demo-room';
 
   useEffect(() => {
-    let mounted = true;
-
-    fetchToken(roomName, identity, 'viewer')
-      .then((t) => {
-        if (mounted) setToken(t);
-      })
-      .catch((err) => {
-        console.error('❌ failed to fetch viewer token', err);
-      });
-
-    return () => {
-      mounted = false;
-    };
-  }, [identity]);
+    (async () => {
+      const t = await fetchToken(
+        roomName,
+        `viewer-${crypto.randomUUID()}`,
+        'viewer',
+      );
+      setToken(t);
+    })();
+  }, []);
 
   if (!token) {
     return (
-      <div className="flex h-full items-center justify-center text-white">
-        Live 연결 중...
+      <div className="flex flex-1 items-center justify-center text-black/60">
+        접속 중…
       </div>
     );
   }
 
-  return <LiveShell token={token} roomName={roomName} userRole="viewer" />;
+  return (
+    <LiveShell
+      token={token}
+      roomName={roomName}
+      userRole="viewer"
+      frameMaxWidth={560}
+    >
+      <GuestStage />
+    </LiveShell>
+  );
 }
