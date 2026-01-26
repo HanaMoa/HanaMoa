@@ -8,9 +8,13 @@ import HomeBanner from '@/components/home/HomeBanner';
 import HomeMenuList from '@/components/home/HomeMenuList';
 import { LoginSheet } from '@/components/home/LoginSheet';
 
-type Props = { isLoggedIn: boolean; userName: string };
+type Props = { isLoggedIn: boolean; userName: string; eventCount: number };
 
-export default function HomeClient({ isLoggedIn, userName }: Props) {
+export default function HomeClient({
+  isLoggedIn,
+  userName,
+  eventCount,
+}: Props) {
   const router = useRouter();
   const [loginOpen, setLoginOpen] = useState(false);
 
@@ -20,7 +24,7 @@ export default function HomeClient({ isLoggedIn, userName }: Props) {
         variant="home"
         onNotificationClick={() => {
           if (!isLoggedIn) return setLoginOpen(true);
-          router.push('/notice');
+          router.push('/notification');
         }}
       />
 
@@ -28,7 +32,7 @@ export default function HomeClient({ isLoggedIn, userName }: Props) {
         <HomeBanner name={userName} />
 
         <div className="px-6 py-3 md:px-7 lg:px-8">
-          <EventCard count={0} />
+          <EventCard count={eventCount} />
         </div>
 
         <HomeMenuList
