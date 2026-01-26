@@ -16,7 +16,7 @@ export default function MessageManualPage() {
     if (isTransactionFlow) {
         const params = new URLSearchParams(searchParams.toString());
         params.set('hasMessage', 'true');
-        // params.set('message', text); 
+        
         router.push(`/transaction/media?${params.toString()}`);
     } else {
         // 메시지 페이지 진입 전 페이지로 이동

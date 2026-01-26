@@ -1,12 +1,12 @@
 'use client';
 
-import Image from 'next/image';
-import { useRouter } from 'next/navigation';
-import { useMemo } from 'react';
 import { MainHeader } from '@/components/common/MainHeader';
 import { SingleButton } from '@/components/common/SingleButton';
 import AccountDropdown from '@/components/event/AccountDropdown';
 import SpeechBubble from '@/components/event/SpeechBubble';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { useMemo } from 'react';
 
 // image 경로
 // const BG_SRC = '/images/event/wedding/lounge_bg.png';
@@ -60,6 +60,26 @@ export default function WeddingLoungePage({ event }: Props) {
     }
     return items;
   }, [event.hosts]);
+
+  const handleSendMoney = () => {
+    // 기본 계좌 선택 (첫 번째)
+    const defaultAccount = accounts[0];
+    
+    // params 설정
+    const params = new URLSearchParams();
+    // 결혼식(Wedding)에서 진입했으므로 eventType=WEDDING
+    params.set('eventType', 'WEDDING');
+    params.set('eventId', event.eventId); // eventId 추가
+
+    // 계좌 정보가 있다면 같이 넘김 (Amount 페이지에서 사용)
+    if (defaultAccount) {
+      params.set('toName', defaultAccount.ownerName);
+      params.set('bank', defaultAccount.bank);
+      params.set('account', defaultAccount.account);
+    }
+
+    router.push(`/transaction/amount?${params.toString()}`);
+  };
 
   return (
     <div className="flex min-h-screen w-full flex-col">
@@ -193,9 +213,7 @@ export default function WeddingLoungePage({ event }: Props) {
           <div className="pointer-events-none fixed inset-x-0 bottom-0 z-30 pb-[calc(env(safe-area-inset-bottom)+16px)]">
             <div className="pointer-events-auto mx-auto flex w-full justify-center px-4">
               <SingleButton
-                onClick={() =>
-                  router.push(`/event/wedding/${event.eventId}/dashboard`)
-                }
+                onClick={handleSendMoney}
                 className="h-[54px] w-[360px] rounded-[14px] bg-[#EF5A6E] font-semibold text-[16px] text-white hover:bg-[#EF5A6E]/90 active:bg-[#EF5A6E]/80 md:w-[360px] md:text-[16px] lg:w-[560px] lg:text-[18px]"
               >
                 축의금 · 축하 메시지 보내기

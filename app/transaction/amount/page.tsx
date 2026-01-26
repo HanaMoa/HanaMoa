@@ -25,6 +25,8 @@ export default function TransferAmountPage() {
   const bank = sp.get('bank') ?? '국민은행';
   const account = sp.get('account') ?? '55990204144435';
   const mode = sp.get('mode');
+  const eventType = sp.get('eventType');
+  const eventId = sp.get('eventId');
 
   // 금액(숫자 문자열)
   const [amount, setAmount] = useState('0');
@@ -64,6 +66,13 @@ export default function TransferAmountPage() {
       account, // 계좌번호
       amount, // 금액 (숫자 문자열)
     });
+    
+    if (eventType) {
+      params.set('eventType', eventType);
+    }
+    if (eventId) {
+      params.set('eventId', eventId);
+    }
     
     if (mode) {
         params.set('mode', mode);

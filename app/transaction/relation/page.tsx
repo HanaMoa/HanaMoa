@@ -31,6 +31,7 @@ export default function TransferRelationPage() {
   const eventType = sp.get('eventType') ?? 'WEDDING';
 
   const mode = sp.get('mode');
+  const eventId = sp.get('eventId');
 
   // 임시 출금계좌
   const fromBank = '하나은행';
@@ -48,8 +49,9 @@ export default function TransferRelationPage() {
       eventType,
     });
     if (mode) p.set('mode', mode);
+    if (eventId) p.set('eventId', eventId);
     return p.toString();
-  }, [toName, bank, account, amount, eventType, mode]);
+  }, [toName, bank, account, amount, eventType, mode, eventId]);
 
   const goNext = (
     relationType: 'FAMILY' | 'FRIEND' | 'COLLEAGUE' | 'ACQUAINTANCE' | 'MANUAL',
@@ -60,6 +62,9 @@ export default function TransferRelationPage() {
     p.set('relationType', relationType);
     // baseParams 안에 eventType이 없다면 아래도 필요:
     // p.set('eventType', eventType);
+    if (eventId) {
+      p.set('eventId', eventId);
+    }
 
     if (mode === 'transfer') {
         // 송금 모드인 경우 메시지/미디어 단계 건너뛰고 바로 완료 페이지로
