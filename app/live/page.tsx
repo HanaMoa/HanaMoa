@@ -1,39 +1,30 @@
-// app/live/page.tsx
-'use client';
+import { auth } from '@/lib/auth';
+import { prisma } from '@/lib/prisma';
+import LiveEntryClient from './LiveEntryClient';
 
-import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
+export default async function LiveEntryPage({
+  searchParams,
+}: {
+  searchParams: { eventId?: string };
+}) {
+  const session = await auth();
+  const userId = session?.user?.id;
+  const eventId = searchParams.eventId;
 
-export default function LiveEntryPage() {
-  const router = useRouter();
+  let role: 'host' | 'viewer' = 'viewer';
 
-  return (
-    <div className="flex w-full flex-1 flex-col px-5 py-6">
-      <div className="mx-auto w-full max-w-[560px]">
-        <h1 className="font-semibold text-[20px] text-black">라이브 입장</h1>
-        <p className="mt-2 text-[14px] text-black/60">
-          역할을 선택해서 입장하세요.
-        </p>
+  // 1. 로그인 되어 있고 eventId가 있을 때만 DB 조회
+  if (userId && eventId) {
+    const event = await prisma.event.findUnique({
+      where: { id: BigInt(eventId) },
+      select: { userId: true },
+    });
 
-        <div className="mt-6 space-y-3">
-          <Button
-            type="button"
-            className="h-12 w-full rounded-xl bg-black text-white hover:bg-black/90"
-            onClick={() => router.push('/live/host')}
-          >
-            방송 시작 (Host)
-          </Button>
+    // 2. 이벤트 생성자(userId)와 현재 로그인 유저 ID 비교
+    if (event && BigInt(userId) === event.userId) {
+      role = 'host';
+    }
+  }
 
-          <Button
-            type="button"
-            variant="outline"
-            className="h-12 w-full rounded-xl border-black/15 bg-white hover:bg-black/5"
-            onClick={() => router.push('/live/viewer')}
-          >
-            시청하기 (Viewer)
-          </Button>
-        </div>
-      </div>
-    </div>
-  );
+  return <LiveEntryClient userRole={role} />;
 }

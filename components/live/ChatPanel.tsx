@@ -78,6 +78,38 @@ export default function ChatPanel({
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   /**
+   * [추가] 로컬 스토리지에서 기존 채팅 내역 불러오기
+   * 컴포넌트 마운트 시 및 roomName이 확정될 때 실행
+   */
+  useEffect(() => {
+    if (!room) return;
+
+    const savedHistory = localStorage.getItem(`chat_history_${room}`);
+    if (savedHistory) {
+      try {
+        const parsed = JSON.parse(savedHistory);
+        // 저장된 메시지가 배열인 경우에만 상태 업데이트
+        if (Array.isArray(parsed)) {
+          setMessages(parsed);
+        }
+      } catch (e) {
+        console.error('채팅 히스토리 로드 실패:', e);
+      }
+    }
+  }, [room]);
+
+  /**
+   * [추가] 메시지가 변경될 때마다 로컬 스토리지에 저장
+   */
+  useEffect(() => {
+    if (!room || messages.length === 0) return;
+
+    // 최신 maxMessages 개수만큼만 저장하여 용량 최적화
+    const historyToSave = messages.slice(-maxMessages);
+    localStorage.setItem(`chat_history_${room}`, JSON.stringify(historyToSave));
+  }, [messages, room, maxMessages]);
+
+  /**
    * [수신 로직: DataChannel]
    * LiveKit의 dataReceived 이벤트를 구독하여 'chat' 토픽의 메시지만 필터링합니다.
    */

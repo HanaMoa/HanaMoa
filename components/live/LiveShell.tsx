@@ -188,7 +188,8 @@ export default function LiveShell({
           {/* SECTION 3: 🖼 하단 컨텐츠 */}
           <div
             ref={lowerWrapRef}
-            className="relative flex-1 overflow-hidden bg-white"
+            className="relative z-10 flex-1 overflow-hidden bg-white"
+            /* 🚀 z-index를 낮게 설정하여 ChatPanel(45) 아래로 보냅니다. */
           >
             {children ? (
               children

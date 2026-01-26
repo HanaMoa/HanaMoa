@@ -1,5 +1,6 @@
 "use client";
 
+// app/live/viewer/page.tsx
 /**
  * ViewerLivePage
  *
