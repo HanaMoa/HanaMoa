@@ -16,6 +16,7 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 
 import ChatPanel from '@/components/live/ChatPanel';
 import LivePlayer from '@/components/live/LivePlayer';
+import LiveStatus from './LiveStatus';
 
 type UserRole = 'host' | 'viewer';
 
@@ -160,6 +161,11 @@ export default function LiveShell({
           <div className="relative aspect-video w-full bg-black">
             <LivePlayer preferScreen={true} />
 
+            {/* ✅ 좌측 상단 LIVE 상태창 추가 */}
+            <div className="absolute top-4 left-4 z-50">
+              <LiveStatus />
+            </div>
+
             {/* 풀스크린 전환 트리거 (유튜브 모바일 UI 스타일) */}
             <button
               type="button"
@@ -186,16 +192,19 @@ export default function LiveShell({
           {/* SECTION 3: 🖼 하단 컨텐츠 영역 (GuestStage 또는 배경 이미지) */}
           <div
             ref={lowerWrapRef}
-            className="relative flex-1 overflow-hidden bg-white"
+            className="relative z-10 flex-1 overflow-hidden bg-white"
+            /* 🚀 z-index를 낮게 설정하여 ChatPanel(45) 아래로 보냅니다. */
           >
             {children ? (
-              children // 외부 주입 컨텐츠 (예: 하객 캐릭터 배치 영역)
+              <div className="pointer-events-auto h-full w-full">
+                {children}
+              </div>
             ) : (
               <div
-                className="absolute inset-0 bg-cover bg-top bg-no-repeat transition-opacity duration-500"
+                className="absolute inset-0 bg-cover bg-top bg-no-repeat"
                 style={{
                   backgroundImage: `url(${backgroundImageUrl})`,
-                  imageRendering: 'pixelated', // 픽셀 아트 소스 선명도 유지
+                  imageRendering: 'pixelated',
                 }}
               />
             )}

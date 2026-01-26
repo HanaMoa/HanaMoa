@@ -78,6 +78,38 @@ export default function ChatPanel({
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   /**
+   * [추가] 로컬 스토리지에서 기존 채팅 내역 불러오기
+   * 컴포넌트 마운트 시 및 roomName이 확정될 때 실행
+   */
+  useEffect(() => {
+    if (!room) return;
+
+    const savedHistory = localStorage.getItem(`chat_history_${room}`);
+    if (savedHistory) {
+      try {
+        const parsed = JSON.parse(savedHistory);
+        // 저장된 메시지가 배열인 경우에만 상태 업데이트
+        if (Array.isArray(parsed)) {
+          setMessages(parsed);
+        }
+      } catch (e) {
+        console.error('채팅 히스토리 로드 실패:', e);
+      }
+    }
+  }, [room]);
+
+  /**
+   * [추가] 메시지가 변경될 때마다 로컬 스토리지에 저장
+   */
+  useEffect(() => {
+    if (!room || messages.length === 0) return;
+
+    // 최신 maxMessages 개수만큼만 저장하여 용량 최적화
+    const historyToSave = messages.slice(-maxMessages);
+    localStorage.setItem(`chat_history_${room}`, JSON.stringify(historyToSave));
+  }, [messages, room, maxMessages]);
+
+  /**
    * [수신 로직: DataChannel]
    * LiveKit의 dataReceived 이벤트를 구독하여 'chat' 토픽의 메시지만 필터링합니다.
    */
@@ -194,12 +226,14 @@ export default function ChatPanel({
     <>
       {/* 1) 채팅 바 (닫힌 상태) - 유튜브 모바일 UI 스타일 */}
       {!open && (
-        <div className="w-full bg-white">
+        <div className="relative z-[45] w-full bg-white">
+          {/* 🚀 z-index를 비디오(50)보다는 낮고, 하단 영역(기본)보다는 높게 설정 */}
           <button
             type="button"
             disabled={!canOpen}
             onClick={() => setOpen(true)}
             className="flex w-full items-center justify-between border-black/10 border-t px-4 py-3 text-left transition-colors active:bg-black/5"
+            style={{ position: 'relative', zIndex: 46 }} // 한 번 더 확실하게 보장
             aria-label="실시간 채팅 열기"
           >
             <span className="font-semibold text-[14px] text-black">
