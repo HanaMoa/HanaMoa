@@ -47,7 +47,7 @@ export default function HomeMenuList({ onMenuClick }: Props) {
       titleMain: '추억',
       titleSub: '보러가기',
       desc: '감사한 마음을 기억해요',
-      href: '/memory',
+      href: '/memorialweddingdb',
       className: 'col-start-1 row-start-6 row-span-4',
       image: '/images/home/memory.png',
       imgSize: 72,
