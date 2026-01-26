@@ -79,7 +79,6 @@ ${toBank} ${toName}님에게 ${amountLabel}을 보냈어요.
     try {
       // Web Share API (모바일에서 잘 됨)
       if (typeof navigator !== 'undefined' && 'share' in navigator) {
-        // @ts-expect-error
         await navigator.share({
           title: '완료',
           text: shareText,
@@ -88,8 +87,8 @@ ${toBank} ${toName}님에게 ${amountLabel}을 보냈어요.
       }
 
       // fallback: 클립보드 복사
-      if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
-        await navigator.clipboard.writeText(shareText);
+      if (typeof navigator !== 'undefined' && (navigator as any).clipboard?.writeText) {
+        await (navigator as any).clipboard.writeText(shareText);
         alert('공유 내용을 클립보드에 복사했어요.');
         return;
       }
@@ -100,8 +99,17 @@ ${toBank} ${toName}님에게 ${amountLabel}을 보냈어요.
     }
   };
 
+  const eventId = sp.get('eventId');
+
   const handleConfirm = () => {
-    router.push('/home'); // ✅ app/home/page.tsx
+    // 장례(FUNERAL)이면서 eventId가 있다면 memorial lounge로 이동
+    if (eventType === 'FUNERAL' && eventId) {
+       router.push(`/event/memorial/${eventId}`);
+    } else if (eventType === 'WEDDING' && eventId) {
+       router.push(`/event/wedding/${eventId}`);
+    } else {
+       router.push('/home'); // app/home/page.tsx
+    }
   };
 
   return (

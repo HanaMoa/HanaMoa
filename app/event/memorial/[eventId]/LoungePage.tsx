@@ -59,6 +59,31 @@ export default function MemorialLoungePage({ event }: Props) {
     return items;
   }, [event.hosts]);
 
+  const handleSendMoney = () => {
+    // 기본 계좌 선택 (첫 번째)
+    const defaultAccount = accounts[0];
+
+    // params 설정
+    const params = new URLSearchParams();
+    // 장례식(Memorial)에서 진입했으므로 eventType=FUNERAL
+    params.set('eventType', 'FUNERAL');
+    params.set('eventId', event.eventId); // eventId 추가
+
+    // 계좌 정보가 있다면 같이 넘김 (Amount 페이지에서 사용)
+    if (defaultAccount) {
+      params.set('toName', defaultAccount.ownerName);
+      params.set('bank', defaultAccount.bank);
+      params.set('account', defaultAccount.account);
+    }
+
+    // mode=transfer 등으로 설정할 수도 있지만,
+    // 여기서는 단순히 송금(Amount) -> 관계(Relation) -> 완료 흐름을 타므로 기본값 사용
+    // 혹은 'mode=transfer'를 명시해야 한다면 param.set('mode', 'transfer') 추가.
+    // 여기서는 기존 로직대로 일반 송금 흐름으로 진입.
+
+    router.push(`/transaction/amount?${params.toString()}`);
+  };
+
   // 발인 날짜 - event date가 바뀔 때만 다시 실행
   const dateText = useMemo(() => {
     return Intl.DateTimeFormat('ko-KR', {
@@ -110,9 +135,7 @@ export default function MemorialLoungePage({ event }: Props) {
           {/* 온라인 조문 */}
           <button
             type="button"
-            onClick={() =>
-              router.push(`/event/memorial/${event.eventId}/online`)
-            }
+            onClick={() => router.push(`/event/memorial/${event.eventId}/live`)}
             aria-label="온라인 조문으로 이동"
             className="-translate-x-1/2 absolute top-[30%] left-1/2 z-10 w-[450px] cursor-pointer border-0 bg-transparent p-0 md:top-[30%] md:w-[450px] lg:top-[27%] lg:w-[480px]"
           >
@@ -206,10 +229,8 @@ export default function MemorialLoungePage({ event }: Props) {
           <div className="pointer-events-none fixed inset-x-0 bottom-0 z-30 pb-[calc(env(safe-area-inset-bottom)+16px)]">
             <div className="pointer-events-auto mx-auto flex w-full justify-center px-4">
               <SingleButton
-                onClick={() =>
-                  router.push(`/event/memorial/${event.eventId}/dashboard`)
-                }
-                className="h-[54px] w-[400px] rounded-[14px] bg-[#232325] font-semibold text-[16px] text-white hover:bg-[#EF5A6E]/90 active:bg-[#EF5A6E]/80 md:w-[400px] md:text-[16px] lg:w-[530px] lg:text-[18px]"
+                onClick={handleSendMoney}
+                className="h-[54px] w-[360px] rounded-[14px] bg-[#232325] font-semibold text-[16px] text-white hover:bg-[#EF5A6E]/90 active:bg-[#EF5A6E]/80 md:w-[360px] md:text-[16px] lg:w-[560px] lg:text-[18px]"
               >
                 조의금 · 추모 메시지 보내기
               </SingleButton>
