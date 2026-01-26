@@ -14,7 +14,10 @@ import { DeathForm } from '@/components/info/peopleInfo/DeathForm';
 import { PartyInfoForm } from '@/components/info/peopleInfo/PartyInfoForm';
 import { DatePlaceForm } from '@/components/info/placeInfo/DatePlaceForm';
 import { WeddingPhotoForm } from '@/components/info/weddingInfo/WeddingPhotoForm';
+import { saveDatePlace } from '@/lib/server/datePlace.action';
 import { createDeadHost } from '@/lib/server/dead.action';
+import { savePartyInfo } from '@/lib/server/party.action';
+import { saveWeddingPhoto } from '@/lib/server/weddingMsg.action';
 
 type EventType = 'funeral' | 'wedding';
 
@@ -85,10 +88,6 @@ export default function Page() {
     }
   })();
 
-  console.log('event', event, 'step', step);
-  console.log('config', config);
-  console.log('stepCfg', stepCfg);
-
   if (!stepCfg && step < totalSteps) notFound();
 
   const onBack = () => {
@@ -112,10 +111,15 @@ export default function Page() {
       (event === 'funeral' && step === 3) ||
       (event === 'wedding' && (step === 2 || step === 3))
     ) {
+      const repRole =
+        event === 'funeral' ? 'CHIEF_MOURNER' : step === 2 ? 'GROOM' : 'BRIDE';
+
       return (
         <PartyInfoForm
-          role={stepCfg?.role}
-          addLabel={stepCfg?.addLabel ?? '추가'}
+          event={event}
+          repRole={repRole}
+          repLabel={stepCfg?.role} // infoConfig에서 신랑/신부/대표상주는 같은 라벨
+          addLabel={stepCfg?.addLabel ?? '추가'} // wedding이면 혼주 추가
           onValidChange={setCanNext}
         />
       );
@@ -170,14 +174,38 @@ export default function Page() {
             }
 
             // TODO: 아래는 나중에 연결 (PartyInfoForm, DatePlaceForm, WeddingPhotoForm)
-            // if (event === 'funeral' && step === 3) await saveParty(...)
-            // if (step === 4) await saveDatePlace(...)
-            // if (event === 'wedding' && step === 5) await saveWeddingPhoto(...)
+            if (
+              (event === 'funeral' && step === 3) ||
+              (event === 'wedding' && (step === 2 || step === 3))
+            ) {
+              const res = await savePartyInfo(undefined, formData);
+              if (!res.ok) {
+                alert(res.message);
+                return;
+              }
+            }
+
+            if (step === 4) {
+              const res = await saveDatePlace(undefined, formData);
+              if (!res.ok) {
+                alert(res.message);
+                return;
+              }
+            }
+
+            if (event === 'wedding' && step === 5) {
+              const res = await saveWeddingPhoto(undefined, formData);
+              if (!res.ok) {
+                alert(res.message);
+                return;
+              }
+            }
 
             // 성공하면 다음 이동
             if (step < totalSteps) {
               router.push(`/info/${event}/step/${step + 1}?eid=${eid}`);
             } else {
+              // TODO 경로 바꾸기
               router.push('/home');
             }
           } finally {

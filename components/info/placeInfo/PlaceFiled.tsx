@@ -10,6 +10,7 @@ type Props = {
   detailPlace: string;
   onPlaceChange: (v: string) => void;
   onDetailPlaceChange: (v: string) => void;
+  disabled?: boolean;
 };
 
 export function PlaceField({
@@ -17,11 +18,20 @@ export function PlaceField({
   detailPlace,
   onPlaceChange,
   onDetailPlaceChange,
+  disabled,
 }: Props) {
   const [open, setOpen] = useState(false);
 
+  const openSheet = () => {
+    if (disabled) return;
+    setOpen(true);
+  };
+
   return (
     <>
+      <input type="hidden" name="place" value={place} />
+      <input type="hidden" name="detailPlace" value={detailPlace} />
+
       <label
         htmlFor="place"
         className="mt-5 mb-2 block font-semibold text-black text-sm md:text-base lg:text-lg"

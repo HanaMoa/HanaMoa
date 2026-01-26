@@ -14,9 +14,10 @@ import { TimeWheelPicker } from './TimeWheelPicker';
 type Props = {
   value: string; // 'HH:mm'
   onChange: (v: string) => void;
+  disabled?: boolean;
 };
 
-export function TimeField({ value, onChange }: Props) {
+export function TimeField({ value, onChange, disabled }: Props) {
   const [open, setOpen] = useState(false);
 
   // 확인 버튼 눌렀을 때만 값 저장
@@ -25,6 +26,8 @@ export function TimeField({ value, onChange }: Props) {
   const [tempMinute, setTempMinute] = useState(0);
 
   const openSheet = () => {
+    if (disabled) return; // 펜딩 중 방지
+
     if (value) {
       const [h, m] = value.split(':').map(Number);
       const t = from24Hour(h);
@@ -49,6 +52,8 @@ export function TimeField({ value, onChange }: Props) {
 
   return (
     <>
+      <input type="hidden" name="time" value={value} />
+
       <label
         htmlFor="time"
         className="mt-5 mb-2 block font-semibold text-black text-sm md:text-base lg:text-lg"
