@@ -142,9 +142,9 @@ docker compose up -d
 
 ### prisma setting
 ```
-pnpm prisma generate
-pnpm prisma db push
-pnpm prisma db seed
+pnpm prisma migrate dev   //로컬 DB에 적용
+pnpm prisma generate  //Prisma Client 재생성
+pnpm prisma migrate deploy //rds반영
 ```
 
 
@@ -158,12 +158,16 @@ pnpm prisma studio
 
 ## .env
 ```
-DATABASE_URL="mysql://hanamoa:12345678@127.0.0.1:3333/hanamoadb"
-SHADOW_DATABASE_URL="mysql://root:root@127.0.0.1:3333/hanamoadb_shadow"
-
-DATABASE_HOST="127.0.0.1"
-DATABASE_PORT="3333"
-DATABASE_USER="hanamoa"
-DATABASE_PASSWORD="12345678"
+DATABASE_URL="mysql://admin:X0sMzUKy3dHxSmFr4zStvIMHHYdnO7d@hanamoa-mysql.c526asuauow1.ap-northeast-2.rds.amazonaws.com:3306/hanamoadb"
+DATABASE_HOST="hanamoa-mysql.c526asuauow1.ap-northeast-2.rds.amazonaws.com"
+DATABASE_PORT="3306"
+DATABASE_USER="admin"
+DATABASE_PASSWORD="X0sMzUKy3dHxSmFr4zStvIMHHYdnO7d"
 DATABASE_NAME="hanamoadb"
+
+AWS_REGION=ap-northeast-2
+AWS_ACCESS_KEY_ID=AKIAYS2MXSMDBGB5HVLV
+AWS_SECRET_ACCESS_KEY=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
+S3_BUCKET_NAME=hanamoa-gallery
+
 ```
