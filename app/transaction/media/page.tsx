@@ -90,11 +90,11 @@ export default function TransactionMediaPage() {
         params.set('lastAction', 'relation');
     }
     
-    // amount가 있거나 flow가 transaction이면 완료 화면으로 이동
-    if (searchParams.get('amount') || searchParams.get('flow') === 'transaction') {
+    // amount가 있거나 message가 있으면 완료 화면으로 이동
+    if (searchParams.get('amount') || searchParams.get('hasMessage') === 'true') {
         router.push(`/transaction/complete?${params.toString()}`);
     } else {
-        // amount가 없으면(첫 화면에서 건너뛰기 등) -> 홈으로 (Transaction 진입 전)
+        // 둘 다 없으면(3연속 스킵 등) -> 홈으로 (Transaction 진입 전)
         router.push('/home');
     }
   };

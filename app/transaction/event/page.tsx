@@ -18,6 +18,7 @@ export default function TransferEventPage() {
   const bank = sp.get('bank') ?? '신한은행';
   const account = sp.get('account') ?? '1234----------';
   const amount = sp.get('amount') ?? '100000';
+  const mode = sp.get('mode');
 
   const amountLabel = useMemo(() => `${formatWon(amount)}원`, [amount]);
 
@@ -29,8 +30,9 @@ export default function TransferEventPage() {
       account,
       amount,
     });
+    if (mode) p.set('mode', mode);
     return p.toString();
-  }, [toName, bank, account, amount]);
+  }, [toName, bank, account, amount, mode]);
 
   const goNext = (eventType: 'WEDDING' | 'FUNERAL' | 'MANUAL') => {
     const p = new URLSearchParams(baseParams);

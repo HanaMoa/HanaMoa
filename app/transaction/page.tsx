@@ -4,7 +4,7 @@ import { BankSelectButton } from '@/components/common/BankSelectButton';
 import { BankSelectModal } from '@/components/common/BankSelectModal';
 import NumberKeypad from '@/components/common/NumberKeypad';
 import { X } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useMemo, useState } from 'react';
 
 // ✅ 프로젝트에 이미 있을 가능성이 높은 Bank 타입/은행목록 사용
@@ -14,6 +14,8 @@ import { BANKS } from '@/lib/bank';
 
 export default function TransactionPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const isTransferMode = searchParams.get('mode') === 'transfer';
 
   const [accountNumber, setAccountNumber] = useState('');
   const [bankOpen, setBankOpen] = useState(false);
@@ -50,6 +52,10 @@ export default function TransactionPage() {
       bank: selectedBank!.name,
       account: accountNumber,
     });
+    
+    if (isTransferMode) {
+      params.set('mode', 'transfer');
+    }
 
     router.push(`/transaction/amount?${params.toString()}`);
   };
@@ -71,14 +77,16 @@ export default function TransactionPage() {
           누구에게 보낼까요?
         </h1>
 
-        {/* ✅ 오른쪽: 건너뛰기 */}
-        <button
-          type="button"
-          onClick={handleSkip}
-          className="ml-auto text-[14px] text-gray-500"
-        >
-          건너뛰기
-        </button>
+        {/* ✅ 오른쪽: 건너뛰기 (전송 모드일 때는 숨김) */}
+        {!isTransferMode && (
+          <button
+            type="button"
+            onClick={handleSkip}
+            className="ml-auto text-[14px] text-gray-500"
+          >
+            건너뛰기
+          </button>
+        )}
       </header>
 
       {/* 본문 */}
