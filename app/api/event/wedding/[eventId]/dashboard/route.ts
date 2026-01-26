@@ -41,7 +41,7 @@ const ORNAMENT_TYPES = [
   'dashboard_gift',
   'dashboard_confetti',
   'dashboard_ring',
-  'dashboard_flower',
+  'dashboard_heart',
 ] as const;
 
 type OrnamentType = (typeof ORNAMENT_TYPES)[number];

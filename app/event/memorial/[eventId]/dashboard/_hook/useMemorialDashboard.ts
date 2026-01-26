@@ -64,6 +64,7 @@ export function useMemorialDashboard(eventId: string) {
   }
 
   useEffect(() => {
+    if (!eventId) return;
     fetchDashboard(0);
   }, [eventId]);
 

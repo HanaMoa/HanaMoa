@@ -30,6 +30,7 @@ export default function WeddingOrnament({
       onClick={onClick}
       style={style}
       className={cn(
+        // 오너먼트 고정
         'group absolute z-10 flex flex-col items-center',
         'focus:outline-none',
         className,
@@ -41,13 +42,13 @@ export default function WeddingOrnament({
         className={cn(
           'transition-transform duration-150 ease-out',
           'group-hover:scale-[1.05] group-active:scale-[0.98]',
-          'cursor-pointer group-hover:drop-shadow-[0_4px_6px_rgba(0,0,0,0.45)]',
+          'cursor-pointer group-hover:drop-shadow-[0_2px_4px_rgba(0,0,0,0.25)]',
         )}
       >
         <Image
           src={`/images/event/wedding/${msg.ornamentType}.svg`}
           alt="wedding ornament"
-          width={48}
+          width={60}
           height={48}
           priority
         />
@@ -61,7 +62,7 @@ export default function WeddingOrnament({
           'font-semibold text-[13px] text-black/70',
           'transition-all duration-150 ease-out',
           'group-hover:scale-[1.03]',
-          'cursor-pointer group-hover:shadow-[0_2px_6px_rgba(0,0,0,0.45)]',
+          'cursor-pointer group-hover:shadow-[0_2px_4px_rgba(0,0,0,0.25)]',
         )}
       >
         {msg.badge}
