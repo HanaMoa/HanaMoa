@@ -24,7 +24,7 @@ export default function HomeClient({
         variant="home"
         onNotificationClick={() => {
           if (!isLoggedIn) return setLoginOpen(true);
-          router.push('/notice');
+          router.push('/notification');
         }}
       />
 
