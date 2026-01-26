@@ -6,8 +6,10 @@ import { useEffect, useRef, useState } from 'react';
 
 export function DeathForm({
   onValidChange,
+  disabled = false,
 }: {
   onValidChange?: (ok: boolean) => void;
+  disabled?: boolean;
 }) {
   const [name, setName] = useState('');
   const [photo, setPhoto] = useState<File | null>(null);
@@ -66,9 +68,11 @@ export function DeathForm({
           고인 성함
         </span>
         <input
+          name="deadName"
           className="h-[45px] rounded-lg border border-[#E6E6E6] bg-white px-4 text-sm md:text-base lg:text-lg"
           value={name}
           onChange={(e) => setName(e.target.value)}
+          disabled={disabled}
           placeholder="이름"
         />
       </label>
@@ -83,6 +87,7 @@ export function DeathForm({
           <button
             type="button"
             onClick={openFilePicker}
+            disabled={disabled}
             className="relative flex h-[90px] w-[90px] items-center justify-center overflow-hidden rounded-lg bg-black/[0.04]"
           >
             {previewUrl ? (
@@ -119,6 +124,7 @@ export function DeathForm({
           ref={fileInputRef}
           type="file"
           accept="image/*"
+          name="deadPhoto"
           className="hidden"
           onChange={onFileChange}
         />

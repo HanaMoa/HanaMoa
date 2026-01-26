@@ -62,7 +62,7 @@ export default function Page() {
     // 일단 결혼식하고 장례식만 구현
     if (selected !== 'wedding' && selected !== 'funeral') return;
 
-    router.push(`/info/${selected}/step/2`);
+    router.push(`/info/${selected}`);
   };
 
   return (
