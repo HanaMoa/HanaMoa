@@ -14,6 +14,7 @@ import { DeathForm } from '@/components/info/peopleInfo/DeathForm';
 import { PartyInfoForm } from '@/components/info/peopleInfo/PartyInfoForm';
 import { DatePlaceForm } from '@/components/info/placeInfo/DatePlaceForm';
 import { WeddingPhotoForm } from '@/components/info/weddingInfo/WeddingPhotoForm';
+import { saveDatePlace } from '@/lib/server/datePlace.action';
 import { createDeadHost } from '@/lib/server/dead.action';
 import { savePartyInfo } from '@/lib/server/party.action';
 
@@ -85,10 +86,6 @@ export default function Page() {
         return null;
     }
   })();
-
-  console.log('event', event, 'step', step);
-  console.log('config', config);
-  console.log('stepCfg', stepCfg);
 
   if (!stepCfg && step < totalSteps) notFound();
 
@@ -187,13 +184,20 @@ export default function Page() {
               }
             }
 
-            // if (step === 4) await saveDatePlace(...)
+            if (step === 4) {
+              const res = await saveDatePlace(undefined, formData);
+              if (!res.ok) {
+                alert(res.message);
+                return;
+              }
+            }
             // if (event === 'wedding' && step === 5) await saveWeddingPhoto(...)
 
             // 성공하면 다음 이동
             if (step < totalSteps) {
               router.push(`/info/${event}/step/${step + 1}?eid=${eid}`);
             } else {
+              // TODO 경로 바꾸기
               router.push('/home');
             }
           } finally {

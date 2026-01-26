@@ -5,13 +5,16 @@ import { DateField } from './DateField';
 import { PlaceField } from './PlaceFiled';
 import { TimeField } from './TimeFiled';
 
-type Props = { onValidChange?: (ok: boolean) => void };
+type Props = {
+  onValidChange?: (ok: boolean) => void;
+  disabled?: boolean;
+};
 
-export function DatePlaceForm({ onValidChange }: Props) {
+export function DatePlaceForm({ onValidChange, disabled }: Props) {
   const [date, setDate] = useState('');
-  const [time, setTime] = useState(''); // 최종 저장: 'HH:mm'
-  const [place, setPlace] = useState(''); // 선택된 주소(표시용)
-  const [detailPlace, setDetailPlace] = useState(''); // 상세주소
+  const [time, setTime] = useState(''); // 'HH:mm'
+  const [place, setPlace] = useState('');
+  const [detailPlace, setDetailPlace] = useState('');
 
   const isValid = useMemo(
     () => date.trim() && time.trim() && place.trim(),
@@ -24,13 +27,19 @@ export function DatePlaceForm({ onValidChange }: Props) {
 
   return (
     <section className="rounded-lg px-4 py-4">
-      <DateField value={date} onChange={setDate} />
-      <TimeField value={time} onChange={setTime} />
+      <input type="hidden" name="date" value={date} />
+      <input type="hidden" name="time" value={time} />
+      <input type="hidden" name="place" value={place} />
+      <input type="hidden" name="detailPlace" value={detailPlace} />
+
+      <DateField value={date} onChange={setDate} disabled={disabled} />
+      <TimeField value={time} onChange={setTime} disabled={disabled} />
       <PlaceField
         place={place}
         detailPlace={detailPlace}
         onPlaceChange={setPlace}
         onDetailPlaceChange={setDetailPlace}
+        disabled={disabled}
       />
     </section>
   );
