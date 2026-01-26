@@ -14,8 +14,7 @@ export async function createEvent(event: 'funeral' | 'wedding') {
   const ev = await prisma.event.create({
     data: {
       userId,
-      // TODO: 스키마에 맞게 기본값 세팅
-      // category: event === 'funeral' ? 'FUNERAL' : 'WEDDING',
+      category: event === 'funeral' ? 'FUNERAL' : 'WEDDING',
     },
     select: { id: true },
   });
