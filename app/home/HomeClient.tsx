@@ -28,13 +28,7 @@ export default function HomeClient({ isLoggedIn, userName }: Props) {
         <HomeBanner name={userName} />
 
         <div className="px-6 py-3 md:px-7 lg:px-8">
-          <EventCard
-            count={0}
-            onClick={() => {
-              if (!isLoggedIn) return setLoginOpen(true);
-              router.push('/event');
-            }}
-          />
+          <EventCard count={0} />
         </div>
 
         <HomeMenuList
