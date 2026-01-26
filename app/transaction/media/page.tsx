@@ -72,12 +72,31 @@ export default function TransactionMediaPage() {
   const handleSubmit = () => {
     // alert('사진과 영상이 전송되었습니다.');
     const params = new URLSearchParams(searchParams.toString());
-    router.push(`/transaction/complete?${params.toString()}`);
+    params.set('lastAction', 'media');
+    
+    // amount가 있거나 flow가 transaction이면 완료 화면으로 이동
+    if (searchParams.get('amount') || searchParams.get('flow') === 'transaction') {
+        router.push(`/transaction/complete?${params.toString()}`);
+    } else {
+        router.push('/home');
+    }
   };
 
   const handleSkip = () => {
     const params = new URLSearchParams(searchParams.toString());
-    router.push(`/transaction/complete?${params.toString()}`);
+    if (searchParams.get('hasMessage') === 'true') {
+        params.set('lastAction', 'message');
+    } else {
+        params.set('lastAction', 'relation');
+    }
+    
+    // amount가 있거나 flow가 transaction이면 완료 화면으로 이동
+    if (searchParams.get('amount') || searchParams.get('flow') === 'transaction') {
+        router.push(`/transaction/complete?${params.toString()}`);
+    } else {
+        // amount가 없으면(첫 화면에서 건너뛰기 등) -> 홈으로 (Transaction 진입 전)
+        router.push('/home');
+    }
   };
 
   return (

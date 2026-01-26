@@ -67,7 +67,8 @@ export default function TransferRelationPage() {
     // baseParams 안에 eventType이 없다면 아래도 필요:
     // p.set('eventType', eventType);
 
-    router.push(`/transaction/complete?${p.toString()}`);
+    p.set('flow', 'transaction');
+    router.push(`/message?${p.toString()}`);
   };
 
   return (
