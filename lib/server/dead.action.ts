@@ -10,7 +10,7 @@ const dead = z.object({
 });
 
 // async function uploadImageToStorage(file: File): Promise<string> {
-// TODO: S3/Cloudinary/Blob 업로드 후 URL 반환
+// TODO: S3 업로드 후 URL 반환
 //   throw new Error('uploadImageToStorage 구현 필요');
 // }
 
@@ -70,6 +70,15 @@ export async function createDeadHost(_: unknown, formData: FormData) {
       },
     });
   }
+
+  const cleanName = deadName.trim();
+
+  await prisma.event.update({
+    where: { id: eventId },
+    data: {
+      message: `${cleanName}님 조문`,
+    },
+  });
 
   return { ok: true } as const;
 }
