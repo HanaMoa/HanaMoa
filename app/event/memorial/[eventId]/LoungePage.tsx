@@ -95,18 +95,12 @@ export default function MemorialLoungePage({ event }: Props) {
           <div className="pointer-events-auto absolute top-3 right-0 left-0 z-20 px-4">
             <div className="flex items-center gap-3">
               {/* 계좌 리스트 */}
-              <AccountDropdown
-                accounts={accounts}
-                triggerText="계좌 확인"
-                className="bg-white/80"
-              />
+              <AccountDropdown accounts={accounts} className="bg-white/80" />
 
               {/* 발인 날짜 */}
-              <div className="flex h-9 flex-1 items-center gap-2 rounded-xl bg-black/15 px-3 text-white backdrop-blur-sm md:px-4 lg:px-5">
-                <span className="shrink-0 font-semibold text-[13px] md:text-[13px] lg:text-[14px]">
-                  발인
-                </span>
-                <span className="truncate text-[13px] text-white/90 md:text-[13px] lg:text-[14px]">
+              <div className="flex h-9.5 flex-1 items-center gap-2 rounded-xl bg-black/15 px-3 text-white backdrop-blur-sm md:px-4 lg:px-5">
+                <span className="shrink-0 font-semibold text-[15px]">발인</span>
+                <span className="truncate text-[15px] text-white/90 md:text-[14px] lg:text-[15px]">
                   {dateText}
                 </span>
               </div>
@@ -215,7 +209,7 @@ export default function MemorialLoungePage({ event }: Props) {
                 onClick={() =>
                   router.push(`/event/memorial/${event.eventId}/dashboard`)
                 }
-                className="h-[54px] w-[360px] rounded-[14px] bg-[#232325] font-semibold text-[16px] text-white hover:bg-[#EF5A6E]/90 active:bg-[#EF5A6E]/80 md:w-[360px] md:text-[16px] lg:w-[560px] lg:text-[18px]"
+                className="h-[54px] w-[400px] rounded-[14px] bg-[#232325] font-semibold text-[16px] text-white hover:bg-[#EF5A6E]/90 active:bg-[#EF5A6E]/80 md:w-[400px] md:text-[16px] lg:w-[530px] lg:text-[18px]"
               >
                 조의금 · 추모 메시지 보내기
               </SingleButton>

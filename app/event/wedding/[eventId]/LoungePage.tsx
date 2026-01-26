@@ -86,11 +86,7 @@ export default function WeddingLoungePage({ event }: Props) {
           <div className="absolute top-3 right-0 left-0 z-20 px-4">
             <div className="flex flex-col gap-3">
               <div className="flex items-center gap-3">
-                <AccountDropdown
-                  accounts={accounts}
-                  triggerText="계좌 확인"
-                  className="bg-white"
-                />
+                <AccountDropdown accounts={accounts} className="bg-white" />
               </div>
 
               {/* 결혼식 진행 중일 때만 */}
@@ -196,7 +192,7 @@ export default function WeddingLoungePage({ event }: Props) {
                 onClick={() =>
                   router.push(`/event/wedding/${event.eventId}/dashboard`)
                 }
-                className="h-[54px] w-[360px] rounded-[14px] bg-[#EF5A6E] font-semibold text-[16px] text-white hover:bg-[#EF5A6E]/90 active:bg-[#EF5A6E]/80 md:w-[360px] md:text-[16px] lg:w-[560px] lg:text-[18px]"
+                className="h-[54px] w-[400px] rounded-[14px] bg-[#EF5A6E] font-semibold text-[16px] text-white hover:bg-[#EF5A6E]/90 active:bg-[#EF5A6E]/80 md:w-[400px] md:text-[16px] lg:w-[530px] lg:text-[18px]"
               >
                 축의금 · 축하 메시지 보내기
               </SingleButton>

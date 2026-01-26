@@ -1,6 +1,7 @@
 'use client';
 
 import { ChevronDown } from 'lucide-react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -18,7 +19,6 @@ type AccountItem = {
 type Props = {
   accounts: AccountItem[];
   onTransfer?: (accountId: string) => void; // 송금 버튼 클릭
-  triggerText?: string; // 트리거 text
   className?: string; // 폭/여백 등 custom
   disabled?: boolean;
 };
@@ -26,16 +26,19 @@ type Props = {
 export default function AccountDropdown({
   accounts,
   onTransfer,
-  triggerText = '계좌 선택',
   className = '',
   disabled = false,
 }: Props) {
+  const [open, setOpen] = useState(false);
+  const isDisabled = disabled || accounts.length === 0;
+
   return (
-    <DropdownMenu>
+    <DropdownMenu open={open} onOpenChange={setOpen}>
       {/* Trigger */}
-      <DropdownMenuTrigger asChild disabled={disabled || accounts.length === 0}>
+      <DropdownMenuTrigger asChild disabled={isDisabled}>
         <button
           type="button"
+          aria-label="계좌 선택"
           className={[
             'inline-flex items-center gap-2',
             'h-9 rounded-xl px-3',
@@ -45,9 +48,10 @@ export default function AccountDropdown({
             'disabled:cursor-not-allowed disabled:opacity-50',
             className,
           ].join(' ')}
-          aria-label="계좌 선택"
         >
-          <span className="font-semibold text-[13px]">{triggerText}</span>
+          <span className="font-semibold text-[15px] md:text-[15px] lg:text-[15px]">
+            계좌 선택
+          </span>
           <ChevronDown className="h-4 w-4 text-[#7A7A7A]" />
         </button>
       </DropdownMenuTrigger>
