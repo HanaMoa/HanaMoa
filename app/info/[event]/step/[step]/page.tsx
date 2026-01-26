@@ -17,6 +17,7 @@ import { WeddingPhotoForm } from '@/components/info/weddingInfo/WeddingPhotoForm
 import { saveDatePlace } from '@/lib/server/datePlace.action';
 import { createDeadHost } from '@/lib/server/dead.action';
 import { savePartyInfo } from '@/lib/server/party.action';
+import { saveWeddingPhoto } from '@/lib/server/weddingMsg.action';
 
 type EventType = 'funeral' | 'wedding';
 
@@ -191,7 +192,14 @@ export default function Page() {
                 return;
               }
             }
-            // if (event === 'wedding' && step === 5) await saveWeddingPhoto(...)
+
+            if (event === 'wedding' && step === 5) {
+              const res = await saveWeddingPhoto(undefined, formData);
+              if (!res.ok) {
+                alert(res.message);
+                return;
+              }
+            }
 
             // 성공하면 다음 이동
             if (step < totalSteps) {
