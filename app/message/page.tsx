@@ -1,9 +1,11 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 export default function MessageEntryPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const isTransactionFlow = searchParams.get('flow') === 'transaction';
 
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-[440px] flex-col bg-[#F6F7F9] px-5 pt-8 pb-24 lg:max-w-[530px]">
@@ -17,13 +19,26 @@ export default function MessageEntryPage() {
           ← 뒤로
         </button>
 
-        <button
-          type="button"
-          className="cursor-pointer text-slate-500 text-sm"
-          onClick={() => router.back()}
-        >
-          취소
-        </button>
+        {isTransactionFlow ? (
+          <button
+            type="button"
+            className="cursor-pointer text-slate-500 text-sm"
+            onClick={() => {
+                const params = new URLSearchParams(searchParams.toString());
+                router.push(`/transaction/media?${params.toString()}`);
+            }}
+          >
+            건너뛰기
+          </button>
+        ) : (
+          <button
+            type="button"
+            className="cursor-pointer text-slate-500 text-sm"
+            onClick={() => router.back()}
+          >
+            취소
+          </button>
+        )}
       </div>
 
       {/* Title */}
@@ -46,7 +61,10 @@ export default function MessageEntryPage() {
             <button
               type="button"
               className="w-full cursor-pointer rounded-3xl bg-white px-7 py-8 text-left shadow-sm transition hover:bg-[#EAF8F4] hover:shadow-md"
-              onClick={() => router.push('/message/generate')}
+              onClick={() => {
+                const params = new URLSearchParams(searchParams.toString());
+                router.push(`/message/generate?${params.toString()}`);
+              }}
             >
               <div className="flex items-center justify-between gap-6">
                 <div>
@@ -68,7 +86,10 @@ export default function MessageEntryPage() {
             <button
               type="button"
               className="w-full cursor-pointer rounded-3xl bg-white px-7 py-8 text-left shadow-sm transition hover:bg-[#EAF8F4] hover:shadow-md"
-              onClick={() => router.push('/message/refine')}
+              onClick={() => {
+                const params = new URLSearchParams(searchParams.toString());
+                router.push(`/message/refine?${params.toString()}`);
+              }}
             >
               <div className="flex items-center justify-between gap-6">
                 <div>
@@ -90,7 +111,10 @@ export default function MessageEntryPage() {
             <button
               type="button"
               className="w-full cursor-pointer rounded-3xl bg-white px-7 py-8 text-left shadow-sm transition hover:bg-[#EAF8F4] hover:shadow-md"
-              onClick={() => router.push('/message/manual')}
+              onClick={() => {
+                const params = new URLSearchParams(searchParams.toString());
+                router.push(`/message/manual?${params.toString()}`);
+              }}
             >
               <div className="flex items-center justify-between gap-6">
                 <div>

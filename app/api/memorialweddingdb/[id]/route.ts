@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import type { EventCategory } from '@/lib/generated/prisma/client/client';
+import type { events_category as EventCategory } from '@/lib/generated/prisma/client/client';
 import { prisma } from '@/lib/prisma';
 
 function toJSON<T>(data: T) {
@@ -31,9 +31,15 @@ export async function GET(
       },
       include: {
         event: {
-          select: { id: true, date: true, location: true, message: true },
+          select: {
+            id: true,
+            date: true,
+            category: true,
+            message: true,
+            location: true,
+          },
         },
-        eventHost: { select: { id: true, name: true } },
+        eventHost: { select: { id: true, name: true, role: true } },
       },
     });
 

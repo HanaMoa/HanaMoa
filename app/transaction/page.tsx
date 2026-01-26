@@ -1,11 +1,11 @@
 'use client';
 
-import { X } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { useMemo, useState } from 'react';
 import { BankSelectButton } from '@/components/common/BankSelectButton';
 import { BankSelectModal } from '@/components/common/BankSelectModal';
 import NumberKeypad from '@/components/common/NumberKeypad';
+import { X } from 'lucide-react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useMemo, useState } from 'react';
 
 // ✅ 프로젝트에 이미 있을 가능성이 높은 Bank 타입/은행목록 사용
 // BankSelectModal/Button가 동일 타입을 쓰고 있음:contentReference[oaicite:3]{index=3}:contentReference[oaicite:4]{index=4}
@@ -14,6 +14,8 @@ import { BANKS } from '@/lib/bank';
 
 export default function TransactionPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const isTransferMode = searchParams.get('mode') === 'transfer';
 
   const [accountNumber, setAccountNumber] = useState('');
   const [bankOpen, setBankOpen] = useState(false);
@@ -33,8 +35,8 @@ export default function TransactionPage() {
 
   // 스킵버튼 function
   const handleSkip = () => {
-    // ✅ 건너뛰기 시 어디로 갈지 정하면 됨 (예시: 홈)
-    router.push('/home');
+    // ✅ 건너뛰기 시 메시지 페이지로 이동 (flow=transaction)
+    router.push('/message?flow=transaction');
   };
 
   const canSubmit = useMemo(() => {
@@ -50,6 +52,10 @@ export default function TransactionPage() {
       bank: selectedBank!.name,
       account: accountNumber,
     });
+    
+    if (isTransferMode) {
+      params.set('mode', 'transfer');
+    }
 
     router.push(`/transaction/amount?${params.toString()}`);
   };
@@ -71,14 +77,16 @@ export default function TransactionPage() {
           누구에게 보낼까요?
         </h1>
 
-        {/* ✅ 오른쪽: 건너뛰기 */}
-        <button
-          type="button"
-          onClick={handleSkip}
-          className="ml-auto text-[14px] text-gray-500"
-        >
-          건너뛰기
-        </button>
+        {/* ✅ 오른쪽: 건너뛰기 (전송 모드일 때는 숨김) */}
+        {!isTransferMode && (
+          <button
+            type="button"
+            onClick={handleSkip}
+            className="ml-auto text-[14px] text-gray-500"
+          >
+            건너뛰기
+          </button>
+        )}
       </header>
 
       {/* 본문 */}

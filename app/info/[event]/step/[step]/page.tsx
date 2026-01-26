@@ -1,7 +1,12 @@
 'use client';
 
-import { notFound, useParams, useRouter } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
+import {
+  notFound,
+  useParams,
+  useRouter,
+  useSearchParams,
+} from 'next/navigation';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { InfoLayout } from '@/components/info/InfoLayout';
 import { InfoTitle } from '@/components/info/InfoTitle';
 import { infoConfig } from '@/components/info/infoConfig';
@@ -9,6 +14,7 @@ import { DeathForm } from '@/components/info/peopleInfo/DeathForm';
 import { PartyInfoForm } from '@/components/info/peopleInfo/PartyInfoForm';
 import { DatePlaceForm } from '@/components/info/placeInfo/DatePlaceForm';
 import { WeddingPhotoForm } from '@/components/info/weddingInfo/WeddingPhotoForm';
+import { createDeadHost } from '@/lib/server/dead.action';
 
 type EventType = 'funeral' | 'wedding';
 
@@ -23,7 +29,16 @@ type StepCfg = {
 export default function Page() {
   const router = useRouter();
   const params = useParams<{ event: string; step: string }>();
+
+  const sp = useSearchParams();
+  const eid = sp.get('eid');
+  if (!eid) notFound();
+  const eventId = BigInt(eid);
+
   const [canNext, setCanNext] = useState(false);
+
+  const formRef = useRef<HTMLFormElement | null>(null);
+  const [isPending, setIsPending] = useState(false);
 
   // params 파싱
   const eventParam = params?.event;
@@ -44,8 +59,9 @@ export default function Page() {
     return Array.from({ length: totalSteps - 1 }, (_, i) => i + 2);
   }, [totalSteps]);
 
-  // 잘못된 라우트면 notFound()
-  if (!event) notFound();
+  if (!event)
+    // 잘못된 라우트면 notFound()
+    notFound();
   if (!Number.isFinite(step) || !validSteps.includes(step)) notFound();
 
   useEffect(() => {
@@ -69,25 +85,26 @@ export default function Page() {
     }
   })();
 
+  console.log('event', event, 'step', step);
+  console.log('config', config);
+  console.log('stepCfg', stepCfg);
+
   if (!stepCfg && step < totalSteps) notFound();
 
   const onBack = () => {
     if (step === 2) router.push('/info');
-    else router.push(`/info/${event}/step/${step - 1}`);
+    else router.push(`/info/${event}/step/${step - 1}?eid=${eid}`);
   };
 
   const onNext = () => {
-    const allowNext = canNext;
-    if (!allowNext) return;
-
-    if (step < totalSteps) router.push(`/info/${event}/step/${step + 1}`);
-    else router.push('/home');
+    if (!canNext || isPending) return;
+    formRef.current?.requestSubmit(); // 저장 트리거
   };
 
   const content = (() => {
     // 장례 step2: 고인 정보
     if (event === 'funeral' && step === 2) {
-      return <DeathForm onValidChange={setCanNext} />;
+      return <DeathForm onValidChange={setCanNext} disabled={isPending} />;
     }
 
     // 장례 step3 & 결혼 step2/3: PartyInfoForm 재사용
@@ -113,8 +130,6 @@ export default function Page() {
     }
   })();
 
-  const nextDisabled = !canNext;
-
   return (
     <InfoLayout
       headerTitle={config.headerTitle}
@@ -124,7 +139,7 @@ export default function Page() {
       onBack={onBack}
       onNext={onNext}
       nextText={step === totalSteps ? '완료' : '다음'}
-      nextDisabled={nextDisabled}
+      nextDisabled={!canNext || isPending}
     >
       {stepCfg?.title || stepCfg?.subtitle ? (
         <div className="mb-4">
@@ -135,7 +150,43 @@ export default function Page() {
         </div>
       ) : null}
 
-      {content}
+      <form
+        ref={formRef}
+        action={async (formData) => {
+          if (isPending) return;
+          setIsPending(true);
+
+          try {
+            // eid 주입
+            formData.set('eid', eventId.toString());
+
+            // step별 저장 분기
+            if (event === 'funeral' && step === 2) {
+              const res = await createDeadHost(undefined, formData);
+              if (!res.ok) {
+                alert(res.message);
+                return; // 실패면 다음으로 못감
+              }
+            }
+
+            // TODO: 아래는 나중에 연결 (PartyInfoForm, DatePlaceForm, WeddingPhotoForm)
+            // if (event === 'funeral' && step === 3) await saveParty(...)
+            // if (step === 4) await saveDatePlace(...)
+            // if (event === 'wedding' && step === 5) await saveWeddingPhoto(...)
+
+            // 성공하면 다음 이동
+            if (step < totalSteps) {
+              router.push(`/info/${event}/step/${step + 1}?eid=${eid}`);
+            } else {
+              router.push('/home');
+            }
+          } finally {
+            setIsPending(false);
+          }
+        }}
+      >
+        {content}
+      </form>
     </InfoLayout>
   );
 }
