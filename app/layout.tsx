@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import './globals.css';
+import Providers from './providers';
 
 const pretendard = localFont({
   src: './fonts/pretendard/PretendardVariable.woff2',
@@ -22,10 +23,12 @@ export default function RootLayout({
   return (
     <html lang="ko" className={pretendard.variable}>
       <body className="bg-[#F2F2F2]">
-        {/* 앱 프레임: 화면을 넘지 않게 고정 */}
-        <div className="mx-auto flex min-h-dvh w-full max-w-[480px] flex-col bg-[#F6F7F9] md:max-w-[480px] lg:max-w-[600px]">
-          {children}
-        </div>
+        <Providers>
+          {/* 앱 프레임: 화면을 넘지 않게 고정 */}
+          <div className="mx-auto flex min-h-dvh w-full max-w-[480px] flex-col bg-[#F6F7F9] md:max-w-[480px] lg:max-w-[600px]">
+            {children}
+          </div>
+        </Providers>
       </body>
     </html>
   );
