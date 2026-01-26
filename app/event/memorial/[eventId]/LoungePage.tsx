@@ -19,7 +19,7 @@ type Props = {
   event: {
     eventId: string;
     date: Date;
-    location: string;
+    location: string | null;
     message: string | null;
     hosts: Array<{
       id: bigint | number | string;
@@ -70,7 +70,7 @@ export default function MemorialLoungePage({ event }: Props) {
   }, [event.date]);
 
   return (
-    <div className="flex min-h-dvh w-full flex-col">
+    <div className="flex min-h-screen w-full flex-col">
       {/* 헤더 */}
       <MainHeader
         title="하나모아"
@@ -80,18 +80,19 @@ export default function MemorialLoungePage({ event }: Props) {
       />
 
       {/* 라운지 */}
-      <main className="relative mx-auto w-full">
-        {/* Background */}
-        <Image
-          src={BG_SRC}
-          alt="라운지 배경"
-          fill
-          priority
-          className="h-auto w-full"
-        />
-        <div className="relative z-10 w-full">
+      <main className="w-full flex-1">
+        <div className="relative min-h-[calc(100vh-56px)] w-full">
+          {/* Background */}
+          <Image
+            src={BG_SRC}
+            alt="라운지 배경"
+            fill
+            priority
+            className="h-auto w-full"
+          />
+
           {/* 상단 UI - 계좌/발인 */}
-          <div className="pointer-events-auto absolute top-3 right-0 left-0 px-4 sm:top-4 md:top-5">
+          <div className="pointer-events-auto absolute top-3 right-0 left-0 z-20 px-4">
             <div className="flex items-center gap-3">
               {/* 계좌 리스트 */}
               <AccountDropdown
@@ -101,11 +102,11 @@ export default function MemorialLoungePage({ event }: Props) {
               />
 
               {/* 발인 날짜 */}
-              <div className="flex h-9 flex-1 items-center gap-2 rounded-xl bg-black/15 px-3 text-white backdrop-blur-sm sm:px-4 md:px-5">
-                <span className="shrink-0 font-semibold text-[13px] sm:text-[14px] md:text-[15px]">
+              <div className="flex h-9 flex-1 items-center gap-2 rounded-xl bg-black/15 px-3 text-white backdrop-blur-sm md:px-4 lg:px-5">
+                <span className="shrink-0 font-semibold text-[13px] md:text-[13px] lg:text-[14px]">
                   발인
                 </span>
-                <span className="truncate text-[13px] text-white/90 sm:text-[14px] md:text-[15px]">
+                <span className="truncate text-[13px] text-white/90 md:text-[13px] lg:text-[14px]">
                   {dateText}
                 </span>
               </div>
@@ -113,64 +114,91 @@ export default function MemorialLoungePage({ event }: Props) {
           </div>
 
           {/* 온라인 조문 */}
-          <div className="-translate-x-1/2 pointer-events-none absolute top-[34%] left-1/2 w-[66%] sm:top-[33%] sm:w-[70%] md:top-[31%] md:w-[72%] lg:top-[30%] lg:w-[74%]">
-            <Image
-              src={IC_LIVE_SRC}
-              alt=""
-              width={1400}
-              height={900}
-              className="h-auto w-full"
-            />
-          </div>
-          <div className="-translate-x-1/2 -translate-y-[110%] sm:-translate-y-[115%] md:-translate-y-[120%] lg:-translate-y-[125%] absolute top-[34%] left-1/2">
-            <SpeechBubble
-              title="온라인 조문"
-              desc="조문 참여하기"
-              href={`/event/memorial/${event.eventId}/online`}
-              className="w-[150px] sm:w-[170px] md:w-[190px] lg:w-[210px]"
-            />
-          </div>
+          <button
+            type="button"
+            onClick={() =>
+              router.push(`/event/memorial/${event.eventId}/online`)
+            }
+            aria-label="온라인 조문으로 이동"
+            className="-translate-x-1/2 absolute top-[30%] left-1/2 z-10 w-[450px] cursor-pointer border-0 bg-transparent p-0 md:top-[30%] md:w-[450px] lg:top-[27%] lg:w-[480px]"
+          >
+            <div className="-translate-x-1/2 pointer-events-none absolute bottom-full left-1/2 z-20">
+              <SpeechBubble
+                title="온라인 조문"
+                desc="조문 참여하기"
+                href={`/event/memorial/${event.eventId}/online`}
+                className="w-[150px] md:w-[150px] lg:w-[180px]"
+              />
+            </div>
+            <div className="pointer-events-none">
+              <Image
+                src={IC_LIVE_SRC}
+                alt="온라인 조문 오브젝트"
+                width={1400}
+                height={900}
+                className="h-auto w-full"
+              />
+            </div>
+          </button>
 
           {/* 추억관 */}
-          <div className="pointer-events-none absolute top-[50%] left-[-2%] w-[54%] sm:top-[50%] sm:left-[-2%] sm:w-[56%] md:top-[49%] md:left-[-3%] md:w-[58%] lg:top-[48%] lg:left-[-4%] lg:w-[60%]">
-            <Image
-              src={IC_GALLERY_SRC}
-              alt=""
-              width={900}
-              height={900}
-              className="h-auto w-full"
-            />
-          </div>
-          <div className="absolute top-[43%] left-[8%] sm:top-[42%] sm:left-[7%] md:top-[41%] md:left-[6%]">
-            <SpeechBubble
-              title="추억관"
-              desc={'사진과 영상으로\n기억을 남기기'}
-              href={`/event/memorial/${event.eventId}/gallery`}
-              className="w-[175px] sm:w-[195px] md:w-[215px] lg:w-[235px]"
-            />
-          </div>
+          <button
+            type="button"
+            onClick={() =>
+              router.push(`/event/memorial/${event.eventId}/gallery`)
+            }
+            aria-label="추억관으로 이동"
+            className="absolute top-[50%] left-0 z-10 w-[260px] cursor-pointer border-0 bg-transparent p-0 md:top-[50%] md:w-[260px] lg:top-[47%] lg:w-[300px]"
+          >
+            <div className="pointer-events-none absolute bottom-full left-[3%] z-20">
+              <SpeechBubble
+                title="추억관"
+                desc={'사진과 영상으로\n기억을 남기기'}
+                href={`/event/memorial/${event.eventId}/gallery`}
+                className="w-[175px] md:w-[175px] lg:w-[205px]"
+              />
+            </div>
+            <div className="pointer-events-none">
+              <Image
+                src={IC_GALLERY_SRC}
+                alt="추억관 오브젝트"
+                width={900}
+                height={900}
+                className="h-auto w-full"
+              />
+            </div>
+          </button>
 
-          {/* 추모 메시지 */}
-          <div className="pointer-events-none absolute top-[51%] right-[-6%] w-[58%] sm:top-[51%] sm:right-[-6%] sm:w-[60%] md:top-[50%] md:right-[-7%] md:w-[62%] lg:top-[49%] lg:right-[-8%] lg:w-[64%]">
-            <Image
-              src={IC_MESSAGE_SRC}
-              alt=""
-              width={900}
-              height={900}
-              className="h-auto w-full"
-            />
-          </div>
-          <div className="absolute top-[44%] right-[6%] sm:top-[43%] sm:right-[5%] md:top-[42%] md:right-[4%]">
-            <SpeechBubble
-              title="추모 메시지 보내기"
-              desc="조의금과 함께 마음을 전하세요"
-              href={`/event/memorial/${event.eventId}/message`}
-              className="w-[205px] sm:w-[225px] md:w-[245px] lg:w-[265px]"
-            />
-          </div>
+          {/* 추모메시지 */}
+          <button
+            type="button"
+            onClick={() =>
+              router.push(`/event/memorial/${event.eventId}/dashboard`)
+            }
+            aria-label="추모 메시지로 이동"
+            className="absolute top-[55%] right-0 z-10 w-[260px] cursor-pointer border-0 bg-transparent p-0 md:top-[55%] md:w-[260px] lg:top-[52%] lg:w-[300px]"
+          >
+            <div className="pointer-events-none absolute right-[1%] bottom-full z-20">
+              <SpeechBubble
+                title="추모 메시지 보내기"
+                desc="조의금과 함께 마음을 전하세요"
+                href={`/event/memorial/${event.eventId}/dashboard`}
+                className="w-[205px] md:w-[205px] lg:w-[235px]"
+              />
+            </div>
+            <div className="pointer-events-none">
+              <Image
+                src={IC_MESSAGE_SRC}
+                alt="추모 메시지 오브젝트"
+                width={900}
+                height={900}
+                className="h-auto w-full"
+              />
+            </div>
+          </button>
 
           {/* 꽃 */}
-          {/* <div className="-translate-x-1/2 pointer-events-none absolute bottom-[12%] left-1/2 w-[92%] sm:bottom-[11%] sm:w-[92%] md:bottom-[10%] md:w-[94%] lg:bottom-[9%] lg:w-[96%]">
+          <div className="-translate-x-1/2 pointer-events-none absolute top-[65%] left-1/2 z-10 w-[400px] md:top-[65%] md:w-[400px] lg:bottom-[62%] lg:w-[440px]">
             <Image
               src={IC_FLOWER_SRC}
               alt=""
@@ -178,25 +206,16 @@ export default function MemorialLoungePage({ event }: Props) {
               height={800}
               className="h-auto w-full"
             />
-          </div> */}
+          </div>
 
           {/* 하단 버튼 - 플로팅 */}
-          <div
-            className={
-              '-translate-x-1/2 pointer-events-none fixed bottom-4 left-1/2 z-30 w-full'
-            }
-          >
-            <div className="pointer-events-auto flex justify-center">
+          <div className="pointer-events-none fixed inset-x-0 bottom-0 z-30 pb-[calc(env(safe-area-inset-bottom)+16px)]">
+            <div className="pointer-events-auto mx-auto flex w-full justify-center px-4">
               <SingleButton
                 onClick={() =>
-                  router.push(`/event/memorial/${event.eventId}/message`)
+                  router.push(`/event/memorial/${event.eventId}/dashboard`)
                 }
-                className={[
-                  'bg-[#232325] text-white hover:bg-[#232325]/90 active:bg-[#232325]/80',
-                  'h-[55px] sm:w-[350px] md:w-[450px] lg:w-[550px]',
-                  'rounded-[10px] sm:rounded-[12px]',
-                  'text-[14px] sm:text-[15px] md:text-[16px] lg:text-[17px]',
-                ].join(' ')}
+                className="h-[54px] w-[360px] rounded-[14px] bg-[#232325] font-semibold text-[16px] text-white hover:bg-[#EF5A6E]/90 active:bg-[#EF5A6E]/80 md:w-[360px] md:text-[16px] lg:w-[560px] lg:text-[18px]"
               >
                 조의금 · 추모 메시지 보내기
               </SingleButton>

@@ -14,8 +14,8 @@ export default async function MemorialLounge({
   const { eventId } = await params;
   if (!eventId) notFound();
 
-  const event = await prisma.event.findUnique({
-    where: { id: BigInt(eventId) },
+  const event = await prisma.event.findFirst({
+    where: { id: BigInt(eventId), category: 'FUNERAL' },
     select: {
       id: true,
       date: true,
@@ -23,10 +23,23 @@ export default async function MemorialLounge({
       message: true,
 
       eventHosts: {
+        where: {
+          name: { not: '' },
+          accounts: {
+            some: {
+              bank: { not: '' },
+              account: { not: '' },
+            },
+          },
+        },
         select: {
           id: true,
           name: true,
           accounts: {
+            where: {
+              bank: { not: '' },
+              account: { not: '' },
+            },
             select: {
               id: true,
               bank: true,
@@ -38,6 +51,7 @@ export default async function MemorialLounge({
     },
   });
   if (!event) notFound();
+  if (!event.eventHosts || event.eventHosts.length === 0) notFound();
 
   return (
     <MemorialLoungePage
