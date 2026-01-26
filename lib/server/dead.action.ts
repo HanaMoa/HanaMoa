@@ -3,10 +3,15 @@
 import { z } from 'zod';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { KOR_ENG_NAME_REGEX } from '../regExp';
 
 const dead = z.object({
   eid: z.coerce.string().min(1),
-  deadName: z.string().min(1, '고인 성함을 입력해주세요.').max(30),
+  deadName: z
+    .string()
+    .min(1, '고인 성함을 입력해주세요.')
+    .max(30)
+    .regex(KOR_ENG_NAME_REGEX, '공백 없이 한글 또는 영문만 입력해주세요.'),
 });
 
 // async function uploadImageToStorage(file: File): Promise<string> {

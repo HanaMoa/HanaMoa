@@ -6,6 +6,7 @@ import type { DropdownItem } from '@/components/common/Dropdown';
 import type { Bank } from '@/lib/bank';
 import { BANKS } from '@/lib/bank';
 import type { eventhost_role } from '@/lib/generated/prisma/client/enums';
+import { validateKorEngNameNoSpace, validateOnlyNumber } from '@/lib/regExp';
 import {
   FUNERAL_RELATIONS,
   WEDDING_BRIDE_SIDE_EXTRA_ROLE,
@@ -30,6 +31,7 @@ export function PartyInfoForm({
   onValidChange,
 }: Props) {
   const [repName, setRepName] = useState('');
+  const [repPhone, setRepPhone] = useState('');
   const [repAccount, setRepAccount] = useState('');
 
   const [bank, setBank] = useState<Bank | null>(null);
@@ -37,6 +39,10 @@ export function PartyInfoForm({
 
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [extraMembers, setExtraMembers] = useState<PartyMemberPayload[]>([]);
+
+  const [repNameError, setRepNameError] = useState<string | null>(null);
+  const [repAccountError, setRepAccountError] = useState<string | null>(null);
+  const [isComposing, setIsComposing] = useState(false);
 
   const label =
     repLabel ??
@@ -58,7 +64,11 @@ export function PartyInfoForm({
     extraRoleItems.find((i) => i.value === value)?.label ?? value;
 
   const isValid = useMemo(() => {
-    return Boolean(repName.trim() && repAccount.trim() && bank);
+    return (
+      validateKorEngNameNoSpace(repName) === null &&
+      validateOnlyNumber(repAccount) === null &&
+      Boolean(bank)
+    );
   }, [repName, repAccount, bank]);
 
   useEffect(() => {
@@ -113,10 +123,39 @@ export function PartyInfoForm({
         </span>
         <input
           name="repName"
-          className="h-[45px] rounded-lg border border-[#E6E6E6] bg-white px-4 text-sm md:text-base lg:text-lg"
+          className={[
+            'h-[45px] rounded-lg border bg-white px-4 text-sm md:text-base lg:text-lg',
+            repNameError ? 'border-red-500' : 'border-[#E6E6E6]',
+          ].join(' ')}
           value={repName}
-          onChange={(e) => setRepName(e.target.value)}
+          onChange={(e) => {
+            const v = e.target.value;
+            setRepName(v);
+            if (!isComposing) {
+              setRepNameError(validateKorEngNameNoSpace(v));
+            }
+          }}
           placeholder="이름"
+        />
+
+        {repNameError && (
+          <p className="mt-1 text-red-500 text-xs">{repNameError}</p>
+        )}
+      </label>
+
+      <label className="flex flex-col gap-1">
+        <span className="font-semibold text-black text-sm md:text-base lg:text-lg">
+          {label} 전화번호
+        </span>
+        <input
+          className="h-[45px] rounded-lg border border-[#E6E6E6] bg-white px-4 text-sm md:text-base lg:text-lg"
+          value={repPhone}
+          onChange={(e) => {
+            const onlyNum = e.target.value.replace(/[^0-9]/g, '');
+            setRepPhone(onlyNum);
+          }}
+          placeholder="01012345678"
+          inputMode="tel"
         />
       </label>
 
@@ -140,13 +179,24 @@ export function PartyInfoForm({
 
           <input
             name="repAccount"
-            className="h-[45px] flex-1 rounded-lg border border-[#E6E6E6] bg-white px-4 text-sm md:text-base lg:text-lg"
+            className={[
+              'h-[45px] flex-1 rounded-lg border bg-white px-4 text-sm md:text-base lg:text-lg',
+              repAccountError ? 'border-red-500' : 'border-[#E6E6E6]',
+            ].join(' ')}
             value={repAccount}
-            onChange={(e) => setRepAccount(e.target.value)}
-            placeholder="12345-678-9101112"
+            onChange={(e) => {
+              const onlyNum = e.target.value.replace(/[^0-9]/g, '');
+              setRepAccount(onlyNum);
+              setRepAccountError(validateOnlyNumber(onlyNum));
+            }}
+            placeholder="1234567891011129876"
             inputMode="numeric"
           />
         </div>
+
+        {repAccountError && (
+          <p className="mt-1 text-red-500 text-xs">{repAccountError}</p>
+        )}
 
         <BankSelectModal
           isOpen={isBankOpen}

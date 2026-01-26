@@ -7,6 +7,7 @@ import Dropdown, { type DropdownItem } from '@/components/common/Dropdown';
 import { ModalBottomSheet } from '@/components/common/ModalBottomSheet';
 import type { Bank } from '@/lib/bank';
 import { BANKS } from '@/lib/bank';
+import { validateKorEngNameNoSpace } from '@/lib/regExp';
 
 export type PartyMemberPayload = {
   name: string;
@@ -42,6 +43,10 @@ export function AddMemberModal({
   const [isBankOpen, setIsBankOpen] = useState(false);
 
   const [error, setError] = useState(''); // 미입력 안내
+  const [nameError, setNameError] = useState<string | null>(null);
+  const [phoneError, setPhoneError] = useState<string | null>(null);
+  const [accountError, setAccountError] = useState<string | null>(null);
+  const [isComposing, setIsComposing] = useState(false);
 
   const selectedLabel = useMemo(() => {
     const found = roleItems.find((i) => i.value === relationValue);
@@ -64,6 +69,11 @@ export function AddMemberModal({
     setRelationValue('');
     setBank(null);
     setError('');
+
+    setNameError(null);
+    setPhoneError(null);
+    setAccountError(null);
+    setIsComposing(false);
   };
 
   const onConfirm = () => {
@@ -107,14 +117,23 @@ export function AddMemberModal({
             성함
           </span>
           <input
-            className="h-[45px] rounded-lg border border-[#E6E6E6] bg-white px-4 text-sm md:text-base lg:text-lg"
+            className={[
+              'h-[45px] rounded-lg border bg-white px-4 text-sm md:text-base lg:text-lg',
+              nameError ? 'border-red-500' : 'border-[#E6E6E6]',
+            ].join(' ')}
             value={name}
             onChange={(e) => {
-              setName(e.target.value);
-              if (error) setError('');
+              const v = e.target.value;
+              setName(v);
+              if (!isComposing) {
+                setNameError(validateKorEngNameNoSpace(v));
+              }
             }}
             placeholder="이름"
           />
+          {nameError && (
+            <p className="mt-1 text-red-500 text-xs">{nameError}</p>
+          )}
         </label>
 
         <label className="flex flex-col gap-1">
@@ -122,15 +141,21 @@ export function AddMemberModal({
             전화번호
           </span>
           <input
-            className="h-[45px] rounded-lg border border-[#E6E6E6] bg-white px-4 text-sm md:text-base lg:text-lg"
+            className={[
+              'h-[45px] rounded-lg border bg-white px-4 text-sm md:text-base lg:text-lg',
+              phoneError ? 'border-red-500' : 'border-[#E6E6E6]',
+            ].join(' ')}
             value={phone}
             onChange={(e) => {
-              setPhone(e.target.value);
-              if (error) setError('');
+              const onlyNum = e.target.value.replace(/[^0-9]/g, '');
+              setPhone(onlyNum);
             }}
-            placeholder="010-1234-5678"
+            placeholder="01012345678"
             inputMode="tel"
           />
+          {phoneError && (
+            <p className="mt-1 text-red-500 text-xs">{phoneError}</p>
+          )}
         </label>
 
         <label className="flex flex-col gap-1">
@@ -152,16 +177,23 @@ export function AddMemberModal({
             </button>
 
             <input
-              className="h-[45px] flex-1 rounded-lg border border-[#E6E6E6] bg-white px-4 text-sm md:text-base lg:text-lg"
+              className={[
+                'h-[45px] flex-1 rounded-lg border bg-white px-4 text-sm md:text-base lg:text-lg',
+                accountError ? 'border-red-500' : 'border-[#E6E6E6]',
+              ].join(' ')}
               value={account}
               onChange={(e) => {
-                setAccount(e.target.value);
-                if (error) setError('');
+                const onlyNum = e.target.value.replace(/[^0-9]/g, '');
+                setAccount(onlyNum);
               }}
-              placeholder="222222-222-222222"
+              placeholder="1234567891011129876"
               inputMode="numeric"
             />
           </div>
+
+          {accountError && (
+            <p className="mt-1 text-red-500 text-xs">{accountError}</p>
+          )}
 
           <BankSelectModal
             isOpen={isBankOpen}
@@ -190,6 +222,9 @@ export function AddMemberModal({
             placeholder="전체보기"
             triggerClassName="!h-[45px] font-semibold px-4 text-sm md:text-base lg:text-lg"
           />
+          {!relationValue && (
+            <p className="mt-1 text-red-500 text-xs">관계를 선택해주세요.</p>
+          )}
         </div>
       </div>
     </ModalBottomSheet>
