@@ -1,8 +1,8 @@
 'use client';
 
+import { SingleButton } from '@/components/common/SingleButton';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useMemo } from 'react';
-import { SingleButton } from '@/components/common/SingleButton';
 
 function formatWon(n: string) {
   const onlyNum = (n ?? '').replace(/[^\d]/g, '');
@@ -48,6 +48,7 @@ export default function TransferCompletePage() {
   const amount = sp.get('amount') ?? '1';
   const eventType = sp.get('eventType'); // WEDDING | FUNERAL
   const relationType = sp.get('relationType'); // FRIEND | COLLEAGUE | FAMILY | ACQUAINTANCE | MANUAL
+  const lastAction = sp.get('lastAction'); // media | message | relation (or undefined)
 
   // 출금 계좌(프로젝트에서 아직 없으면 임시값)
   const fromBank = sp.get('fromBank') ?? '하나은행';
@@ -80,7 +81,7 @@ ${toBank} ${toName}님에게 ${amountLabel}을 보냈어요.
       if (typeof navigator !== 'undefined' && 'share' in navigator) {
         // @ts-expect-error
         await navigator.share({
-          title: '이체완료',
+          title: '완료',
           text: shareText,
         });
         return;
@@ -108,7 +109,7 @@ ${toBank} ${toName}님에게 ${amountLabel}을 보냈어요.
       {/* 상단 타이틀 */}
       <header className="relative flex h-14 items-center px-4">
         <h1 className="-translate-x-1/2 absolute left-1/2 font-semibold text-[16px]">
-          이체완료
+          완료
         </h1>
       </header>
 
@@ -121,45 +122,45 @@ ${toBank} ${toName}님에게 ${amountLabel}을 보냈어요.
         </div>
 
         <div className="mt-5 text-center font-extrabold text-[18px] text-gray-900">
-          <div className="mb-1">
-            {toName} {relationLabel(relationType)}에게
-          </div>
-          <div className="mb-1 text-[#00A998]">{eventMessage(eventType)}</div>
-          <div>{amountLabel}을 보냈어요</div>
+          {lastAction === 'media' ? (
+            <div>사진·영상 보내기를 완료했습니다.</div>
+          ) : lastAction === 'message' ? (
+            <div>메시지 보내기를 완료했습니다.</div>
+          ) : (
+            <>
+              <div className="mb-1">
+                {toName} {relationLabel(relationType)}에게
+              </div>
+              <div className="mb-1 text-[#00A998]">{eventMessage(eventType)}</div>
+              <div>{amountLabel}을 보냈어요</div>
+            </>
+          )}
         </div>
 
         {/* (PDF에 있는 작은 버튼들 느낌 - 필요 없으면 삭제 가능) */}
-        <div className="mt-6 flex gap-2">
-          {['★', '추가해요', '자동이체'].map((t) => (
-            <button
-              key={t}
-              type="button"
-              className="h-9 rounded-xl bg-[#F3F4F6] px-4 font-semibold text-[12px] text-gray-700 active:scale-[0.99]"
-              onClick={() => {}}
-            >
-              {t}
-            </button>
-          ))}
-        </div>
+
       </section>
 
       {/* 계좌 정보 */}
-      <section className="mx-auto mt-8 w-full max-w-[520px] rounded-2xl bg-white">
-        <div className="border-gray-200 border-t py-4" />
-        <div className="grid grid-cols-2 gap-y-4 px-2 text-[13px]">
-          <div className="text-gray-500">입금계좌</div>
-          <div className="text-right font-semibold text-gray-900">
-            {toBank}
-            <div className="mt-1 font-normal text-gray-700">{toAccount}</div>
-          </div>
+      {/* 계좌 정보 */}
+      {(!lastAction || lastAction === 'relation') && (
+        <section className="mx-auto mt-8 w-full max-w-[520px] rounded-2xl bg-white">
+          <div className="border-gray-200 border-t py-4" />
+          <div className="grid grid-cols-2 gap-y-4 px-2 text-[13px]">
+            <div className="text-gray-500">입금계좌</div>
+            <div className="text-right font-semibold text-gray-900">
+              {toBank}
+              <div className="mt-1 font-normal text-gray-700">{toAccount}</div>
+            </div>
 
-          <div className="text-gray-500">출금계좌</div>
-          <div className="text-right font-semibold text-gray-900">
-            {fromBank}
-            <div className="mt-1 font-normal text-gray-700">{fromAccount}</div>
+            <div className="text-gray-500">출금계좌</div>
+            <div className="text-right font-semibold text-gray-900">
+              {fromBank}
+              <div className="mt-1 font-normal text-gray-700">{fromAccount}</div>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* 하단 버튼 (PDF처럼 2개) */}
       <div className="-translate-x-1/2 fixed bottom-0 left-1/2 z-50 w-full max-w-[600px] bg-white px-6 pb-[env(safe-area-inset-bottom)]">

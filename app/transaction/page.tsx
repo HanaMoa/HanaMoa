@@ -1,11 +1,11 @@
 'use client';
 
-import { X } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { useMemo, useState } from 'react';
 import { BankSelectButton } from '@/components/common/BankSelectButton';
 import { BankSelectModal } from '@/components/common/BankSelectModal';
 import NumberKeypad from '@/components/common/NumberKeypad';
+import { X } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useMemo, useState } from 'react';
 
 // ✅ 프로젝트에 이미 있을 가능성이 높은 Bank 타입/은행목록 사용
 // BankSelectModal/Button가 동일 타입을 쓰고 있음:contentReference[oaicite:3]{index=3}:contentReference[oaicite:4]{index=4}
@@ -33,8 +33,8 @@ export default function TransactionPage() {
 
   // 스킵버튼 function
   const handleSkip = () => {
-    // ✅ 건너뛰기 시 어디로 갈지 정하면 됨 (예시: 홈)
-    router.push('/home');
+    // ✅ 건너뛰기 시 메시지 페이지로 이동 (flow=transaction)
+    router.push('/message?flow=transaction');
   };
 
   const canSubmit = useMemo(() => {

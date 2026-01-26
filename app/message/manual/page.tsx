@@ -1,13 +1,31 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 
 export default function MessageManualPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const isTransactionFlow = searchParams.get('flow') === 'transaction';
+  
   const [text, setText] = useState('');
 
   const canSubmit = text.trim().length > 0;
+
+  const handleSubmit = () => {
+    if (isTransactionFlow) {
+        const params = new URLSearchParams(searchParams.toString());
+        params.set('hasMessage', 'true');
+        // params.set('message', text); 
+        router.push(`/transaction/media?${params.toString()}`);
+    } else {
+        // 메시지 페이지 진입 전 페이지로 이동
+        // 보통 홈이나 상세페이지 등에서 진입하므로, 일단 홈으로 이동하거나
+        // router.back()을 여러번 호출해야 함.
+        // 하지만 안전하게 홈으로 이동.
+        router.push('/home'); 
+    }
+  };
 
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-[440px] flex-col bg-[#F6F7F9] px-5 pt-8 pb-24 lg:max-w-[530px]">
@@ -54,10 +72,10 @@ export default function MessageManualPage() {
           <button
             type="button"
             className="mt-2 w-full cursor-pointer rounded-xl bg-[#017F70] py-3 font-semibold text-sm text-white disabled:opacity-50"
-            onClick={() => router.push('/message/')}
+            onClick={handleSubmit}
             disabled={!canSubmit}
           >
-            메시지 완료 - 다음: 송금완료 버튼?
+            {isTransactionFlow ? '입력 완료' : '메시지 완료'}
           </button>
         </div>
       </div>

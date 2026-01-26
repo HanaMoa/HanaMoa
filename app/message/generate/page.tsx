@@ -1,8 +1,8 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
 import Dropdown, { type DropdownItem } from '@/components/common/Dropdown';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useState } from 'react';
 
 type Occasion = '결혼' | '장례';
 type Relation = '친구' | '가족/친척' | '직장 동료' | '상사/선배';
@@ -29,6 +29,7 @@ const lengthItems: DropdownItem[] = [
 
 export default function MessageGeneratePage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const [occasion, setOccasion] = useState<Occasion>('결혼');
   const [relation, setRelation] = useState<Relation>('친구');
@@ -197,7 +198,10 @@ export default function MessageGeneratePage() {
             <button
               type="button"
               className="w-full cursor-pointer rounded-xl bg-[#017F70] py-3 font-semibold text-sm text-white"
-              onClick={() => router.push('/message/manual')}
+              onClick={() => {
+                const params = new URLSearchParams(searchParams.toString());
+                router.push(`/message/manual?${params.toString()}`);
+              }}
             >
               다음 - 메시지 보내기
             </button>
