@@ -90,8 +90,8 @@ export default function MemorialWeddingDbEditPage() {
 
       // 1) name (Input)
       const nameEl = form.elements.namedItem('name') as HTMLInputElement | null;
-      if (nameEl) nameEl.value = it.eventHost?.name ?? '';
-      setName(it.eventHost?.name ?? ''); // ✅ 제목용
+      if (nameEl) nameEl.value = it.name ?? '';
+      setName(it.name ?? '');
 
       // 2) amount (Input)
       const amountEl = form.elements.namedItem(

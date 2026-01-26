@@ -101,6 +101,7 @@ export async function POST(req: Request) {
           date: sentAt,
           category, // ✅ location 대신 category
           message: message ?? null,
+          name: name?.trim(),
         },
         select: { id: true },
       });
@@ -108,7 +109,7 @@ export async function POST(req: Request) {
       const host = await tx.eventHost.create({
         data: {
           eventId: event.id,
-          name,
+          name: '주최자', // 임시 고정
           role: defaultRoleByCategory[category], // ✅ 필수 role 넣기
         },
         select: { id: true },
@@ -124,6 +125,7 @@ export async function POST(req: Request) {
           relation,
           message: message ?? null,
           sentAt,
+          name: name,
         },
         include: {
           event: {
