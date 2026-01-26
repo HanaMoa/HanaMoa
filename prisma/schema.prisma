@@ -31,7 +31,7 @@ model Event {
   location     String?
   message      String?         @db.Text
   category     events_category @default(WEDDING)
-  name         String          @default("이벤트")
+  name         String?          
   eventHosts   EventHost[]
   user         User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   transactions Transaction[]
@@ -78,6 +78,8 @@ model Transaction {
   relation    String
   sentAt      DateTime   @default(now()) @map("sent_at")
   createdAt   DateTime   @default(now()) @map("created_at")
+  name        String?   @map("ocr_name")
+  
   account     Account?   @relation(fields: [accountId], references: [id])
   eventHost   EventHost? @relation(fields: [eventHostId], references: [id])
   event       Event?     @relation(fields: [eventId], references: [id])

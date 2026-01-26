@@ -74,7 +74,7 @@ export async function PUT(
     const { id } = await ctx.params;
     const body = await req.json();
 
-    const name = String(body?.name ?? '').trim(); // eventHost.name
+    const name = String(body?.name ?? '').trim(); // transaction.name
     const relation = String(body?.relation ?? '').trim(); // transaction.relation
     const eventType = String(body?.eventType ?? '').trim();
     const category = categoryMap[eventType]; // 타입: EventCategory | undefined
@@ -127,6 +127,7 @@ export async function PUT(
         relation,
         message,
         sentAt,
+        name,
 
         // 연결된 Event 업데이트
         ...(existing.eventId
@@ -136,17 +137,7 @@ export async function PUT(
                   date: sentAt,
                   category,
                   message,
-                },
-              },
-            }
-          : {}),
-
-        // 연결된 Host 업데이트
-        ...(existing.eventHostId
-          ? {
-              eventHost: {
-                update: {
-                  name,
+                  name: name || '이벤트',
                 },
               },
             }
