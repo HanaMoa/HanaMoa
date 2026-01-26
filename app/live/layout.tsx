@@ -1,5 +1,5 @@
+import type { ReactNode } from "react";
 import { SubHeader } from "@/components/common/SubHeader";
-import { ReactNode } from "react";
 
 export default function LiveLayout({ children }: { children: ReactNode }) {
   return (

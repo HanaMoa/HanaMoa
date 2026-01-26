@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 /**
  * [LiveShell]
@@ -9,61 +9,78 @@
  * 3. 훅 안정성: 환경변수 체크 등 예외 상황에서도 React Hook 호출 순서가 보장되도록 구조화
  */
 
-import { LiveKitRoom } from '@livekit/components-react';
-import '@livekit/components-styles';
-import { Maximize2, Minimize2 } from 'lucide-react';
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import {
+  LiveKitRoom,
+  useRoomContext, // ✅ 추가
+} from "@livekit/components-react";
+import "@livekit/components-styles";
+import type { Room } from "livekit-client"; // ✅ 추가
+import { Maximize2, Minimize2 } from "lucide-react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
-import ChatPanel from '@/components/live/ChatPanel';
-import LivePlayer from '@/components/live/LivePlayer';
+import ChatPanel from "@/components/live/ChatPanel";
+import LivePlayer from "@/components/live/LivePlayer";
 
-type UserRole = 'host' | 'viewer';
+type UserRole = "host" | "viewer";
 
 // 채팅창이 덮어야 할 하단 영역의 뷰포트 상대 좌표 정보
 type OverlayRect = {
-  top: number; // 상단 시작 좌표 (y)
-  left: number; // 좌측 시작 좌표 (x)
-  width: number; // 렌더링 가로 폭
-  height: number; // 렌더링 세로 높이
+  top: number;
+  left: number;
+  width: number;
+  height: number;
 };
 
 type Props = {
   token: string;
   roomName: string;
   userRole: UserRole;
-  frameMaxWidth?: number; // 디자인 가이드에 따른 최대 폭 (기본 560px)
-  backgroundImageUrl?: string; // fallback 배경 이미지 경로
-  children?: React.ReactNode; // 하단 영역에 렌더링할 동적 컨텐츠 (예: 하객 스테이지)
+  frameMaxWidth?: number;
+  backgroundImageUrl?: string;
+  children?: React.ReactNode;
+
+  onRoomReady?: (room: Room) => void; // ✅ 추가
 };
+
+/**
+ * LiveKit Room 객체를 외부로 전달하기 위한 브리지 컴포넌트
+ */
+function RoomBridge({ onRoomReady }: { onRoomReady?: (room: Room) => void }) {
+  const room = useRoomContext(); // ✅ 추가
+
+  useEffect(() => {
+    if (room && onRoomReady) {
+      onRoomReady(room); // ✅ 추가
+    }
+  }, [room, onRoomReady]);
+
+  return null;
+}
 
 export default function LiveShell({
   token,
   roomName,
   userRole,
   frameMaxWidth = 560,
-  backgroundImageUrl = '/images/live/wedding.png',
+  backgroundImageUrl = "/images/live/wedding.png",
   children,
+  onRoomReady, // ✅ 추가
 }: Props) {
   // 1. [환경 설정] LiveKit 서버 URL 메모이제이션
   const serverUrl = useMemo(
-    () => process.env.NEXT_PUBLIC_LIVEKIT_URL ?? '',
+    () => process.env.NEXT_PUBLIC_LIVEKIT_URL ?? "",
     [],
   );
 
   // 2. [DOM 참조] 레이아웃 측정을 위한 핵심 Ref
-  const frameRef = useRef<HTMLDivElement | null>(null); // 전체 레이아웃 경계
-  const lowerWrapRef = useRef<HTMLDivElement | null>(null); // 비디오 하단 가용 영역
+  const frameRef = useRef<HTMLDivElement | null>(null);
+  const lowerWrapRef = useRef<HTMLDivElement | null>(null);
 
   // 3. [상태 관리] 레이아웃 좌표 및 전체화면 상태
   const [frameWidth, setFrameWidth] = useState<number>(frameMaxWidth);
   const [overlayRect, setOverlayRect] = useState<OverlayRect | null>(null);
   const [isFullScreen, setIsFullScreen] = useState(false);
 
-  /**
-   * [Measure Logic]
-   * 비디오 플레이어 하단부터 시작되는 '가용 영역'의 크기와 위치를 정밀 측정합니다.
-   * 이 값은 ChatPanel이 전체 화면을 덮지 않고 하단 영역만 덮도록 제어하는 데 사용됩니다.
-   */
   const measure = () => {
     const frameEl = frameRef.current;
     const lowerEl = lowerWrapRef.current;
@@ -81,11 +98,6 @@ export default function LiveShell({
     });
   };
 
-  /**
-   * [Fullscreen API]
-   * 브라우저 네이티브 풀스크린을 요청/해제합니다.
-   * 영상뿐만 아니라 전체 프레임(frameRef)을 대상으로 하여 채팅 인터랙션을 유지합니다.
-   */
   const toggleFullScreen = async () => {
     const target = frameRef.current;
     if (!target) return;
@@ -97,38 +109,33 @@ export default function LiveShell({
         await document.exitFullscreen?.();
       }
     } catch (err) {
-      console.error('Fullscreen Toggle Error:', err);
+      console.error("Fullscreen Toggle Error:", err);
     }
   };
 
-  // [Lifecycle] 전체화면 상태 동기화 및 레이아웃 재측정
   useEffect(() => {
     const onFsChange = () => {
       setIsFullScreen(Boolean(document.fullscreenElement));
-      // 브라우저의 레이아웃 변경 시간을 고려하여 100ms 지연 후 재측정
       setTimeout(measure, 100);
     };
-    document.addEventListener('fullscreenchange', onFsChange);
-    return () => document.removeEventListener('fullscreenchange', onFsChange);
+    document.addEventListener("fullscreenchange", onFsChange);
+    return () => document.removeEventListener("fullscreenchange", onFsChange);
   }, []);
 
-  // [Lifecycle] 초기 렌더링 시 레이아웃 측정 (깜빡임 방지용 LayoutEffect)
   useLayoutEffect(() => {
     measure();
   }, []);
 
-  // [Lifecycle] 윈도우 리사이즈 및 스크롤 시 좌표 업데이트
   useEffect(() => {
     const onResize = () => measure();
-    window.addEventListener('resize', onResize);
-    window.addEventListener('scroll', onResize, { passive: true });
+    window.addEventListener("resize", onResize);
+    window.addEventListener("scroll", onResize, { passive: true });
     return () => {
-      window.removeEventListener('resize', onResize);
-      window.removeEventListener('scroll', onResize);
+      window.removeEventListener("resize", onResize);
+      window.removeEventListener("scroll", onResize);
     };
   }, []);
 
-  // [Edge Case] 환경변수 미설정 시 가이드 렌더링 (Hook 호출 순서 보존을 위해 하단 배치)
   if (!serverUrl) {
     return (
       <div className="flex min-h-dvh items-center justify-center p-6 text-black/70">
@@ -139,13 +146,10 @@ export default function LiveShell({
 
   return (
     <div className="w-full flex-1 bg-white">
-      {/* Main Layout Frame: 
-         전체화면 모드일 경우 maxWidth 제한을 해제하여 몰입감을 확보합니다. 
-      */}
       <div
         ref={frameRef}
         className="mx-auto flex h-full w-full flex-col overflow-hidden bg-white shadow-xl"
-        style={{ maxWidth: isFullScreen ? 'none' : frameMaxWidth }}
+        style={{ maxWidth: isFullScreen ? "none" : frameMaxWidth }}
       >
         <LiveKitRoom
           serverUrl={serverUrl}
@@ -154,18 +158,18 @@ export default function LiveShell({
           video={true}
           audio={true}
           data-lk-theme="default"
-          style={{ width: '100%', height: '100%' }}
+          style={{ width: "100%", height: "100%" }}
         >
-          {/* SECTION 1: 🎥 비디오 영역 (Fixed 16:9 Aspect Ratio) */}
+          {/* ✅ LiveKit Room 객체 외부 전달 */}
+          <RoomBridge onRoomReady={onRoomReady} /> {/* ✅ 추가 */}
+          {/* SECTION 1: 🎥 비디오 영역 */}
           <div className="relative aspect-video w-full bg-black">
             <LivePlayer preferScreen={true} />
 
-            {/* 풀스크린 전환 트리거 (유튜브 모바일 UI 스타일) */}
             <button
               type="button"
               onClick={toggleFullScreen}
               className="absolute top-4 right-4 z-50 flex h-10 w-10 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-sm transition-all hover:bg-black/60 active:scale-95"
-              aria-label={isFullScreen ? '전체화면 나가기' : '전체화면 보기'}
             >
               {isFullScreen ? (
                 <Minimize2 className="h-6 w-6" />
@@ -174,28 +178,26 @@ export default function LiveShell({
               )}
             </button>
           </div>
-
-          {/* SECTION 2: 💬 채팅 인터랙션 레이어 (overlayRect 기준 정밀 배치) */}
+          {/* SECTION 2: 💬 채팅 */}
           <ChatPanel
             userRole={userRole}
             frameWidth={frameWidth}
             overlayRect={overlayRect}
             isFullScreen={isFullScreen}
           />
-
-          {/* SECTION 3: 🖼 하단 컨텐츠 영역 (GuestStage 또는 배경 이미지) */}
+          {/* SECTION 3: 🖼 하단 컨텐츠 */}
           <div
             ref={lowerWrapRef}
             className="relative flex-1 overflow-hidden bg-white"
           >
             {children ? (
-              children // 외부 주입 컨텐츠 (예: 하객 캐릭터 배치 영역)
+              children
             ) : (
               <div
-                className="absolute inset-0 bg-cover bg-top bg-no-repeat transition-opacity duration-500"
+                className="absolute inset-0 bg-cover bg-top bg-no-repeat"
                 style={{
                   backgroundImage: `url(${backgroundImageUrl})`,
-                  imageRendering: 'pixelated', // 픽셀 아트 소스 선명도 유지
+                  imageRendering: "pixelated",
                 }}
               />
             )}
