@@ -69,10 +69,13 @@ export default function MemorialDashboardPage() {
 
           <div className="font-semibold text-[18px]">추모 메시지</div>
         </div>
+        <div className="mt-4 text-center text-[13px] text-black/45">
+          소중한 기억과 마음을 남겨주세요
+        </div>
       </header>
 
       {/* main (리본 영역만 스크롤) */}
-      <main className="flex-1 overflow-y-auto px-5 pt-6 pb-6">
+      <main className="flex-1 overflow-y-auto px-5 pb-6">
         {errorMsg ? (
           <div className="rounded-xl bg-black/10 p-4 text-center text-sm">
             {errorMsg}

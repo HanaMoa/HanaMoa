@@ -11,15 +11,29 @@ type DashboardMessage = {
   createdAt: string;
 };
 
+// 분기
+type Variant = 'memorial' | 'wedding';
+
 type Props = {
   open: boolean;
   message: DashboardMessage | null;
   onClose: () => void;
+  variant?: Variant;
 };
 
-export default function MessageModal({ open, message, onClose }: Props) {
+export default function MessageModal({
+  open,
+  message,
+  onClose,
+  variant = 'memorial', // 기본 -> 장례식
+}: Props) {
   if (!open || !message) return null;
 
+  const titleSuffix =
+    variant === 'wedding' ? '님의 축하 메시지' : '님의 추모메시지';
+
+  // 배경색
+  const contentBg = variant === 'wedding' ? 'bg-[#F7E7E9]/60' : 'bg-[#F5F5F4]';
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* dim */}
@@ -51,12 +65,13 @@ export default function MessageModal({ open, message, onClose }: Props) {
             <span className="font-semibold text-[17px]">
               {message.senderName}
             </span>
-            <span className="ml-0.5 font-medium">님의 추모메시지</span>
+            <span className="ml-0.5 font-medium">{titleSuffix}</span>
           </div>
 
           <div
             className={cn(
-              'rounded-xl bg-[#F5F5F4] px-4 py-3',
+              'rounded-xl px-4 py-3',
+              contentBg,
               'text-[14px] text-gray-700 leading-relaxed',
               'whitespace-pre-wrap break-words',
               'max-h-[40vh] overflow-auto',
