@@ -42,18 +42,18 @@ const KEYS: KeypadKey[] = [
 
 export default function NumberKeypad({ onInput, onDelete }: NumberKeypadProps) {
   return (
-    <div className="grid grid-cols-3 gap-3">
+    <div className="grid grid-cols-3">
       {/* 숫자 1~9 */}
       {KEYS.map((key) => (
         <button
           key={key.number}
           type="button"
           onClick={() => onInput(key.number)}
-          className="flex aspect-[4/3] flex-col items-center justify-center rounded-lg bg-white py-4 shadow-sm transition-all hover:shadow-md active:scale-95"
+          className="flex flex-col items-center justify-center bg-white py-5 shadow-[0.5px_0.5px_0px_#E5E7EB] transition-all active:bg-gray-100 border border-gray-100 cursor-pointer hover:bg-gray-50"
         >
-          <span className="font-normal text-3xl">{key.number}</span>
+          <span className="font-normal text-2xl">{key.number}</span>
           {key.letters && (
-            <span className="mt-0.5 text-gray-500 text-xs tracking-widest">
+            <span className="mt-01 text-gray-400 text-[10px] tracking-widest">
               {key.letters}
             </span>
           )}
@@ -64,27 +64,27 @@ export default function NumberKeypad({ onInput, onDelete }: NumberKeypadProps) {
       <button
         type="button"
         onClick={() => onInput('+')}
-        className="flex aspect-[4/3] items-center justify-center rounded-lg bg-gray-200 py-4 shadow-sm transition-all hover:shadow-md active:scale-95"
+        className="flex items-center justify-center bg-[#F2F4F6] py-5 shadow-[0.5px_0.5px_0px_#E5E7EB] transition-all active:bg-gray-200 cursor-pointer hover:bg-gray-200"
       >
-        <span className="font-light text-2xl text-gray-600">+*#</span>
+        <span className="font-light text-lg text-gray-500">+*#</span>
       </button>
 
       {/* 0 */}
       <button
         type="button"
         onClick={() => onInput('0')}
-        className="flex aspect-[4/3] items-center justify-center rounded-lg bg-white py-4 shadow-sm transition-all hover:shadow-md active:scale-95"
+        className="flex items-center justify-center bg-white py-5 shadow-[0.5px_0.5px_0px_#E5E7EB] transition-all active:bg-gray-100 cursor-pointer hover:bg-gray-50"
       >
-        <span className="font-normal text-3xl">0</span>
+        <span className="font-normal text-2xl">0</span>
       </button>
 
       {/* 삭제 */}
       <button
         type="button"
         onClick={onDelete}
-        className="flex aspect-[4/3] items-center justify-center rounded-lg bg-gray-200 py-4 shadow-sm transition-all hover:shadow-md active:scale-95"
+        className="flex items-center justify-center bg-[#F2F4F6] py-5 shadow-[0.5px_0.5px_0px_#E5E7EB] transition-all active:bg-gray-200 cursor-pointer hover:bg-gray-200"
       >
-        <Delete className="h-6 w-6 text-gray-700" />
+        <Delete className="h-6 w-6 text-gray-600" />
       </button>
     </div>
   );
