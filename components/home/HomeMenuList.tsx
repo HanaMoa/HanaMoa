@@ -1,7 +1,6 @@
 'use client';
 
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
 
 type MenuItem = {
   key: string;
@@ -15,17 +14,19 @@ type MenuItem = {
   col?: 'right';
 };
 
-export default function HomeMenuList() {
-  const router = useRouter();
+type Props = {
+  onMenuClick: (href: string) => void;
+};
 
+export default function HomeMenuList({ onMenuClick }: Props) {
   // 배치 고정 (col/row start로 꼬임 방지)
   const items: MenuItem[] = [
     {
       key: 'invite',
-      titleMain: '초대장',
+      titleMain: '안내장',
       titleSub: '만들기',
       desc: '새로운 행사를\n준비하시나요?',
-      href: '/invite',
+      href: '/info',
       className: 'col-start-1 row-start-1 row-span-5',
       image: '/images/home/invite.png',
       imgSize: 72,
@@ -85,7 +86,7 @@ export default function HomeMenuList() {
             titleSub={item.titleSub}
             desc={item.desc}
             className={item.className}
-            onClick={() => router.push(item.href)}
+            onClick={() => onMenuClick(item.href)}
             image={item.image}
             imgSize={item.imgSize}
             col={item.col}
