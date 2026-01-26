@@ -7,7 +7,7 @@ import type { Bank } from '@/lib/bank';
 import { BANKS } from '@/lib/bank';
 import type { eventhost_role } from '@/lib/generated/prisma/client/enums';
 import {
-  FUNERAL_EXTRA_ROLE,
+  FUNERAL_RELATIONS,
   WEDDING_BRIDE_SIDE_EXTRA_ROLE,
   WEDDING_GROOM_SIDE_EXTRA_ROLE,
 } from '@/lib/role';
@@ -21,23 +21,6 @@ type Props = {
   addLabel: string;
   onValidChange?: (ok: boolean) => void;
 };
-
-function roleLabelFromRole(role?: eventhost_role) {
-  switch (role) {
-    case 'GROOM_FATHER':
-      return '신랑 아버지';
-    case 'GROOM_MOTHER':
-      return '신랑 어머니';
-    case 'BRIDE_FATHER':
-      return '신부 아버지';
-    case 'BRIDE_MOTHER':
-      return '신부 어머니';
-    case 'MOURNER':
-      return '상주';
-    default:
-      return '혼주';
-  }
-}
 
 export function PartyInfoForm({
   event,
@@ -66,15 +49,16 @@ export function PartyInfoForm({
   // 추가 인원 role 목록: 장례/신랑측/신부측 분기 (role.ts 그대로 사용)
   const extraRoleItems: DropdownItem[] =
     event === 'funeral'
-      ? FUNERAL_EXTRA_ROLE
+      ? FUNERAL_RELATIONS
       : repRole === 'GROOM'
         ? WEDDING_GROOM_SIDE_EXTRA_ROLE
         : WEDDING_BRIDE_SIDE_EXTRA_ROLE;
 
-  // 은행 선택 여부
+  const getLabelByValue = (value: string) =>
+    extraRoleItems.find((i) => i.value === value)?.label ?? value;
+
   const isValid = useMemo(() => {
-    const bankOk = Boolean(bank);
-    return repName.trim() && repAccount.trim() && bankOk;
+    return Boolean(repName.trim() && repAccount.trim() && bank);
   }, [repName, repAccount, bank]);
 
   useEffect(() => {
@@ -84,8 +68,9 @@ export function PartyInfoForm({
   // 결혼: 부모 role 중복이면 교체 (한 역할당 1명만)
   const upsertWeddingParent = (payload: PartyMemberPayload) => {
     setExtraMembers((prev) => {
-      if (event !== 'wedding' || !payload.role) return [...prev, payload];
-      const idx = prev.findIndex((p) => p.role === payload.role);
+      const idx = prev.findIndex(
+        (p) => p.relationValue === payload.relationValue,
+      );
       if (idx === -1) return [...prev, payload];
       const next = [...prev];
       next[idx] = payload;
@@ -95,7 +80,7 @@ export function PartyInfoForm({
 
   return (
     <div className="flex flex-col gap-6">
-      {/* role 전달 */}
+      {/* 대표 role */}
       <input type="hidden" name="repRole" value={repRole} />
 
       {/* 장례만 extraRole 사용 */}
@@ -114,7 +99,10 @@ export function PartyInfoForm({
             name: m.name,
             bank: m.bank.name,
             account: m.account,
-            role: event === 'funeral' ? 'MOURNER' : m.role,
+            role:
+              event === 'funeral'
+                ? ('MOURNER' satisfies eventhost_role)
+                : (m.relationValue as eventhost_role),
           })),
         )}
       />
@@ -177,11 +165,11 @@ export function PartyInfoForm({
         <div className="mt-3 flex flex-wrap items-center gap-3">
           {extraMembers.map((m, idx) => (
             <div
-              key={`${m.role ?? 'EXTRA'}-${m.name}-${m.account}-${idx}`}
+              key={`${m.relationValue ?? 'EXTRA'}-${m.name}-${m.account}-${idx}`}
               className="relative flex h-16 min-w-[120px] items-center justify-center rounded-lg bg-white px-4 font-semibold text-black text-sm"
             >
               {/* UI는 드롭다운에서 고른 값 그대로 표시(장례도 role.ts label로 보이게) */}
-              {`${roleLabelFromRole(m.role)}`}
+              {`${getLabelByValue(m.relationValue)}`}
 
               <button
                 type="button"
@@ -213,7 +201,7 @@ export function PartyInfoForm({
             onSubmit={(payload) => {
               if (event === 'wedding') upsertWeddingParent(payload);
               else setExtraMembers((prev) => [...prev, payload]);
-              //setIsAddOpen(false);
+              setIsAddOpen(false);
             }}
           />
         </div>

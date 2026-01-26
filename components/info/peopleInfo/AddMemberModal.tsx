@@ -7,13 +7,15 @@ import Dropdown, { type DropdownItem } from '@/components/common/Dropdown';
 import { ModalBottomSheet } from '@/components/common/ModalBottomSheet';
 import type { Bank } from '@/lib/bank';
 import { BANKS } from '@/lib/bank';
-import type { eventhost_role } from '@/lib/generated/prisma/client/enums';
 
 export type PartyMemberPayload = {
   name: string;
   bank: Bank;
   account: string;
-  role: eventhost_role;
+
+  // 드롭다운 value 원본
+  // (장례: SON/DAUGHTER… / 결혼: GROOM_FATHER…)
+  relationValue: string;
 };
 
 type Props = {
@@ -34,33 +36,38 @@ export function AddMemberModal({
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [account, setAccount] = useState('');
-  const [role, setRole] = useState<eventhost_role | ''>('');
+  const [relationValue, setRelationValue] = useState<string>('');
 
   const [bank, setBank] = useState<Bank | null>(null);
   const [isBankOpen, setIsBankOpen] = useState(false);
 
   const [error, setError] = useState(''); // 미입력 안내
 
+  const selectedLabel = useMemo(() => {
+    const found = roleItems.find((i) => i.value === relationValue);
+    return found?.label ?? '';
+  }, [roleItems, relationValue]);
+
   const canSubmit = useMemo(() => {
     return (
       name.trim().length > 0 &&
       account.trim().length > 0 &&
-      role !== '' &&
+      relationValue.trim().length > 0 &&
       Boolean(bank)
     );
-  }, [name, account, role, bank]);
+  }, [name, account, relationValue, bank]);
 
   const reset = () => {
     setName('');
     setPhone('');
     setAccount('');
-    setRole('');
+    setRelationValue('');
     setBank(null);
     setError('');
   };
 
   const onConfirm = () => {
-    if (!canSubmit || !bank || role === '') {
+    if (!canSubmit || !bank || !selectedLabel) {
       setError('모든 항목을 입력해주세요.');
       return; // 유효하지 않으면 닫히지 않음
     }
@@ -68,7 +75,7 @@ export function AddMemberModal({
     onSubmit({
       name: name.trim(),
       account: account.trim(),
-      role,
+      relationValue: relationValue.trim(),
       bank,
     });
 
@@ -175,9 +182,9 @@ export function AddMemberModal({
 
           <Dropdown
             items={roleItems}
-            value={role || undefined}
+            value={relationValue || undefined}
             onValueChange={(v) => {
-              setRole(v as eventhost_role);
+              setRelationValue(v);
               if (error) setError('');
             }}
             placeholder="전체보기"

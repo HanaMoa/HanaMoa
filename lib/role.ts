@@ -10,6 +10,14 @@ export const FUNERAL_EXTRA_ROLE: DropdownItem[] = [
   { value: 'MOURNER' satisfies eventhost_role, label: '상주' },
 ];
 
+export const FUNERAL_RELATIONS: DropdownItem[] = [
+  { value: 'SPOUSE', label: '배우자' },
+  { value: 'SON', label: '아들/딸' },
+  { value: 'SON_IN_LAW', label: '사위/며느리' },
+  { value: 'GRANDSON', label: '손주' },
+  { value: 'RELATIVE', label: '친척/지인' },
+];
+
 // 결혼식: step2 신랑=GROOM, 추가=GROOM_FATHER/GROOM_MOTHER
 export const WEDDING_GROOM_SIDE_REP_ROLE: DropdownItem[] = [
   { value: 'GROOM' satisfies eventhost_role, label: '신랑(대표)' },
