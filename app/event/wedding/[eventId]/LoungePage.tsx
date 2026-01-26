@@ -1,12 +1,12 @@
 'use client';
 
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { useMemo } from 'react';
 import { MainHeader } from '@/components/common/MainHeader';
 import { SingleButton } from '@/components/common/SingleButton';
 import AccountDropdown from '@/components/event/AccountDropdown';
 import SpeechBubble from '@/components/event/SpeechBubble';
-import Image from 'next/image';
-import { useRouter } from 'next/navigation';
-import { useMemo } from 'react';
 
 // image 경로
 // const BG_SRC = '/images/event/wedding/lounge_bg.png';
@@ -64,7 +64,7 @@ export default function WeddingLoungePage({ event }: Props) {
   const handleSendMoney = () => {
     // 기본 계좌 선택 (첫 번째)
     const defaultAccount = accounts[0];
-    
+
     // params 설정
     const params = new URLSearchParams();
     // 결혼식(Wedding)에서 진입했으므로 eventType=WEDDING
@@ -106,11 +106,7 @@ export default function WeddingLoungePage({ event }: Props) {
           <div className="absolute top-3 right-0 left-0 z-20 px-4">
             <div className="flex flex-col gap-3">
               <div className="flex items-center gap-3">
-                <AccountDropdown
-                  accounts={accounts}
-                  triggerText="계좌 확인"
-                  className="bg-white"
-                />
+                <AccountDropdown accounts={accounts} className="bg-white" />
               </div>
 
               {/* 결혼식 진행 중일 때만 */}

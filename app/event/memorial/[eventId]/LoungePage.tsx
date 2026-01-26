@@ -1,12 +1,12 @@
 'use client';
 
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { useMemo } from 'react';
 import { MainHeader } from '@/components/common/MainHeader';
 import { SingleButton } from '@/components/common/SingleButton';
 import AccountDropdown from '@/components/event/AccountDropdown';
 import SpeechBubble from '@/components/event/SpeechBubble';
-import Image from 'next/image';
-import { useRouter } from 'next/navigation';
-import { useMemo } from 'react';
 
 // image 경로
 const BG_SRC = '/images/event/memorial/lounge_bg.png';
@@ -62,7 +62,7 @@ export default function MemorialLoungePage({ event }: Props) {
   const handleSendMoney = () => {
     // 기본 계좌 선택 (첫 번째)
     const defaultAccount = accounts[0];
-    
+
     // params 설정
     const params = new URLSearchParams();
     // 장례식(Memorial)에서 진입했으므로 eventType=FUNERAL
@@ -76,11 +76,11 @@ export default function MemorialLoungePage({ event }: Props) {
       params.set('account', defaultAccount.account);
     }
 
-    // mode=transfer 등으로 설정할 수도 있지만, 
+    // mode=transfer 등으로 설정할 수도 있지만,
     // 여기서는 단순히 송금(Amount) -> 관계(Relation) -> 완료 흐름을 타므로 기본값 사용
     // 혹은 'mode=transfer'를 명시해야 한다면 param.set('mode', 'transfer') 추가.
     // 여기서는 기존 로직대로 일반 송금 흐름으로 진입.
-    
+
     router.push(`/transaction/amount?${params.toString()}`);
   };
 
@@ -120,18 +120,12 @@ export default function MemorialLoungePage({ event }: Props) {
           <div className="pointer-events-auto absolute top-3 right-0 left-0 z-20 px-4">
             <div className="flex items-center gap-3">
               {/* 계좌 리스트 */}
-              <AccountDropdown
-                accounts={accounts}
-                triggerText="계좌 확인"
-                className="bg-white/80"
-              />
+              <AccountDropdown accounts={accounts} className="bg-white/80" />
 
               {/* 발인 날짜 */}
-              <div className="flex h-9 flex-1 items-center gap-2 rounded-xl bg-black/15 px-3 text-white backdrop-blur-sm md:px-4 lg:px-5">
-                <span className="shrink-0 font-semibold text-[13px] md:text-[13px] lg:text-[14px]">
-                  발인
-                </span>
-                <span className="truncate text-[13px] text-white/90 md:text-[13px] lg:text-[14px]">
+              <div className="flex h-9.5 flex-1 items-center gap-2 rounded-xl bg-black/15 px-3 text-white backdrop-blur-sm md:px-4 lg:px-5">
+                <span className="shrink-0 font-semibold text-[15px]">발인</span>
+                <span className="truncate text-[15px] text-white/90 md:text-[14px] lg:text-[15px]">
                   {dateText}
                 </span>
               </div>
@@ -141,9 +135,7 @@ export default function MemorialLoungePage({ event }: Props) {
           {/* 온라인 조문 */}
           <button
             type="button"
-            onClick={() =>
-              router.push(`/event/memorial/${event.eventId}/live`)
-            }
+            onClick={() => router.push(`/event/memorial/${event.eventId}/live`)}
             aria-label="온라인 조문으로 이동"
             className="-translate-x-1/2 absolute top-[30%] left-1/2 z-10 w-[450px] cursor-pointer border-0 bg-transparent p-0 md:top-[30%] md:w-[450px] lg:top-[27%] lg:w-[480px]"
           >
