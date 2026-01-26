@@ -158,11 +158,13 @@ pnpm prisma studio
 
 ## .env
 ```
-DATABASE_URL="mysql://admin:X0sMzUKy3dHxSmFr4zStvIMHHYdnO7d@hanamoa-mysql.c526asuauow1.ap-northeast-2.rds.amazonaws.com:3306/hanamoadb"
-DATABASE_HOST="hanamoa-mysql.c526asuauow1.ap-northeast-2.rds.amazonaws.com"
-DATABASE_PORT="3306"
-DATABASE_USER="admin"
-DATABASE_PASSWORD="X0sMzUKy3dHxSmFr4zStvIMHHYdnO7d"
+DATABASE_URL="mysql://hanamoa:12345678@127.0.0.1:3333/hanamoadb"
+SHADOW_DATABASE_URL="mysql://root:root@127.0.0.1:3333/hanamoadb_shadow"
+
+DATABASE_HOST="127.0.0.1"
+DATABASE_PORT="3333"
+DATABASE_USER="hanamoa"
+DATABASE_PASSWORD="12345678"
 DATABASE_NAME="hanamoadb"
 
 AWS_REGION=ap-northeast-2
