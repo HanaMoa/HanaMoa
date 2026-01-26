@@ -148,35 +148,3 @@ export default function Page() {
     </main>
   );
 }
-
-function StepDot({
-  step,
-  state,
-}: {
-  step: number;
-  state: 'active' | 'inactive';
-}) {
-  return (
-    <div
-      className={[
-        'grid h-6 w-6 place-items-center rounded-full font-bold text-[12px]',
-        state === 'active'
-          ? 'bg-[#00A998] text-white'
-          : 'bg-black/10 text-black/40',
-      ].join(' ')}
-    >
-      {step}
-    </div>
-  );
-}
-
-function StepLine({ active = false }: { active?: boolean }) {
-  return (
-    <div
-      className={[
-        'mx-2 h-[2px] flex-1 rounded',
-        active ? 'bg-[#00A998]' : 'bg-black/10',
-      ].join(' ')}
-    />
-  );
-}
