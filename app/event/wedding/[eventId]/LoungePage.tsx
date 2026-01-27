@@ -15,7 +15,6 @@ const IC_MESSAGE_SRC = '/images/event/wedding/lounge_ic_cake.png';
 const IC_GALLERY_SRC = '/images/event/wedding/lounge_ic_gallery.png';
 const IC_REELS_SRC = '/images/event/wedding/lounge_ic_reels.png';
 
-const isStreaming = true;
 const streamingText = false;
 
 type Props = {
@@ -42,8 +41,8 @@ type Props = {
 export default function WeddingLoungePage({ event }: Props) {
   const router = useRouter();
 
-  // 계좌 정보 - event host가 바뀔 때만 다시 실행
-  const accounts = useMemo(() => {
+  /* account 정보 */
+  const accounts = (() => {
     const items: Array<{
       id: string;
       bank: string;
@@ -55,24 +54,22 @@ export default function WeddingLoungePage({ event }: Props) {
 
     for (const host of event.hosts ?? []) {
       for (const acc of host.accounts ?? []) {
-        const isPrimary = host.role === 'GROOM' || host.role === 'BRIDE';
         items.push({
           id: String(acc.id),
           bank: acc.bank,
           account: acc.account,
           ownerName: host.name,
           ownerRole: host.role,
-          isPrimary,
+          isPrimary: host.role === 'GROOM' || host.role === 'BRIDE',
         });
       }
     }
     return items;
-  }, [event.hosts]);
+  })();
 
-  /* account dropdown */
-  // 새로고침 or 재진입 시 - Trigger Label 초기화
+  /* Account Dropdown */
   useEffect(() => {
-    setSelectedAccountId(null);
+    setSelectedAccountId(null); // 새로고침 or 재진입 시 - Trigger Label 초기화
   }, [event.eventId]);
 
   // account dropdown - 선택 o
@@ -103,6 +100,33 @@ export default function WeddingLoungePage({ event }: Props) {
 
     router.push(`/transaction/amount?${params.toString()}`);
   };
+
+  /* Live Status */
+  const [isLive, setIsLive] = useState(false);
+
+  useEffect(() => {
+    let mounted = true;
+    let timer: number | null = null;
+
+    const fetchStatus = async () => {
+      try {
+        const res = await fetch('/api/live/status', { cache: 'no-store' });
+        if (!res.ok) throw new Error('status not ok');
+        const data: { isLive?: boolean } = await res.json();
+        if (mounted) setIsLive(Boolean(data.isLive));
+      } catch {
+        if (mounted) setIsLive(false);
+      }
+    };
+
+    fetchStatus(); // 최초 1회
+    timer = window.setInterval(fetchStatus, 30_000); // 30초마다
+
+    return () => {
+      mounted = false;
+      if (timer) window.clearInterval(timer);
+    };
+  }, []);
 
   return (
     <div className="flex min-h-screen w-full flex-col">
@@ -137,21 +161,19 @@ export default function WeddingLoungePage({ event }: Props) {
               </div>
 
               {/* 결혼식 라이브 진행 중일 때만 */}
-              {
-                /*event.*/ isStreaming ? (
-                  <div className="flex items-center gap-3 rounded-xl border border-black/10 bg-white/80 px-4 py-3 shadow-sm backdrop-blur">
-                    <div className="grid h-10 w-10 place-items-center rounded-lg bg-white">
-                      <div className="h-6 w-6 rounded-full border-4 border-red-500" />
-                    </div>
-                    <div className="flex-1 text-center font-medium text-[15px] text-black/80 md:text-[15px] lg:text-[16px]">
-                      현재 결혼식 스트리밍 중 ... <br />
-                      <span className="font-normal text-black/60">
-                        ({/*event.*/ streamingText ?? '30분'})
-                      </span>
-                    </div>
+              {isLive ? (
+                <div className="flex items-center gap-3 rounded-xl border border-black/10 bg-white/80 px-4 py-3 shadow-sm backdrop-blur">
+                  <div className="grid h-10 w-10 place-items-center rounded-lg bg-white">
+                    <div className="h-6 w-6 rounded-full border-4 border-red-500" />
                   </div>
-                ) : null
-              }
+                  <div className="flex-1 text-center font-medium text-[15px] text-black/80 md:text-[15px] lg:text-[16px]">
+                    현재 결혼식 스트리밍 중 ... <br />
+                    {/* <span className="font-normal text-black/60">
+                      ({event.streamingText ?? '30분'})
+                    </span> */}
+                  </div>
+                </div>
+              ) : null}
             </div>
           </div>
 
