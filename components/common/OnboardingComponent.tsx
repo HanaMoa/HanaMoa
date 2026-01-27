@@ -33,6 +33,7 @@ export default function OnBoardingComponent({ data, current, total }: Props) {
             src={data.imageSrc}
             alt="온보딩 이미지"
             fill
+            sizes="(min-width: 1024px) 400px, (min-width: 768px) 340px, 300px"
             className="object-contain"
             priority
           />
