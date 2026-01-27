@@ -287,11 +287,9 @@ export function PhotoUpload({
 
       <div className="grid grid-cols-3 gap-3">
         {value.map((p) => (
-          <button
+          <div
             key={p.id}
-            type="button"
             className="relative aspect-square overflow-hidden rounded-lg bg-black/[0.04]"
-            aria-label="업로드된 사진"
           >
             <Image
               src={p.previewUrl}
@@ -324,7 +322,7 @@ export function PhotoUpload({
             >
               <X size={14} />
             </button>
-          </button>
+          </div>
         ))}
 
         {value.length < maxCount && (
