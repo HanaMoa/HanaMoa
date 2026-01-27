@@ -8,7 +8,7 @@ export default function MessageEntryPage() {
   const isTransactionFlow = searchParams.get('flow') === 'transaction';
 
   return (
-    <div className="mx-auto flex min-h-dvh w-full max-w-[440px] flex-col bg-[#F6F7F9] px-5 pt-8 pb-24 lg:max-w-[530px]">
+    <div className="mx-auto flex min-h-dvh w-full max-w-110 flex-col bg-[#F6F7F9] px-5 pt-8 pb-24 lg:max-w-132.5">
       {/* Top bar */}
       <div className="flex items-center justify-between">
         <button
@@ -24,8 +24,8 @@ export default function MessageEntryPage() {
             type="button"
             className="cursor-pointer text-slate-500 text-sm"
             onClick={() => {
-                const params = new URLSearchParams(searchParams.toString());
-                router.push(`/transaction/media?${params.toString()}`);
+              const params = new URLSearchParams(searchParams.toString());
+              router.push(`/transaction/media?${params.toString()}`);
             }}
           >
             건너뛰기
