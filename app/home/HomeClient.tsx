@@ -28,7 +28,7 @@ export default function HomeClient({
         }}
       />
 
-      <main className="flex min-h-[calc(100dvh-56px)] flex-col">
+      <main className="flex h-full flex-col">
         <HomeBanner name={userName} />
           <div className="px-6 py-12 md:py-10 lg:py-5 md:px-7 lg:px-8">
             <EventCard count={eventCount} />
