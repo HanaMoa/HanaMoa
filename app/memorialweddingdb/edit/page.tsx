@@ -49,11 +49,19 @@ export default function MemorialWeddingDbEditPage() {
     const datetime = String(fd.get('datetime') ?? '');
     const eventType = String(fd.get('eventType') ?? '');
     const relation = String(fd.get('relation') ?? '');
+    const message = String(fd.get('message') ?? '').trim();
 
     const res = await fetch(`/api/memorialweddingdb/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, amount, datetime, eventType, relation }),
+      body: JSON.stringify({
+        name,
+        amount,
+        datetime,
+        eventType,
+        relation,
+        message,
+      }),
     });
 
     if (!res.ok) {
@@ -128,6 +136,12 @@ export default function MemorialWeddingDbEditPage() {
         'relation',
       ) as HTMLSelectElement | null;
       if (relationEl) relationEl.value = it.relation ?? '친구';
+
+      // 6) message
+      const messageEl = form.elements.namedItem(
+        'message',
+      ) as HTMLInputElement | null;
+      if (messageEl) messageEl.value = it.message ?? it.event?.message ?? '';
     })();
   }, [id, router]);
 
@@ -225,6 +239,20 @@ export default function MemorialWeddingDbEditPage() {
 
                   <ChevronDown className="-translate-y-1/2 pointer-events-none absolute top-1/2 right-3 h-5 w-5 text-gray-400" />
                 </div>
+              </div>
+
+              {/* 메시지 */}
+              <div className="mt-4 flex flex-col gap-2">
+                <label className="font-semibold text-gray-800 text-sm">
+                  메시지
+                </label>
+
+                <input
+                  type="text"
+                  name="message"
+                  placeholder="메시지를 입력해 주세요"
+                  className="w-full rounded-full border border-gray-200 bg-white px-4 py-3.5 shadow-sm transition-all placeholder:text-gray-400 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
               </div>
             </Card>
           </form>

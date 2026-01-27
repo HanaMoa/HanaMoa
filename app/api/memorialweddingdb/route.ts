@@ -100,7 +100,6 @@ export async function POST(req: Request) {
           userId: TEMP_USER_ID,
           date: sentAt,
           category, // ✅ location 대신 category
-          message: message ?? null,
           name: name?.trim(),
         },
         select: { id: true },
