@@ -3,16 +3,14 @@
 'use client';
 
 import { Download, Plus, Search } from 'lucide-react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { Card } from '@/components/ui/card';
 
 export default function HanamoaPage() {
   const router = useRouter();
   const [selectedPeriod, setSelectedPeriod] = useState('6개월');
-  const searchParams = useSearchParams();
   const [items, setItems] = useState<any[]>([]);
-  const refreshKey = searchParams.get('r') ?? ''; // Card 계좌 re랜더링 인자
 
   useEffect(() => {
     (async () => {
@@ -21,7 +19,7 @@ export default function HanamoaPage() {
       const data = await res.json();
       if (data?.ok) setItems(data.items ?? []);
     })();
-  }, [refreshKey]); // refreshKey : r 받을때 rerendering
+  }, []);
 
   const fetchItems = async () => {
     const res = await fetch('/api/memorialweddingdb', { cache: 'no-store' });
@@ -49,7 +47,7 @@ export default function HanamoaPage() {
     <div className="mx-auto h-dvh w-full max-w-[600px] overflow-hidden bg-[#F6F7F9] md:max-w-[720px] lg:max-w-[800px]">
       <main className="flex h-full w-full flex-col bg-white px-6 pt-6">
         {/* 메인 계좌 카드 */}
-        <div className="flex flex-1 flex-col gap-6">
+        <div className="flex h-full flex-col gap-6">
           <div className="flex items-center justify-center">
             <Card className="relative mx-auto flex min-h-[30vh] w-full max-w-[420px] flex-col items-center justify-center overflow-hidden rounded-2xl border-0 bg-[#1EA698] p-4 shadow-none">
               <div className="z-10 flex flex-col items-center gap-1">
@@ -116,15 +114,14 @@ export default function HanamoaPage() {
             </div>
           </div>
 
-          {/* 거래 내역 리스트 */}
-          <div className="mt- flex flex-col gap-4">
+          {/* 거래 내역 리스트 (스크롤 영역) */}
+          <div className="flex flex-1 flex-col overflow-hidden">
+            {/* 리스트 상단(날짜 + 추가 버튼) */}
             <div className="flex items-center justify-between px-1">
-              {/* 날짜 */}
               <span className="font-bold text-gray-800 text-sm">
                 2026.01.09 (금)
               </span>
 
-              {/* 추가 버튼 */}
               <button
                 type="button"
                 onClick={() => router.push('/memorialweddingdb/add')}
@@ -133,58 +130,63 @@ export default function HanamoaPage() {
                 <Plus className="h-5 w-5 text-black" />
               </button>
             </div>
+
             {/* 분리선 */}
             <div className="my-2 w-full border border-[#7B7C7D]" />
 
-            {/* 결제 정보 카드*/}
-            {items.map((it) => (
-              <button
-                key={it.id}
-                type="button"
-                onClick={() =>
-                  router.push(`/memorialweddingdb/edit?id=${it.id}`)
-                }
-                className="w-full text-left"
-              >
-                <Card className="relative cursor-pointer rounded-2xl border-0 bg-gray-50 p-5 shadow-none outline-none transition hover:bg-gray-100 focus:ring-2 focus:ring-[#1EA698]/40">
-                  <span className="mt-1 text-[11px] text-gray-400">
-                    {new Date(it.sentAt).toLocaleTimeString('ko-KR', {
-                      hour12: false,
-                    })}
-                  </span>
-
-                  <div className="flex w-full items-start justify-between">
-                    <div className="flex flex-col items-start gap-1">
-                      <span className="rounded-md px-1 font-medium text-[12px]">
-                        {it.event?.location ?? '경조사'}
+            {/* ✅ 여기만 스크롤 */}
+            <div className="flex-1 overflow-y-auto overscroll-contain pb-6">
+              <div className="flex flex-col gap-4">
+                {items.map((it) => (
+                  <button
+                    key={it.id}
+                    type="button"
+                    onClick={() =>
+                      router.push(`/memorialweddingdb/edit?id=${it.id}`)
+                    }
+                    className="w-full text-left"
+                  >
+                    <Card className="relative cursor-pointer rounded-2xl border-0 bg-gray-50 p-5 shadow-none outline-none transition hover:bg-gray-100 focus:ring-2 focus:ring-[#1EA698]/40">
+                      <span className="mt-1 text-[11px] text-gray-400">
+                        {new Date(it.sentAt).toLocaleTimeString('ko-KR', {
+                          hour12: false,
+                        })}
                       </span>
-                    </div>
 
-                    <div className="flex flex-col items-end gap-1">
-                      <div className="mb-1 flex items-center gap-1.5">
-                        <span className="rounded-md px-1 font-medium text-[10px]">
-                          {it.relation ?? '-'}
-                        </span>
+                      <div className="flex w-full items-start justify-between">
+                        <div className="flex flex-col items-start gap-1">
+                          <span className="rounded-md px-1 font-medium text-[12px]">
+                            {it.event?.location ?? '경조사'}
+                          </span>
+                        </div>
+
+                        <div className="flex flex-col items-end gap-1">
+                          <div className="mb-1 flex items-center gap-1.5">
+                            <span className="rounded-md px-1 font-medium text-[10px]">
+                              {it.relation ?? '-'}
+                            </span>
+                          </div>
+
+                          <p className="mt-1 font-bold text-[#1EA698] text-[12px]">
+                            + {Number(it.amount).toLocaleString('ko-KR')} 원
+                          </p>
+
+                          <p className="font-medium text-[12px] text-gray-900">
+                            {it.name ?? '-'}
+                          </p>
+
+                          {!!it.message && (
+                            <p className="text-[11px] text-gray-400">
+                              {it.message}
+                            </p>
+                          )}
+                        </div>
                       </div>
-
-                      <p className="mt-1 font-bold text-[#1EA698] text-[12px]">
-                        + {Number(it.amount).toLocaleString('ko-KR')} 원
-                      </p>
-
-                      <p className="font-medium text-[12px] text-gray-900">
-                        {it.eventHost?.name ?? '-'}
-                      </p>
-
-                      {!!it.message && (
-                        <p className="font-mediu text-[11px] text-gray-400">
-                          {it.message}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </Card>
-              </button>
-            ))}
+                    </Card>
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
         <div className="h-10"></div>

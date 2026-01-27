@@ -1,16 +1,10 @@
 'use client';
 
-import { useParams, useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useParams } from 'next/navigation';
+import { useDraftEvent } from '@/hooks/useDraftEvent';
 
 export default function Page() {
-  const router = useRouter();
   const params = useParams<{ event: string }>();
-
-  useEffect(() => {
-    const event = params.event;
-    router.replace(`/info/${event}/step/2`);
-  }, [params.event, router]);
-
+  useDraftEvent(params.event);
   return null;
 }

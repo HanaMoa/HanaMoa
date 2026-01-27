@@ -55,13 +55,16 @@ export default function MemorialWeddingDbAddPage() {
       body: JSON.stringify({ name, amount, datetime, eventType, relation }),
     });
 
-    if (!res.ok) {
-      alert('저장 실패');
+    const data = await res.json().catch(() => null);
+
+    if (!res.ok || !data?.ok) {
+      alert(data?.message ?? `저장 실패 (status: ${res.status})`);
       return;
     }
 
-    // 계좌 push 성공시 파라미터 r 붙이기
-    router.push(`/memorialweddingdb?r=${Date.now()}`);
+    // 계좌 push -> replace + refresh 사용
+    router.replace('/memorialweddingdb');
+    router.refresh();
   };
 
   return (

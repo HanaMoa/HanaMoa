@@ -30,21 +30,15 @@ export default function TransferRelationPage() {
   const amount = sp.get('amount') ?? '100000';
   const eventType = sp.get('eventType') ?? 'WEDDING';
 
+  const mode = sp.get('mode');
+  const eventId = sp.get('eventId');
+
   // 임시 출금계좌
   const fromBank = '하나은행';
   const fromAccount = '137-910552-78607';
 
-  const topLine = useMemo(() => {
-    const ev = eventLabel(eventType);
-
-    if (eventType === 'WEDDING')
-      return `${toName}님 ${ev} 축하의 마음을 전해요🥰`;
-    if (eventType === 'FUNERAL')
-      return `${toName}님 ${ev} 위로의 마음을 전해요🎗️`;
-    return `${toName}님에게 마음을 전해요`;
-  }, [toName, eventType]);
-
   const amountLabel = useMemo(() => `${formatWon(amount)}원`, [amount]);
+  const topLine = useMemo(() => `${toName}님의 ${eventLabel(eventType)}`, [toName, eventType]);
 
   const baseParams = useMemo(() => {
     const p = new URLSearchParams({
@@ -54,8 +48,10 @@ export default function TransferRelationPage() {
       amount,
       eventType,
     });
+    if (mode) p.set('mode', mode);
+    if (eventId) p.set('eventId', eventId);
     return p.toString();
-  }, [toName, bank, account, amount, eventType]);
+  }, [toName, bank, account, amount, eventType, mode, eventId]);
 
   const goNext = (
     relationType: 'FAMILY' | 'FRIEND' | 'COLLEAGUE' | 'ACQUAINTANCE' | 'MANUAL',
@@ -66,12 +62,22 @@ export default function TransferRelationPage() {
     p.set('relationType', relationType);
     // baseParams 안에 eventType이 없다면 아래도 필요:
     // p.set('eventType', eventType);
+    if (eventId) {
+      p.set('eventId', eventId);
+    }
 
-    router.push(`/transaction/complete?${p.toString()}`);
+    if (mode === 'transfer') {
+        // 송금 모드인 경우 메시지/미디어 단계 건너뛰고 바로 완료 페이지로
+        p.set('lastAction', 'relation');
+        router.push(`/transaction/complete?${p.toString()}`);
+    } else {
+        p.set('flow', 'transaction');
+        router.push(`/message?${p.toString()}`);
+    }
   };
 
   return (
-    <div className="mx-auto h-dvh w-full max-w-[600px] overflow-y-auto bg-white px-6 pt-10 pb-10">
+    <div className="mx-auto h-dvh w-full max-w-[600px] overflow-y-auto bg-white px-6">
       {/* 상단 헤더 */}
       <header className="relative flex h-14 items-center px-4">
         <h1 className="-translate-x-1/2 absolute left-1/2 font-semibold text-[16px]">

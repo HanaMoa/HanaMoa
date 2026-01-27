@@ -1,103 +1,177 @@
+/**
+ * components/notification/NotificationItem.tsx
+ * * [기능 설명]
+ * - Framer Motion을 사용한 Swipe-to-Reveal (밀어서 버튼 보이기) 구현
+ * - 오른쪽으로 밀면: [삭제] 버튼 등장
+ * - 왼쪽으로 밀면: [공개] 버튼 등장 (특정 타입만 가능)
+ * - 본문 클릭 시: onItemClick 실행
+ */
+
 'use client';
 
+import { motion, type PanInfo, useAnimation } from 'framer-motion';
+import { Share2, Trash2 } from 'lucide-react';
 import Image from 'next/image';
-import { formatTime } from '@/app/utils/time';
-import { type User, UserProfile } from '@/components/common/UserProfile';
+import type {
+  NotificationItemProps,
+  NotificationType,
+} from '@/types/notification';
 
-/*
-사용 예시
-<NotificationItem
-    user={user}
-    message="새로운 영상을 업로드 했습니다."
-    type='video'
-    createdAt={new Date(Date.now() - 1000 * 60 * 60 * 2)}
-    thumbnailUrl="https://picsum.photos/200/120"
-    onClick={() => console.log('page')}
-/>
+// 💡 왼쪽 스와이프(공개하기)가 가능한 알림 타입 정의
+// 이 배열에 없는 타입은 왼쪽으로 밀리지 않습니다. (갤러리, 릴스)
+const PUBLISHABLE_TYPES: NotificationType[] = ['GALLERY_ADDED', 'REEL_ADDED'];
 
-message값은 결혼식/장례식 & 영상올리기,메세지남기기/송금하기 등에 따라서 달라져야 함
-이 부분은 더 고민해보기
-
-TODO: 스와이프했을 때 기능 추가해야 함
-*/
-
-type NotificationItemProps =
-  | {
-      user: User;
-      message: string;
-      type: 'video';
-      createdAt: Date | string;
-      thumbnailUrl: string; // 알림이 영상 올리기거나 메세지 남기면 필수
-      onClick?: () => void;
-    }
-  | {
-      user: User;
-      message: string;
-      type: 'money';
-      createdAt: Date | string;
-      thumbnailUrl?: never; // money면 아예 금지
-      onClick?: () => void;
-    };
+// 공용 컴포넌트를 위한 Props 확장 (클릭 이벤트 추가)
+interface ExtendedNotificationItemProps extends NotificationItemProps {
+  onItemClick?: () => void;
+}
 
 export default function NotificationItem({
   user,
-  message,
   type,
+  message,
   createdAt,
+  isRead,
   thumbnailUrl,
-  onClick,
-}: NotificationItemProps) {
-  const timeText = formatTime(createdAt);
+  onDelete,
+  onPublish,
+  onItemClick,
+}: ExtendedNotificationItemProps) {
+  // 현재 알림이 '공개하기' 기능을 지원하는지 확인
+  const isPublishable = PUBLISHABLE_TYPES.includes(type);
 
-  // 썸네일 기본 이미지 넣을건지?
-  //  const DEFAULT_THUMBNAIL = '/thumbnails/default.png';
+  // 애니메이션을 수동으로 제어하기 위한 훅 (버튼을 열고 닫을 때 사용)
+  const controls = useAnimation();
 
-  // 테스트용 이미지
-  thumbnailUrl = '/step3.png';
+  // 버튼이 드러났을 때의 너비 (px 단위)
+  const ACTION_WIDTH = 100;
+
+  /**
+   * 👆 드래그가 끝났을 때 실행되는 함수 (Snap Logic)
+   * 사용자가 손을 뗐을 때, 버튼을 계속 보여줄지 다시 닫을지 결정합니다.
+   */
+  const handleDragEnd = async (event: any, info: PanInfo) => {
+    const offset = info.offset.x; // 이동한 거리
+    const velocity = info.velocity.x; // 던지는 속도
+
+    // 1. 오른쪽으로 충분히 밀었거나, 빠르게 휙 던졌을 때 -> [삭제] 버튼 고정
+    if (offset > ACTION_WIDTH / 2 || velocity > 500) {
+      await controls.start({ x: ACTION_WIDTH });
+    }
+    // 2. 왼쪽으로 충분히 밀었을 때 (공개 가능 타입만) -> [공개] 버튼 고정
+    else if (isPublishable && (offset < -ACTION_WIDTH / 2 || velocity < -500)) {
+      await controls.start({ x: -ACTION_WIDTH });
+    }
+    // 3. 어중간하게 밀었다면 -> 제자리로 복귀 (닫기)
+    else {
+      await controls.start({ x: 0 });
+    }
+  };
+
+  /**
+   * 👆 본문 클릭 핸들러
+   * 스와이프로 열려있는 상태라면 닫고, 아니면 상세 페이지로 이동합니다.
+   */
+  const handleItemClick = () => {
+    controls.start({ x: 0 }); // 무조건 닫기
+    if (onItemClick) onItemClick();
+  };
 
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="w-full text-left active:bg-gray-100"
-    >
-      <div className="flex items-center gap-3 px-4 py-4 sm:gap-4 sm:py-5">
-        {/* 왼쪽: 프로필 */}
-        <div className="shrink-0">
-          <UserProfile user={user} />
-        </div>
+    <div className="relative w-full overflow-hidden border-gray-100 border-b bg-white">
+      {/* ==============================================
+          배경 레이어 (Action Buttons)
+          평소에는 전경(Foreground)에 가려져 안 보이다가, 
+          스와이프하면 드러납니다.
+         ============================================== */}
 
-        {/* 가운데: 텍스트 */}
-        <div className="min-w-0 flex-1">
-          <p className="truncate text-[#45413C] text-base leading-snug sm:text-lg">
-            <span className="font-semibold">{user.name}</span>
-            <span>님이 </span>
-            <span>{message}</span>
-          </p>
-        </div>
-
-        {/* 오른쪽: 시간 + 사진/영상 
-        public에서 이미지 가져오는 식으로
-        */}
-        <div className="flex shrink-0 items-center gap-3">
-          <span className="whitespace-nowrap text-[#B3B3B3] text-xs sm:text-sm md:text-base">
-            {timeText}
-          </span>
-
-          {type === 'video' && (
-            <div className="relative h-16 w-16 overflow-hidden rounded-lg bg-gray-200 sm:h-20 sm:w-20 md:h-24 md:w-24">
-              <Image
-                src={thumbnailUrl}
-                alt="thumbnail"
-                fill
-                className="object-cover"
-                sizes="(max-width: 640px) 64px, (max-width: 768px) 80px, 96px"
-                priority={false}
-              />
-            </div>
-          )}
-        </div>
+      {/* 삭제 버튼 (왼쪽 배경 -> 오른쪽으로 밀 때 보임) */}
+      <div className="absolute inset-y-0 left-0 w-[100px] bg-red-500">
+        <button
+          type="button" // ⚠️ 중요: form submit 방지
+          onClick={() => {
+            onDelete();
+            controls.start({ x: 0 });
+          }} // 클릭 후 닫기
+          className="flex h-full w-full flex-col items-center justify-center text-white transition-colors active:bg-red-600"
+        >
+          <Trash2 size={24} />
+          <span className="mt-1 font-bold text-[12px]">삭제</span>
+        </button>
       </div>
-    </button>
+
+      {/* 공개 버튼 (오른쪽 배경 -> 왼쪽으로 밀 때 보임) */}
+      {isPublishable && (
+        <div
+          className="absolute inset-y-0 right-0 w-[100px]"
+          style={{ backgroundColor: '#00897B' }}
+        >
+          <button
+            type="button"
+            onClick={() => {
+              onPublish();
+              controls.start({ x: 0 });
+            }}
+            className="flex h-full w-full flex-col items-center justify-center text-white transition-colors active:bg-blue-600"
+          >
+            <Share2 size={24} />
+            <span className="mt-1 font-bold text-[12px]">공개</span>
+          </button>
+        </div>
+      )}
+
+      {/* ==============================================
+          전경 레이어 (Foreground Content)
+          실제 알림 내용이 보이는 부분이며, 드래그가 가능합니다.
+         ============================================== */}
+      <motion.div
+        animate={controls} // 수동 애니메이션 제어 연결
+        drag="x" // 가로 드래그 활성화
+        dragConstraints={{
+          // 드래그 가능한 최대 범위 제한
+          left: isPublishable ? -ACTION_WIDTH : 0,
+          right: ACTION_WIDTH,
+        }}
+        dragElastic={0.1} // 끝까지 당겼을 때의 텐션 (고무줄 효과)
+        onDragEnd={handleDragEnd} // 드래그 놓았을 때 처리
+        onClick={handleItemClick} // 클릭 처리
+        className={`relative z-10 flex h-20 w-full cursor-pointer items-center gap-3 bg-white p-4 shadow-sm active:cursor-grabbing ${
+          !isRead ? 'bg-blue-50/30' : '' // 읽지 않음: 푸른 배경
+        }`}
+      >
+        {/* 프로필 이미지 영역 */}
+        <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full border border-black/5 bg-gray-200">
+          <Image
+            src={user.profileImageUrl || '/default-profile.png'}
+            alt={`${user.name} 프로필`}
+            fill
+            className="object-cover"
+          />
+        </div>
+
+        {/* 텍스트 내용 영역 */}
+        {/* pointer-events-none: 드래그 중 텍스트가 블록 잡히는 것 방지 */}
+        <div className="pointer-events-none min-w-0 flex-1 select-none">
+          <p className="text-[14px] text-gray-900 leading-snug">
+            <span className="font-bold">{user.name}</span>님이 {message}
+          </p>
+          <span className="mt-0.5 block text-[12px] text-gray-400">
+            {createdAt}
+          </span>
+        </div>
+
+        {/* 썸네일 영역 (있을 경우만 렌더링) */}
+        {thumbnailUrl && (
+          <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-md border border-gray-200 bg-gray-50">
+            <Image
+              src={thumbnailUrl}
+              alt="알림 썸네일"
+              fill
+              className="object-cover"
+            />
+          </div>
+        )}
+      </motion.div>
+    </div>
   );
 }

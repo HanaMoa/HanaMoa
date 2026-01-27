@@ -25,7 +25,7 @@ export default function RootLayout({
       <body className="bg-[#F2F2F2]">
         <Providers>
           {/* 앱 프레임: 화면을 넘지 않게 고정 */}
-          <div className="mx-auto flex min-h-dvh w-full max-w-[480px] flex-col bg-[#F6F7F9] md:max-w-[480px] lg:max-w-[600px]">
+          <div className="mx-auto flex min-h-dvh w-full max-w-[420px] flex-col bg-[#F6F7F9] md:max-w-[480px] lg:max-w-[600px]">
             {children}
           </div>
         </Providers>

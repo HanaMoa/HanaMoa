@@ -18,6 +18,7 @@ export default function TransferEventPage() {
   const bank = sp.get('bank') ?? '신한은행';
   const account = sp.get('account') ?? '1234----------';
   const amount = sp.get('amount') ?? '100000';
+  const mode = sp.get('mode');
 
   const amountLabel = useMemo(() => `${formatWon(amount)}원`, [amount]);
 
@@ -29,8 +30,9 @@ export default function TransferEventPage() {
       account,
       amount,
     });
+    if (mode) p.set('mode', mode);
     return p.toString();
-  }, [toName, bank, account, amount]);
+  }, [toName, bank, account, amount, mode]);
 
   const goNext = (eventType: 'WEDDING' | 'FUNERAL' | 'MANUAL') => {
     const p = new URLSearchParams(baseParams);
@@ -40,7 +42,7 @@ export default function TransferEventPage() {
   };
 
   return (
-    <div className="mx-auto h-dvh w-full max-w-[600px] overflow-y-auto bg-white px-6 pt-10 pb-10">
+    <div className="mx-auto h-dvh w-full max-w-[600px] overflow-y-auto bg-white px-6">
       {/* 상단 헤더: amount 페이지 규격 유지 */}
       <header className="relative flex h-14 items-center px-4">
         <h1 className="-translate-x-1/2 absolute left-1/2 font-semibold text-[16px]">
