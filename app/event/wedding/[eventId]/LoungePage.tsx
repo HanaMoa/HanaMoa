@@ -69,26 +69,16 @@ export default function WeddingLoungePage({ event }: Props) {
     return items;
   }, [event.hosts]);
 
-  // 계좌 선택 o
+  /* account dropdown */
+  // 새로고침 or 재진입 시 - Trigger Label 초기화
+  useEffect(() => {
+    setSelectedAccountId(null);
+  }, [event.eventId]);
+
+  // account dropdown - 선택 o
   const [selectedAccountId, setSelectedAccountId] = useState<string | null>(
     null,
   );
-
-  // 계좌 선택 x - 주계좌(첫번째 계좌) 우선 설정
-  useEffect(() => {
-    if (accounts.length === 0) {
-      setSelectedAccountId(null);
-      return;
-    }
-
-    setSelectedAccountId((prev) => {
-      // 이미 유효한 선택이 있으면 유지
-      if (prev && accounts.some((a) => a.id === prev)) return prev;
-
-      const primary = accounts.find((a) => a.isPrimary);
-      return (primary ?? accounts[0]).id;
-    });
-  }, [accounts]);
 
   const selectedAccount = useMemo(() => {
     if (!selectedAccountId) return null;
@@ -96,14 +86,16 @@ export default function WeddingLoungePage({ event }: Props) {
   }, [accounts, selectedAccountId]);
 
   const handleSendMoney = () => {
+    // account dropdown - 선택 x : 주계좌(첫번째 계좌) 우선 설정
     const target = selectedAccount ?? accounts[0] ?? null;
+    if (!target) return;
 
     const params = new URLSearchParams();
     params.set('eventType', 'WEDDING');
     params.set('eventId', event.eventId);
 
     if (target) {
-      params.set('accountId', target.id); // 나중에 서버에서 accountId로 검증/조회 가능
+      params.set('accountId', target.id); // 추후 서버에서 accountId로 검증/조회 가능
       params.set('toName', target.ownerName);
       params.set('bank', target.bank);
       params.set('account', target.account);
@@ -137,10 +129,14 @@ export default function WeddingLoungePage({ event }: Props) {
           <div className="pointer-events-auto absolute top-3 right-0 left-0 z-20 px-4">
             <div className="flex flex-col gap-3">
               <div className="flex items-center gap-3">
-                <AccountDropdown accounts={accounts} />
+                <AccountDropdown
+                  accounts={accounts}
+                  value={selectedAccountId}
+                  onSelect={setSelectedAccountId}
+                />
               </div>
 
-              {/* 결혼식 진행 중일 때만 */}
+              {/* 결혼식 라이브 진행 중일 때만 */}
               {
                 /*event.*/ isStreaming ? (
                   <div className="flex items-center gap-3 rounded-xl border border-black/10 bg-white/80 px-4 py-3 shadow-sm backdrop-blur">

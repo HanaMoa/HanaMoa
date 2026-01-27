@@ -72,6 +72,7 @@ export default function HomeBanner({ name }: Props) {
                 src="/images/home/home_char.png"
                 alt="배너 별돌별송이"
                 fill
+                sizes="(min-width: 1024px) 190px, (min-width: 768px) 170px, 140px"
                 className="object-contain object-bottom"
                 priority
               />
