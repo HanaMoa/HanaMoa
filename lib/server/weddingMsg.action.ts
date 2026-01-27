@@ -12,8 +12,8 @@ const weddingPhoto = z.object({
     .min(1, '청첩장 제목을 입력해주세요.')
     .max(60, '청첩장 제목은 60자 이내로 입력해주세요.'),
 
-  // PhotoUpload에서 만든 url 배열을 JSON 문자열로 받아서 저장
-  // 예: '["url1","url2"]'
+  // S3 key 배열(JSON string)
+  // 예: '["images/uuid1","images/uuid2"]'
   photos: z.string().min(1, '사진을 1장 이상 추가해주세요.'),
 });
 
@@ -42,13 +42,14 @@ export async function saveWeddingPhoto(_: unknown, formData: FormData) {
   const { eid: eventId, title, photos } = parsed.data;
 
   // 사진 값 보강 검증
-  let photoUrls: string[] = [];
+  let photoKeys: string[] = [];
   try {
     const arr = JSON.parse(photos);
+
     if (!Array.isArray(arr)) {
       return { ok: false, message: '사진 값이 올바르지 않습니다.' as const };
     }
-    photoUrls = arr
+    photoKeys = arr
       .filter((v) => typeof v === 'string')
       .map((v) => v.trim())
       .filter(Boolean);
@@ -56,12 +57,17 @@ export async function saveWeddingPhoto(_: unknown, formData: FormData) {
     return { ok: false, message: '사진 값이 올바르지 않습니다.' as const };
   }
 
-  if (photoUrls.length === 0) {
+  if (photoKeys.length === 0) {
     return { ok: false, message: '사진을 1장 이상 추가해주세요.' as const };
   }
-  if (photoUrls.length > 15) {
+  if (photoKeys.length > 15) {
     return { ok: false, message: '사진은 최대 15장까지 가능합니다.' as const };
   }
+
+  // "images/"로 시작하는 key만 허용
+  photoKeys = photoKeys.filter((k) => k.startsWith('images/'));
+  if (photoKeys.length === 0)
+    return { ok: false, message: '사진 값이 올바르지 않습니다.' as const };
 
   // 내 이벤트인지 검증 (+ message도 가져오기)
   const event = await prisma.event.findFirst({
@@ -79,9 +85,10 @@ export async function saveWeddingPhoto(_: unknown, formData: FormData) {
     messageObj = {};
   }
 
+  // s3 key 배열로 저장
   messageObj.wedding = {
     title: title.trim(),
-    photos: photoUrls,
+    photos: photoKeys,
   };
 
   await prisma.event.update({

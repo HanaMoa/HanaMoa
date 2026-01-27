@@ -14,11 +14,6 @@ const dead = z.object({
     .regex(KOR_ENG_NAME_REGEX, '공백 없이 한글 또는 영문만 입력해주세요.'),
 });
 
-// async function uploadImageToStorage(file: File): Promise<string> {
-// TODO: S3 업로드 후 URL 반환
-//   throw new Error('uploadImageToStorage 구현 필요');
-// }
-
 export async function createDeadHost(_: unknown, formData: FormData) {
   const session = await auth();
 
