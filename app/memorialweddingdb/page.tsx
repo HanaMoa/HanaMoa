@@ -150,8 +150,39 @@ export default function HanamoaPage() {
               <button
                 type="button"
                 className="flex items-center gap-1 text-[13px] text-gray-500 hover:text-gray-700"
-                onClick={() => {
-                  console.log('excel download');
+                // export/route.ts 연결
+                onClick={async () => {
+                  // UI 라벨 → query param 값으로 매핑
+                  const periodParam =
+                    selectedPeriod === '6개월'
+                      ? '6m'
+                      : selectedPeriod === '전체'
+                        ? 'all'
+                        : 'latest';
+
+                  const res = await fetch(
+                    `/api/memorialweddingdb/export?period=${periodParam}`,
+                    {
+                      cache: 'no-store',
+                    },
+                  );
+
+                  if (!res.ok) {
+                    alert('엑셀 다운로드 실패');
+                    return;
+                  }
+
+                  const blob = await res.blob();
+                  const url = window.URL.createObjectURL(blob);
+
+                  const a = document.createElement('a');
+                  a.href = url;
+                  a.download = `hanamoa_export_${periodParam}_${new Date().toISOString().slice(0, 10)}.xlsx`;
+                  document.body.appendChild(a);
+                  a.click();
+                  a.remove();
+
+                  window.URL.revokeObjectURL(url);
                 }}
               >
                 <Download className="h-4 w-4" />
