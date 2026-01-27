@@ -24,25 +24,21 @@ export function LoginSheet({ isOpen, onClose }: Props) {
 
   const [state, login, isPending] = useActionState(
     async (_: ValidError | undefined, formData: FormData) => {
+      console.log('🟡 submit start');
+
       try {
         formData.set('redirectTo', redirectTo);
 
-        // 서버 액션 호출(실패 시 throw or 리턴 형태에 맞춰 처리)
         const res = await loginCredentials(formData);
+
         if (!res) return undefined;
         const err = res[0];
-        if (err) {
-          return err as ValidError;
-        }
+        if (err) return err as ValidError;
 
         return undefined;
-      } catch {
-        return {
-          error: { userId: '아이디 또는 비밀번호가 올바르지 않습니다.' },
-          data: {
-            userId: String(formData.get('userId') ?? ''),
-          },
-        } as unknown as ValidError;
+      } catch (e) {
+        console.error('LoginSheet catch =', e);
+        throw e;
       }
     },
     undefined,
