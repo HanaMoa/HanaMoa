@@ -18,6 +18,7 @@ export default async function MemorialLounge({
     where: { id: BigInt(eventId), category: 'FUNERAL' },
     select: {
       id: true,
+      userId: true,
       date: true,
       location: true,
       message: true,
@@ -35,6 +36,7 @@ export default async function MemorialLounge({
         select: {
           id: true,
           name: true,
+          role: true,
           accounts: {
             where: {
               bank: { not: '' },
@@ -47,6 +49,11 @@ export default async function MemorialLounge({
             },
           },
         },
+        orderBy: [
+          // 대표상주 먼저 보이도록
+          { role: 'asc' },
+          { id: 'asc' },
+        ],
       },
     },
   });
@@ -57,9 +64,10 @@ export default async function MemorialLounge({
     <MemorialLoungePage
       event={{
         eventId: event.id.toString(),
+        userId: event.userId.toString(),
         date: event.date,
-        location: event.location,
-        message: event.message,
+        location: event.location ?? null,
+        message: event.message ?? null,
         hosts: event.eventHosts,
       }}
     />
