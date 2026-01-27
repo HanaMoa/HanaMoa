@@ -1,14 +1,14 @@
 'use client';
 
-import MessageModal from '@/components/dashboard/MessageModal';
-import PaginationBar from '@/components/dashboard/PaginationBar';
-import WeddingCake from '@/components/dashboard/WeddingCake';
 import { ChevronLeft } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { useState } from 'react';
+import MessageModal from '@/components/dashboard/MessageModal';
+import PaginationBar from '@/components/dashboard/PaginationBar';
+import WeddingCake from '@/components/dashboard/WeddingCake';
 import {
-    useWeddingDashboard,
-    type WeddingDashboardMessage,
+  useWeddingDashboard,
+  type WeddingDashboardMessage,
 } from './_hook/useWeddingDashboard';
 
 export default function WeddingDashboardPage() {
@@ -92,8 +92,10 @@ export default function WeddingDashboardPage() {
       <div className="shrink-0 px-5 pb-6">
         <button
           type="button"
-          className="h-[52px] w-full cursor-pointer rounded-2xl bg-[#EA596E] font-semibold text-[15px] text-white"
-          onClick={() => router.push(`/message?eventId=${eventId}&eventType=wedding`)}
+          className="h-13 w-full cursor-pointer rounded-2xl bg-[#EA596E] font-semibold text-[15px] text-white"
+          onClick={() =>
+            router.push(`/message?eventId=${eventId}&eventType=wedding`)
+          }
         >
           축하 메시지 보내기
         </button>

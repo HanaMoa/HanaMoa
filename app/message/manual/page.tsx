@@ -7,33 +7,38 @@ export default function MessageManualPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const isTransactionFlow = searchParams.get('flow') === 'transaction';
-  
+
   const [text, setText] = useState('');
 
   const canSubmit = text.trim().length > 0;
 
-  const handleSubmit = () => {
-    if (isTransactionFlow) {
-        const params = new URLSearchParams(searchParams.toString());
-        params.set('hasMessage', 'true');
-        
-        router.push(`/transaction/media?${params.toString()}`);
-    } else {
-        const eventId = searchParams.get('eventId');
-        const eventType = searchParams.get('eventType');
+  const handleSubmit = async () => {
+    if (!text.trim()) return;
 
-        if (eventId && eventType === 'wedding') {
-            router.push(`/event/wedding/${eventId}/dashboard`);
-        } else if (eventId && eventType === 'memorial') {
-            router.push(`/event/memorial/${eventId}/dashboard`);
-        } else {
-            router.push('/home'); 
-        }
+    const eventId = searchParams.get('eventId');
+    const eventType = searchParams.get('eventType');
+
+    await fetch('/api/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        eventId,
+        // userId: 1, // TODO: 실제 로그인 유저 ID
+        message: text,
+      }),
+    });
+
+    if (eventType === 'wedding') {
+      router.push(`/event/wedding/${eventId}/dashboard`);
+    } else if (eventType === 'memorial') {
+      router.push(`/event/memorial/${eventId}/dashboard`);
+    } else {
+      router.push('/home');
     }
   };
 
   return (
-    <div className="mx-auto flex min-h-dvh w-full max-w-[440px] flex-col bg-[#F6F7F9] px-5 pt-8 pb-24 lg:max-w-[530px]">
+    <div className="mx-auto flex min-h-dvh w-full max-w-110 flex-col bg-[#F6F7F9] px-5 pt-8 pb-24 lg:max-w-132.5">
       {/* Top bar */}
       <div className="flex items-center justify-between">
         <button
@@ -68,7 +73,7 @@ export default function MessageManualPage() {
           <div className="font-medium text-slate-700 text-sm">메시지</div>
 
           <textarea
-            className="min-h-[180px] w-full resize-none rounded-2xl border bg-white px-4 py-3 text-sm leading-relaxed outline-none focus:ring-2 focus:ring-[#E6F6F2]"
+            className="min-h-45 w-full resize-none rounded-2xl border bg-white px-4 py-3 text-sm leading-relaxed outline-none focus:ring-2 focus:ring-[#E6F6F2]"
             value={text}
             onChange={(e) => setText(e.target.value)}
             placeholder="예: 결혼 정말 축하해! 두 분 항상 행복하길 바라요."
