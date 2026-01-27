@@ -69,7 +69,7 @@ export default function HomeMenuList({ onMenuClick }: Props) {
   ];
 
   return (
-    <section className="px-4 mb-20 md:mb-10 lg:mb-5 md:px-5 lg:px-6">
+    <section className="px-4 md:px-5 lg:px-6">
       {/* 타이틀 */}
       <div className="mb-3 flex items-baseline gap-2">
         <h2 className="font-bold text-black text-lg md:text-xl lg:text-2xl">
