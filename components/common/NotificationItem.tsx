@@ -12,6 +12,8 @@
 import { motion, type PanInfo, useAnimation } from 'framer-motion';
 import { Share2, Trash2 } from 'lucide-react';
 import Image from 'next/image';
+import { useEffect, useMemo, useState } from 'react';
+import { formatTime } from '@/app/utils/time';
 import type {
   NotificationItemProps,
   NotificationType,
@@ -76,6 +78,27 @@ export default function NotificationItem({
     controls.start({ x: 0 }); // 무조건 닫기
     if (onItemClick) onItemClick();
   };
+
+  // createdAt을 안정적인 문자열(ISO)로 통일
+  const createdAtIso = useMemo(() => {
+    if (!createdAt) return '';
+    return typeof createdAt === 'string' ? createdAt : createdAt.toISOString();
+  }, [createdAt]);
+
+  // 상대시간은 마운트 후에만 계산(SSR/CSR mismatch 방지)
+  const [timeText, setTimeText] = useState(''); // 초기 렌더는 비워두기
+
+  useEffect(() => {
+    if (!createdAtIso) {
+      setTimeText('-');
+      return;
+    }
+    const update = () => setTimeText(formatTime(createdAtIso));
+    update();
+
+    const id = window.setInterval(update, 60_000);
+    return () => window.clearInterval(id);
+  }, [createdAtIso]);
 
   return (
     <div className="relative w-full overflow-hidden border-gray-100 border-b bg-white">
@@ -156,7 +179,7 @@ export default function NotificationItem({
             <span className="font-bold">{user.name}</span>님이 {message}
           </p>
           <span className="mt-0.5 block text-[12px] text-gray-400">
-            {createdAt}
+            {timeText || '-'}
           </span>
         </div>
 
