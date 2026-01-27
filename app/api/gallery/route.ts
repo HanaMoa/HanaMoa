@@ -43,10 +43,7 @@ export async function GET(req: NextRequest) {
   }
 
   const hostId = event.userId;
-
-  // 4️ mode에 따른 조건
   let whereCondition = {};
-
   if (mode === 'gallery') {
     // host 사진만
     whereCondition = {
