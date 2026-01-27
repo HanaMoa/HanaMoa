@@ -1,6 +1,6 @@
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
@@ -12,21 +12,66 @@ const s3 = new S3Client({
   },
 });
 
-export async function GET() {
-  //클라이언트에서 자신의 사진목록들이 필요할때 get API호출
+export async function GET(req: NextRequest) {
+  // 1️ 로그인 확인
   const session = await auth();
-  const userId = session?.user?.id;
+  const viewerId = session?.user?.id;
 
-  if (!userId) {
+  if (!viewerId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
-  // 2️ DB에서 이 유저의 이미지 key 조회
+
+  // 2️ query param
+  const { searchParams } = new URL(req.url);
+  const eventId = searchParams.get('eventId');
+  const mode = searchParams.get('mode'); // gallery | reels
+
+  if (!eventId) {
+    return NextResponse.json({ error: 'eventId required' }, { status: 400 });
+  }
+
+  const eventIdBig = BigInt(eventId);
+
+  // 3️  hostId 조회 (핵심)
+  const event = await prisma.event.findUnique({
+    where: { id: eventIdBig },
+    select: { userId: true }, //  hostId
+  });
+
+  if (!event) {
+    return NextResponse.json({ error: 'Event not found' }, { status: 404 });
+  }
+
+  const hostId = event.userId;
+
+  // 4️ mode에 따른 조건
+  let whereCondition = {};
+
+  if (mode === 'gallery') {
+    // host 사진만
+    whereCondition = {
+      eventId: BigInt(eventId),
+      userId: hostId,
+    };
+  } else if (mode === 'reels') {
+    // 다른 게스트들이올린 사진전부
+    whereCondition = {
+      eventId: eventIdBig,
+      userId: {
+        not: hostId,
+      },
+    };
+  } else {
+    return NextResponse.json({ error: 'invalid mode' }, { status: 400 });
+  }
+
+  // 5️ 갤러리 조회
   const images = await prisma.gallery.findMany({
-    where: { userId: BigInt(userId) },
+    where: whereCondition,
     select: { key: true },
   });
 
-  // 3️ key → presigned GET URL
+  // 6️ presigned GET URL
   const results = await Promise.all(
     images.map(async ({ key }) => {
       const command = new GetObjectCommand({
@@ -46,8 +91,8 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
-  //클라이언트에서 사진업로드 성공후 key와 함께 api요청보내면 db에저장
-  const { keys } = await req.json();
+  const { keys, eventId } = await req.json();
+
   const session = await auth();
   const userId = session?.user?.id;
 
@@ -55,12 +100,33 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
+  if (!eventId) {
+    return NextResponse.json({ error: 'eventId required' }, { status: 400 });
+  }
+
+  const userIdBig = BigInt(userId);
+  const eventIdBig = BigInt(eventId);
+
+  //   이 이벤트가 실제로 존재하는지 확인
+  const event = await prisma.event.findUnique({
+    where: { id: eventIdBig },
+    select: { id: true },
+  });
+
+  if (!event) {
+    return NextResponse.json({ error: 'Event not found' }, { status: 404 });
+  }
+
+  // 이 유저가 이 이벤트에 참여한 사람인지 검증
+  // (host 또는 guest)
+
   await prisma.gallery.createMany({
     data: keys.map((key: string) => ({
       key,
-      userId: BigInt(userId),
+      userId: userIdBig,
+      eventId: eventIdBig,
     })),
   });
 
-  return Response.json({ ok: true });
+  return NextResponse.json({ ok: true });
 }

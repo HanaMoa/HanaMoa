@@ -2,12 +2,12 @@ import { useState } from 'react';
 export function useImageUpload() {
   const [loading, setLoading] = useState(false);
 
-  async function upload(files: File[]) {
+  async function upload(files: File[], eventId: string) {
     if (files.length === 0) return;
 
     setLoading(true);
 
-    // 1. presigned URL 요청
+    // 1. presign
     const res = await fetch('/api/presign', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -38,6 +38,7 @@ export function useImageUpload() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
+        eventId,
         keys: presigned.map((p) => p.key),
       }),
     });
