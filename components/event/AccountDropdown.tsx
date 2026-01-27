@@ -14,17 +14,21 @@ type AccountItem = {
   bank: string; // 은행
   account: string; // 계좌번호
   ownerName: string; // 계좌주
+  ownerRole?: string; // role (대표상주, 상주, 신랑, 신부, 혼주 ...)
+  isPrimary?: boolean; // 주계좌 표시용
 };
 
 type Props = {
   accounts: AccountItem[];
-  onTransfer?: (accountId: string) => void; // 송금 버튼 클릭
+  value?: string | null; // 선택된 account
+  onSelect?: (accountId: string) => void; // 선택 버튼 클릭 시
   disabled?: boolean;
 };
 
 export default function AccountDropdown({
   accounts,
-  onTransfer,
+  value,
+  onSelect,
   disabled = false,
 }: Props) {
   const [open, setOpen] = useState(false);
@@ -54,18 +58,33 @@ export default function AccountDropdown({
       <DropdownMenuContent
         align="start"
         sideOffset={8}
-        className="w-[320px] rounded-xl border border-black/10 bg-[#F6F7F9] p-1 text-black shadow-[0_8px_24px_rgba(0,0,0,0.25)] md:w-[320px] lg:w-[350px]"
+        className="w-[350px] rounded-xl border border-black/10 bg-[#F6F7F9] p-1 text-black shadow-[0_8px_24px_rgba(0,0,0,0.25)] md:w-[350px] lg:w-[400px]"
       >
-        {/* List */}
-        <div className="pb-2">
+        {/* Account List */}
+        <div className="space-y-1">
           {accounts.map((a) => (
             <div
               key={a.id}
               className="flex items-center justify-between gap-3 px-3 py-2"
             >
               <div className="min-w-0">
-                <div className="truncate font-medium text-[14px] text-black md:text-[14px] lg:text-[15px]">
-                  {a.bank} {a.account} {a.ownerName}
+                <div className="flex min-w-0 items-center gap-2">
+                  <span className="shrink-0 font-extrabold text-[14px] text-black leading-none md:text-[14px] lg:text-[15px]">
+                    {a.ownerName}
+                  </span>
+                  <div className="min-w-0 truncate text-[14px] text-black leading-none md:text-[14px] lg:text-[15px]">
+                    <span className="ml-2">{a.bank}</span>
+                    <span className="ml-1">{a.account}</span>
+                  </div>
+
+                  {a.isPrimary ? (
+                    <span
+                      className="shrink-0 text-[14px] leading-none md:text-[14px] lg:text-[15px]"
+                      title="주계좌"
+                    >
+                      ⭐
+                    </span>
+                  ) : null}
                 </div>
               </div>
 
@@ -73,14 +92,15 @@ export default function AccountDropdown({
                 type="button"
                 variant="secondary"
                 size="sm"
-                className="h-6 rounded-md bg-[#017F70]/80 px-2 font-semibold text-[12px] text-white hover:bg-[#017F70] active:bg-[#017F70]"
+                className="h-6 rounded-md bg-[#017F70] px-2 font-semibold text-[12px] text-white hover:bg-[#017F70]/80 active:bg-[#017F70]/80"
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation(); // 메뉴 닫힘 방지 & 이벤트 버블 방지
-                  onTransfer?.(a.id);
+                  onSelect?.(a.id);
+                  setOpen(false);
                 }}
               >
-                송금
+                선택
               </Button>
             </div>
           ))}

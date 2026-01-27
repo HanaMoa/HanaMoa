@@ -2,11 +2,12 @@
 
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { MainHeader } from '@/components/common/MainHeader';
 import { SingleButton } from '@/components/common/SingleButton';
 import AccountDropdown from '@/components/event/AccountDropdown';
 import SpeechBubble from '@/components/event/SpeechBubble';
+import type { eventhost_role } from '@/lib/generated/prisma/client/enums';
 
 // image 경로
 // const BG_SRC = '/images/event/wedding/lounge_bg.png';
@@ -20,12 +21,14 @@ const streamingText = false;
 type Props = {
   event: {
     eventId: string;
+    userId: string;
     date: Date;
     location: string | null;
     message: string | null;
     hosts: Array<{
       id: bigint | number | string;
       name: string;
+      role: eventhost_role;
       accounts: Array<{
         id: bigint | number | string;
         bank: string;
@@ -46,36 +49,64 @@ export default function WeddingLoungePage({ event }: Props) {
       bank: string;
       account: string;
       ownerName: string;
+      ownerRole: eventhost_role;
+      isPrimary: boolean;
     }> = [];
 
     for (const host of event.hosts ?? []) {
       for (const acc of host.accounts ?? []) {
+        const isPrimary = host.role === 'GROOM' || host.role === 'BRIDE';
         items.push({
           id: String(acc.id),
           bank: acc.bank,
           account: acc.account,
           ownerName: host.name,
+          ownerRole: host.role,
+          isPrimary,
         });
       }
     }
     return items;
   }, [event.hosts]);
 
+  // 계좌 선택 o
+  const [selectedAccountId, setSelectedAccountId] = useState<string | null>(
+    null,
+  );
+
+  // 계좌 선택 x - 주계좌(첫번째 계좌) 우선 설정
+  useEffect(() => {
+    if (accounts.length === 0) {
+      setSelectedAccountId(null);
+      return;
+    }
+
+    setSelectedAccountId((prev) => {
+      // 이미 유효한 선택이 있으면 유지
+      if (prev && accounts.some((a) => a.id === prev)) return prev;
+
+      const primary = accounts.find((a) => a.isPrimary);
+      return (primary ?? accounts[0]).id;
+    });
+  }, [accounts]);
+
+  const selectedAccount = useMemo(() => {
+    if (!selectedAccountId) return null;
+    return accounts.find((a) => a.id === selectedAccountId) ?? null;
+  }, [accounts, selectedAccountId]);
+
   const handleSendMoney = () => {
-    // 기본 계좌 선택 (첫 번째)
-    const defaultAccount = accounts[0];
+    const target = selectedAccount ?? accounts[0] ?? null;
 
-    // params 설정
     const params = new URLSearchParams();
-    // 결혼식(Wedding)에서 진입했으므로 eventType=WEDDING
     params.set('eventType', 'WEDDING');
-    params.set('eventId', event.eventId); // eventId 추가
+    params.set('eventId', event.eventId);
 
-    // 계좌 정보가 있다면 같이 넘김 (Amount 페이지에서 사용)
-    if (defaultAccount) {
-      params.set('toName', defaultAccount.ownerName);
-      params.set('bank', defaultAccount.bank);
-      params.set('account', defaultAccount.account);
+    if (target) {
+      params.set('accountId', target.id); // 나중에 서버에서 accountId로 검증/조회 가능
+      params.set('toName', target.ownerName);
+      params.set('bank', target.bank);
+      params.set('account', target.account);
     }
 
     router.push(`/transaction/amount?${params.toString()}`);
@@ -103,10 +134,10 @@ export default function WeddingLoungePage({ event }: Props) {
         /> */}
         <div className="relative h-full w-full">
           {/* 상단 UI (계좌 + 스트리밍 배너) */}
-          <div className="absolute top-3 right-0 left-0 z-20 px-4">
+          <div className="pointer-events-auto absolute top-3 right-0 left-0 z-20 px-4">
             <div className="flex flex-col gap-3">
               <div className="flex items-center gap-3">
-                <AccountDropdown accounts={accounts} className="bg-white" />
+                <AccountDropdown accounts={accounts} />
               </div>
 
               {/* 결혼식 진행 중일 때만 */}
