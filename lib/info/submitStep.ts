@@ -1,7 +1,10 @@
+'use client';
+
 import { saveDatePlace } from '@/lib/server/datePlace.action';
 import { createDeadHost } from '@/lib/server/dead.action';
 import { savePartyInfo } from '@/lib/server/party.action';
 import { saveWeddingPhoto } from '@/lib/server/weddingMsg.action';
+import { eventCache } from './eventCache';
 import type { EventType } from './steps';
 
 type Result = { ok: true } | { ok: false; message: string };
@@ -11,8 +14,9 @@ export async function submitStep(args: {
   step: number;
   formData: FormData;
   eventId: bigint;
+  userId: string;
 }): Promise<Result> {
-  const { event, step, formData, eventId } = args;
+  const { event, step, formData, eventId, userId } = args;
 
   formData.set('eid', eventId.toString());
 
@@ -31,12 +35,25 @@ export async function submitStep(args: {
 
   if (step === 4) {
     const res = await saveDatePlace(undefined, formData);
-    return res.ok ? { ok: true } : { ok: false, message: res.message };
+    if (!res.ok) return { ok: false, message: res.message };
+
+    if (event === 'funeral') {
+      eventCache.clear(userId, 'funeral');
+      console.log(
+        '✅ cleared',
+        `draftEid:${userId}:funeral`,
+        eventCache.get(userId, 'funeral'),
+      );
+    }
+    return { ok: true };
   }
 
   if (event === 'wedding' && step === 5) {
     const res = await saveWeddingPhoto(undefined, formData);
-    return res.ok ? { ok: true } : { ok: false, message: res.message };
+    if (!res.ok) return { ok: false, message: res.message };
+
+    eventCache.clear(userId, 'wedding');
+    return { ok: true };
   }
 
   return { ok: true };

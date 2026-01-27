@@ -1,3 +1,5 @@
+'use client';
+
 type EventType = 'funeral' | 'wedding';
 
 const keyOf = (userId: string, event: EventType) =>
