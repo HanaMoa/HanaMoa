@@ -1,10 +1,10 @@
 // components/wedding-feed/post/PostMedia.tsx
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { RotateCcw, Volume2, VolumeX } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
 
 type Props =
   | { type: "image"; imageUrl: string }
@@ -13,7 +13,7 @@ type Props =
 export function PostMedia(props: Props) {
   if (props.type === "image") {
     return (
-      <div className="relative w-full aspect-[4/5] bg-[#121212]">
+      <div className="relative aspect-[4/5] w-full bg-[#121212]">
         <Image src={props.imageUrl} alt="" fill className="object-cover" />
       </div>
     );
@@ -23,7 +23,7 @@ export function PostMedia(props: Props) {
 }
 
 /* ================================
-   🎥 Video Media (Instagram Style)
+🎥 Video Media (Instagram Style)
 ================================ */
 
 function VideoMedia({ videoUrl }: { videoUrl: string }) {
@@ -73,7 +73,7 @@ function VideoMedia({ videoUrl }: { videoUrl: string }) {
   return (
     <div
       ref={containerRef}
-      className="relative w-full aspect-[4/5] bg-[#121212]"
+      className="relative aspect-[4/5] w-full bg-[#121212]"
     >
       <video
         ref={videoRef}
@@ -93,16 +93,7 @@ function VideoMedia({ videoUrl }: { videoUrl: string }) {
         variant="ghost"
         size="icon"
         onClick={() => setIsMuted((v) => !v)}
-        className="
-          absolute bottom-3 right-3
-          z-10
-          h-9 w-9
-          rounded-full
-          bg-black/50
-          text-white
-          backdrop-blur-sm
-          hover:bg-black/70
-        "
+        className="absolute right-3 bottom-3 z-10 h-9 w-9 rounded-full bg-black/50 text-white backdrop-blur-sm hover:bg-black/70"
       >
         {isMuted ? (
           <VolumeX className="h-5 w-5" />
@@ -116,14 +107,7 @@ function VideoMedia({ videoUrl }: { videoUrl: string }) {
         <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/30">
           <Button
             onClick={handleReplay}
-            className="
-              flex items-center gap-2
-              rounded-full
-              bg-white
-              px-5 py-2
-              text-sm font-semibold text-black
-              hover:bg-gray-100
-            "
+            className="flex items-center gap-2 rounded-full bg-white px-5 py-2 font-semibold text-black text-sm hover:bg-gray-100"
           >
             <RotateCcw className="h-4 w-4" />
             다시보기
