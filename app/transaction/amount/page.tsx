@@ -20,7 +20,7 @@ export default function TransferAmountPage() {
   const router = useRouter();
   const sp = useSearchParams();
 
-  // ✅ 이전 “계좌번호 입력” 페이지에서 넘어오는 값들 (없으면 기본값)
+  // 이전 “계좌번호 입력” 페이지에서 넘어오는 값들 (없으면 기본값)
   const toName = sp.get('toName') ?? '정그린';
   const bank = sp.get('bank') ?? '국민은행';
   const account = sp.get('account') ?? '55990204144435';
@@ -188,7 +188,7 @@ export default function TransferAmountPage() {
             type="button"
             onClick={handleDone}
             disabled={!canSubmit}
-            className={`rounded-full font-semibold text-[14px] ${
+            className={`rounded-full font-semibold text-[14px] cursor-pointer ${
               canSubmit ? 'text-[#1EA698]' : 'text-gray-300'
             }`}
           >

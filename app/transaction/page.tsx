@@ -35,7 +35,7 @@ export default function TransactionPage() {
 
   // 스킵버튼 function
   const handleSkip = () => {
-    // ✅ 건너뛰기 시 메시지 페이지로 이동 (flow=transaction)
+    // 건너뛰기 시 메시지 페이지로 이동 (flow=transaction)
     router.push('/message?flow=transaction');
   };
 
@@ -67,7 +67,7 @@ export default function TransactionPage() {
         <button
           type="button"
           onClick={() => router.back()}
-          className="rounded-full p-2 hover:bg-gray-100"
+          className="rounded-full p-2 hover:bg-gray-100 cursor-pointer"
           aria-label="닫기"
         >
           <X className="h-6 w-6" />
@@ -144,7 +144,7 @@ export default function TransactionPage() {
             type="button"
             onClick={handleDone}
             disabled={!canSubmit}
-            className={`rounded-full font-semibold text-[14px] ${
+            className={`rounded-full font-semibold text-[14px] cursor-pointer ${
               canSubmit ? 'text-[#1EA698]' : 'text-gray-300'
             }`}
           >

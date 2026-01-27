@@ -19,7 +19,7 @@ export function BankSelectButton({
     <button
       type="button"
       onClick={onClick}
-      className="flex w-full items-center justify-between rounded-xl border border-[#E6E6E6] bg-white px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#1EA698]/30 active:bg-black/[0.02]"
+      className="flex w-full items-center justify-between rounded-xl border border-[#E6E6E6] bg-white px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#1EA698]/30 active:bg-black/2 cursor-pointer hover:bg-gray-100"
       aria-label="은행 선택"
     >
       <div className="flex items-center gap-3">

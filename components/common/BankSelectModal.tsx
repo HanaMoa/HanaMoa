@@ -1,8 +1,8 @@
 'use client';
 
-import Image from 'next/image';
 import { ModalBottomSheet } from '@/components/common/ModalBottomSheet';
 import type { Bank } from '@/lib/bank';
+import Image from 'next/image';
 
 type Props = {
   isOpen: boolean;
@@ -26,11 +26,11 @@ export function BankSelectModal({
   return (
     <ModalBottomSheet isOpen={isOpen} title="" onClose={onClose}>
       <div className="w-full">
-        <h2 className="pb-3 text-center font-bold text-[18px] md:text-[20px] lg:text-[22px]">
+        <h2 className="pb-3 text-center font-bold text-[18px] md:text-[20px] lg:text-[21px]">
           {title}
         </h2>
 
-        <div className="grid grid-cols-3 gap-3 pb-4">
+        <div className="grid grid-cols-3 gap-3">
           {banks.map((b) => {
             const selected = value?.key === b.key;
 
@@ -40,8 +40,8 @@ export function BankSelectModal({
                 type="button"
                 onClick={() => onChange(b)}
                 className={[
-                  'relative flex h-[115px] flex-col items-center justify-center rounded-2xl',
-                  'bg-[#F3F4F6] transition active:scale-[0.99]',
+                  'relative flex w-full h-[105px] flex-col items-center justify-center rounded-2xl',
+                  'bg-[#F3F4F6] transition active:scale-[0.99] cursor-pointer hover:bg-gray-200',
                   selected
                     ? 'border-2 border-[#1EA698]'
                     : 'border border-transparent',
