@@ -24,8 +24,6 @@ export function LoginSheet({ isOpen, onClose }: Props) {
 
   const [state, login, isPending] = useActionState(
     async (_: ValidError | undefined, formData: FormData) => {
-      console.log('🟡 submit start');
-
       try {
         formData.set('redirectTo', redirectTo);
 
@@ -34,6 +32,9 @@ export function LoginSheet({ isOpen, onClose }: Props) {
         if (!res) return undefined;
         const err = res[0];
         if (err) return err as ValidError;
+
+        onClose?.(); // 모달 닫기
+        router.refresh(); // 서버 props 갱신 (auth() 다시)
 
         return undefined;
       } catch (e) {

@@ -1,15 +1,18 @@
+'use client';
+
 type EventType = 'funeral' | 'wedding';
 
-const keyOf = (event: EventType) => `draftEid:${event}`;
+const keyOf = (userId: string, event: EventType) =>
+  `draftEid:${userId}:${event}`;
 
 export const eventCache = {
-  get(event: EventType) {
-    return localStorage.getItem(keyOf(event));
+  get(userId: string, event: EventType) {
+    return localStorage.getItem(keyOf(userId, event));
   },
-  set(event: EventType, eid: string) {
-    localStorage.setItem(keyOf(event), eid);
+  set(userId: string, event: EventType, eid: string) {
+    localStorage.setItem(keyOf(userId, event), eid);
   },
-  clear(event: EventType) {
-    localStorage.removeItem(keyOf(event));
+  clear(userId: string, event: EventType) {
+    localStorage.removeItem(keyOf(userId, event));
   },
 };

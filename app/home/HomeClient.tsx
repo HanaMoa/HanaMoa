@@ -2,24 +2,45 @@
 
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { MainHeader } from '@/components/common/MainHeader';
 import EventCard from '@/components/home/EventCard';
 import HomeBanner from '@/components/home/HomeBanner';
 import HomeMenuList from '@/components/home/HomeMenuList';
 import { LoginSheet } from '@/components/home/LoginSheet';
+import { syncDraftOwner } from '@/lib/info/draftOwner';
 
 type Props = { userName: string; eventCount: number };
 
 export default function HomeClient({ userName, eventCount }: Props) {
   const router = useRouter();
-  const { data: session, status } = useSession();
+  const { data: session, status, update } = useSession();
   const [loginOpen, setLoginOpen] = useState(false);
 
-  const requireAuth = (action: () => void) => {
+  // 로그인 사용자 변경 시 draft 소유자 동기화
+  useEffect(() => {
+    const userId = session?.user?.id;
+    if (!userId) return;
+
+    syncDraftOwner(String(userId));
+  }, [session?.user?.id]);
+
+  // 로그인 되면 모달 자동 닫기
+  useEffect(() => {
+    if (loginOpen && status === 'authenticated') setLoginOpen(false);
+  }, [loginOpen, status]);
+
+  const requireAuth = async (action: () => void) => {
     if (status === 'loading') return; // 세션 판별 중이면 아무것도 안 함
-    if (!session?.user) return setLoginOpen(true);
-    action();
+
+    // 이미 로그인
+    if (session?.user) return action();
+
+    // 세션 한 번 강제 갱신해보고 다시 판단
+    const fresh = await update();
+    if (fresh?.user) return action();
+
+    setLoginOpen(true);
   };
 
   return (
