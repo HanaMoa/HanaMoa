@@ -1,7 +1,7 @@
 'use client';
 
 import { ChevronDown, ChevronUp } from 'lucide-react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -34,6 +34,11 @@ export default function AccountDropdown({
   const [open, setOpen] = useState(false);
   const isDisabled = disabled || accounts.length === 0;
 
+  const selected = useMemo(() => {
+    if (!value) return null;
+    return accounts.find((a) => a.id === value) ?? null;
+  }, [accounts, value]);
+
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
       {/* Trigger */}
@@ -41,16 +46,33 @@ export default function AccountDropdown({
         <button
           type="button"
           aria-label="계좌 선택"
-          className="inline-flex h-9.5 items-center gap-2 rounded-xl bg-[#F6F7F9]/80 px-4 text-[#4b4b4b] shadow-sm ring-1 ring-black/10 hover:bg-[#F6F7F9] active:bg-[#F6F7F9] disabled:cursor-not-allowed disabled:opacity-70"
+          className="inline-flex h-[30px] w-fit items-center gap-2 rounded-xl bg-[#F6F7F9]/80 px-4 text-[#4b4b4b] shadow-sm ring-1 ring-black/10 hover:bg-[#F6F7F9] active:bg-[#F6F7F9] disabled:cursor-not-allowed disabled:opacity-70"
         >
-          <span className="font-semibold text-[14px] leading-none md:text-[14px] lg:text-[15px]">
-            계좌 선택
+          <div className="flex min-w-0 flex-1 items-center gap-2">
+            {selected ? (
+              <>
+                <span className="shrink-0 font-extrabold text-[14px] leading-none md:text-[14px] lg:text-[15px]">
+                  {selected.ownerName}
+                </span>
+                <div className="min-w-0 truncate text-[14px] leading-none md:text-[14px] lg:text-[15px]">
+                  <span className="ml-2">{selected.bank}</span>
+                  <span className="ml-1">{selected.account}</span>
+                </div>
+              </>
+            ) : (
+              <span className="font-semibold text-[14px] leading-none md:text-[14px] lg:text-[15px]">
+                계좌 선택
+              </span>
+            )}
+          </div>
+
+          <span className="flex shrink-0 items-center">
+            {open ? (
+              <ChevronUp className="h-5 w-5 text-[#7A7A7A]" />
+            ) : (
+              <ChevronDown className="h-5 w-5 text-[#7A7A7A]" />
+            )}
           </span>
-          {open ? (
-            <ChevronUp className="h-5 w-5 text-[#7A7A7A]" />
-          ) : (
-            <ChevronDown className="h-5 w-5 text-[#7A7A7A]" />
-          )}
         </button>
       </DropdownMenuTrigger>
 
