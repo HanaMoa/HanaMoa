@@ -2,15 +2,25 @@
 
 import { ImagePlus, X } from 'lucide-react';
 import Image from 'next/image';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
-type PhotoItem = { id: string; file: File; url: string };
+type PresignRes = { url: string; key: string };
+
+type UploadPhoto = {
+  id: string;
+  previewUrl: string;
+  photoKey: string | null; // 업로드 성공 후 s3 key
+  uploading: boolean;
+  error?: string;
+};
 
 type Props = {
-  value: PhotoItem[]; // 상위에서 상태 소유
-  onChange: (next: PhotoItem[]) => void;
+  value: UploadPhoto[]; // 상위에서 상태 소유
+  onChange: (next: UploadPhoto[]) => void;
   maxCount?: number; // default 15
   maxSizeMB?: number; // default 5
+  saveToGallery?: boolean; // 업로드 성공한 이미지 key들을 DB에 저장하고 싶다면 추가
+  disabled?: boolean;
 };
 
 const makeId = (file: File) => `${file.name}-${file.size}-${file.lastModified}`;
@@ -19,17 +29,133 @@ export function PhotoUpload({
   value,
   onChange,
   maxCount = 15, // 최대 15장
-  maxSizeMB = 5,
+  maxSizeMB = 100,
+  saveToGallery = true,
+  disabled = false,
 }: Props) {
   const fileRef = useRef<HTMLInputElement | null>(null);
 
-  const canAddMore = value.length < maxCount;
+  const [busy, setBusy] = useState(false);
+  const canAddMore = !disabled && !busy && value.length < maxCount;
+
+  // 언마운트 때만 revoke
+  // value 변경 때마다 revoke하면 프리뷰가 갑자기 사라질 수 있음
+  const latestValueRef = useRef<UploadPhoto[]>(value);
+  useEffect(() => {
+    latestValueRef.current = value;
+  }, [value]);
+
+  useEffect(() => {
+    return () => {
+      for (const p of latestValueRef.current) {
+        URL.revokeObjectURL(p.previewUrl);
+      }
+    };
+  }, []);
 
   const openPicker = () => {
-    if (!canAddMore) return;
+    if (!canAddMore || busy) return;
     fileRef.current?.click();
   };
-  const addFiles = (files: File[]) => {
+
+  const remove = (id: string) => {
+    const target = value.find((p) => p.id === id);
+    if (target) URL.revokeObjectURL(target.previewUrl);
+    onChange(value.filter((p) => p.id !== id));
+  };
+
+  const uploadFilesToS3 = async (files: File[], items: UploadPhoto[]) => {
+    // 1) presign 한번에 발급 (files.length 만큼)
+    const presignRes = await fetch('/api/presign', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        files: files.map((f) => ({ contentType: f.type })),
+      }),
+    });
+
+    if (!presignRes.ok) {
+      const text = await presignRes.text().catch(() => '');
+      throw new Error(`presign 실패 (${presignRes.status}) ${text}`);
+    }
+
+    // presign 응답이 배열/객체 둘 다 올 수 있게 안전 처리
+    const json = await presignRes.json();
+    const presignedList = (Array.isArray(json) ? json : [json]) as PresignRes[];
+
+    if (presignedList.length !== files.length) {
+      throw new Error('presign 응답 개수가 파일 개수와 다릅니다.');
+    }
+
+    // 2) PUT 업로드 (병렬)
+    const results = await Promise.allSettled(
+      files.map(async (file, idx) => {
+        const presigned = presignedList[idx];
+
+        const putRes = await fetch(presigned.url, {
+          method: 'PUT',
+          headers: { 'Content-Type': file.type },
+          body: file,
+        });
+
+        if (!putRes.ok) {
+          const text = await putRes.text().catch(() => '');
+          throw new Error(`S3 업로드 실패 (${putRes.status}) ${text}`);
+        }
+
+        return presigned.key;
+      }),
+    );
+
+    // 3) 결과를 items에 반영
+    const next = [...latestValueRef.current];
+    const keysToSave: string[] = [];
+
+    items.forEach((it, idx) => {
+      const r = results[idx];
+      const i = next.findIndex((p) => p.id === it.id);
+      if (i < 0) return;
+
+      if (r.status === 'fulfilled') {
+        next[i] = {
+          ...next[i],
+          uploading: false,
+          photoKey: r.value,
+          error: undefined,
+        };
+        keysToSave.push(r.value);
+      } else {
+        next[i] = {
+          ...next[i],
+          uploading: false,
+          photoKey: null,
+          error: r.reason?.message ?? '업로드 실패',
+        };
+      }
+    });
+
+    onChange(next);
+
+    // 4) (선택) Gallery에 key 저장
+    if (saveToGallery && keysToSave.length > 0) {
+      const saveRes = await fetch('/api/gallery', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ keys: keysToSave }),
+      });
+
+      if (!saveRes.ok) {
+        // 업로드는 됐는데 DB 저장만 실패한 상태
+        console.error(
+          'gallery 저장 실패:',
+          saveRes.status,
+          await saveRes.text().catch(() => ''),
+        );
+      }
+    }
+  };
+
+  const addFiles = async (files: File[]) => {
     const remaining = maxCount - value.length;
     if (remaining <= 0) {
       alert(`최대 ${maxCount}장까지 업로드할 수 있어요.`);
@@ -37,7 +163,8 @@ export function PhotoUpload({
     }
 
     const existing = new Set(value.map((p) => p.id));
-    const next: PhotoItem[] = [];
+
+    const selected: { file: File; id: string }[] = [];
 
     let dupCount = 0;
     let nonImageCount = 0;
@@ -45,7 +172,7 @@ export function PhotoUpload({
     let overLimitCount = 0;
 
     for (const file of files) {
-      if (next.length >= remaining) {
+      if (selected.length >= remaining) {
         overLimitCount += 1;
         continue;
       }
@@ -66,33 +193,27 @@ export function PhotoUpload({
         continue;
       }
 
-      next.push({ id, file, url: URL.createObjectURL(file) });
+      selected.push({ file, id });
       existing.add(id);
     }
 
-    // 원인별 에러 메세지
-    if (next.length === 0) {
+    if (selected.length === 0) {
       if (dupCount > 0 && nonImageCount === 0 && tooBigCount === 0) {
         alert('이미 업로드한 사진입니다.');
         return;
       }
-
       if (nonImageCount > 0) {
         alert('이미지 파일만 업로드할 수 있습니다.');
         return;
       }
-
       if (tooBigCount > 0) {
         alert(`${maxSizeMB}MB 이하 이미지만 업로드 가능합니다.`);
         return;
       }
-
-      // 기타 케이스(남은 칸 없음 등)
       alert('사진을 추가할 수 없습니다.');
       return;
     }
 
-    // 일부는 추가되고 일부는 제외된 경우
     if (
       dupCount > 0 ||
       nonImageCount > 0 ||
@@ -104,31 +225,54 @@ export function PhotoUpload({
       if (nonImageCount > 0) msgs.push(`이미지 아님 ${nonImageCount}`);
       if (tooBigCount > 0) msgs.push(`용량 초과 ${tooBigCount}`);
       if (overLimitCount > 0) msgs.push(`최대 초과 ${overLimitCount}`);
-
       alert(`일부 파일이 제외되었어요. (${msgs.join(', ')})`);
     }
 
-    onChange([...value, ...next]);
+    // 먼저 로컬 프리뷰 아이템을 추가(업로드 상태로)
+    const items: UploadPhoto[] = selected.map(({ file, id }) => ({
+      id,
+      previewUrl: URL.createObjectURL(file),
+      photoKey: null,
+      uploading: true,
+    }));
+
+    onChange([...value, ...items]);
+
+    // 업로드
+    setBusy(true);
+    try {
+      await uploadFilesToS3(
+        selected.map((s) => s.file),
+        items,
+      );
+    } catch (e: any) {
+      console.error(e);
+      alert(e?.message ?? '업로드에 실패했습니다.');
+
+      // 전체 실패면 방금 추가한 아이템들을 error로 표시
+      const ids = new Set(items.map((it) => it.id));
+      const next: UploadPhoto[] = [...value, ...items].map((p) =>
+        ids.has(p.id)
+          ? {
+              ...p,
+              uploading: false,
+              photoKey: null,
+              error: (e as Error)?.message ?? '업로드 실패',
+            }
+          : p,
+      );
+
+      onChange(next);
+    } finally {
+      setBusy(false);
+    }
   };
 
-  const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files ?? []);
-    if (files.length) addFiles(files);
+    if (files.length) await addFiles(files);
     e.target.value = '';
   };
-
-  const remove = (id: string) => {
-    const target = value.find((p) => p.id === id);
-    if (target) URL.revokeObjectURL(target.url);
-    onChange(value.filter((p) => p.id !== id));
-  };
-
-  // 언마운트 시 정리
-  useEffect(() => {
-    return () => {
-      for (const p of value) URL.revokeObjectURL(p.url);
-    };
-  }, []);
 
   return (
     <div className="flex flex-col gap-2">
@@ -150,12 +294,24 @@ export function PhotoUpload({
             aria-label="업로드된 사진"
           >
             <Image
-              src={p.url}
+              src={p.previewUrl}
               alt="photo"
               fill
               className="bg-[#E0E1E6] object-contain"
               sizes="(max-width: 600px) 33vw, 200px"
             />
+
+            {/* 업로드/실패 */}
+            {p.uploading && (
+              <div className="absolute inset-0 flex items-center justify-center bg-black/40 text-white text-xs">
+                업로드 중...
+              </div>
+            )}
+            {!p.uploading && p.error && (
+              <div className="absolute inset-0 flex items-center justify-center bg-black/60 p-2 text-center text-[10px] text-white">
+                업로드 실패
+              </div>
+            )}
 
             <button
               type="button"
@@ -171,10 +327,11 @@ export function PhotoUpload({
           </button>
         ))}
 
-        {canAddMore && (
+        {value.length < maxCount && (
           <button
             type="button"
             onClick={openPicker}
+            disabled={!canAddMore}
             className="relative aspect-square rounded-lg bg-[#E0E1E6] text-gray-400"
             aria-label="사진 추가"
           >
@@ -195,6 +352,7 @@ export function PhotoUpload({
         multiple
         className="hidden"
         onChange={onFileChange}
+        disabled={!canAddMore}
       />
     </div>
   );

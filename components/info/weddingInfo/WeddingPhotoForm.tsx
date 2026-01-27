@@ -3,7 +3,13 @@
 import { useEffect, useMemo, useState } from 'react';
 import { PhotoUpload } from './PhotoUpload';
 
-type PhotoItem = { id: string; file: File; url: string };
+type UploadPhoto = {
+  id: string;
+  previewUrl: string;
+  photoKey: string | null;
+  uploading: boolean;
+  error?: string;
+};
 
 type Props = {
   onValidChange?: (ok: boolean) => void;
@@ -12,16 +18,21 @@ type Props = {
 
 export function WeddingPhotoForm({ onValidChange, disabled }: Props) {
   const [title, setTitle] = useState('');
-  const [photos, setPhotos] = useState<PhotoItem[]>([]);
+  const [photos, setPhotos] = useState<UploadPhoto[]>([]);
 
-  const photoUrls = useMemo(
-    () => photos.map((p) => p.url).filter(Boolean),
+  // 업로드 완료된 key 배열
+  const photoKeys = useMemo(
+    () =>
+      photos
+        .filter((p) => !!p.photoKey && !p.uploading && !p.error)
+        .map((p) => p.photoKey!),
     [photos],
   );
 
+  // 제목 + 사진 1장 이상 업로드 완료 시
   useEffect(() => {
-    onValidChange?.(title.trim().length > 0 && photoUrls.length > 0);
-  }, [title, photoUrls.length, onValidChange]);
+    onValidChange?.(title.trim().length > 0 && photoKeys.length > 0);
+  }, [title, photoKeys.length, onValidChange]);
 
   return (
     <div className="flex flex-col gap-4 pt-4">
@@ -35,11 +46,19 @@ export function WeddingPhotoForm({ onValidChange, disabled }: Props) {
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="김철수 ♥ 이영희 결혼합니다"
+          disabled={disabled}
         />
       </label>
 
-      <PhotoUpload value={photos} onChange={setPhotos} maxCount={15} />
-      <input type="hidden" name="photos" value={JSON.stringify(photoUrls)} />
+      <PhotoUpload
+        value={photos}
+        onChange={setPhotos}
+        maxCount={15}
+        disabled={disabled}
+      />
+
+      {/* server action으로 S3 key 배열 전달 */}
+      <input type="hidden" name="photos" value={JSON.stringify(photoKeys)} />
 
       <p className="pt-1 font-medium text-[#00A998] text-[10px] md:text-[11px] lg:text-xs">
         *첨부하신 사진은 청첩장에 사용됩니다.
