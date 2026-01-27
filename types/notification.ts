@@ -16,7 +16,7 @@ export interface NotificationItemProps {
   user: NotificationUser;
   type: NotificationType;
   message: string;
-  createdAt: string;
+  createdAt: string | Date;
   isRead: boolean;
   thumbnailUrl?: string;
   onDelete: () => void;
