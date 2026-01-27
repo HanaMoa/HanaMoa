@@ -140,7 +140,7 @@ export default function MemorialDashboardPage() {
         <button
           type="button"
           className="h-[52px] w-full cursor-pointer rounded-2xl bg-black font-semibold text-[15px] text-white"
-          onClick={() => router.push(`/message`)}
+          onClick={() => router.push(`/message?eventId=${eventId}&eventType=memorial`)}
         >
           추모 메시지 보내기
         </button>
