@@ -7,7 +7,7 @@ import { X } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useMemo, useState } from 'react';
 
-// ✅ 프로젝트에 이미 있을 가능성이 높은 Bank 타입/은행목록 사용
+// 프로젝트에 이미 있을 가능성이 높은 Bank 타입/은행목록 사용
 // BankSelectModal/Button가 동일 타입을 쓰고 있음:contentReference[oaicite:3]{index=3}:contentReference[oaicite:4]{index=4}
 import type { Bank } from '@/lib/bank';
 import { BANKS } from '@/lib/bank';
@@ -21,7 +21,7 @@ export default function TransactionPage() {
   const [bankOpen, setBankOpen] = useState(false);
   const [selectedBank, setSelectedBank] = useState<Bank | null>(null);
 
-  // ✅ 계좌번호는 숫자만 입력 + 최대 20자리
+  // 계좌번호는 숫자만 입력 + 최대 20자리
   const handleKeypadInput = (value: string) => {
     // NumberKeypad에서 "+*#" 버튼은 onInput('+')로 전달됨:contentReference[oaicite:5]{index=5}
     // 계좌번호 화면에서는 숫자만 허용
@@ -35,7 +35,7 @@ export default function TransactionPage() {
 
   // 스킵버튼 function
   const handleSkip = () => {
-    // ✅ 건너뛰기 시 메시지 페이지로 이동 (flow=transaction)
+    // 건너뛰기 시 메시지 페이지로 이동 (flow=transaction)
     router.push('/message?flow=transaction');
   };
 
@@ -61,13 +61,13 @@ export default function TransactionPage() {
   };
 
   return (
-    <div className="mx-auto h-dvh w-full max-w-[800px] bg-white">
+    <div className="flex flex-col h-dvh w-full max-w-[800px] bg-white">
       {/* 상단 헤더 */}
       <header className="relative flex h-14 items-center px-4">
         <button
           type="button"
           onClick={() => router.back()}
-          className="rounded-full p-2 hover:bg-gray-100"
+          className="rounded-full p-2 hover:bg-gray-100 cursor-pointer"
           aria-label="닫기"
         >
           <X className="h-6 w-6" />
@@ -77,7 +77,7 @@ export default function TransactionPage() {
           누구에게 보낼까요?
         </h1>
 
-        {/* ✅ 오른쪽: 건너뛰기 (전송 모드일 때는 숨김) */}
+        {/* 오른쪽: 건너뛰기 (전송 모드일 때는 숨김) */}
         {!isTransferMode && (
           <button
             type="button"
@@ -90,45 +90,40 @@ export default function TransactionPage() {
       </header>
 
       {/* 본문 */}
-      <main className="px-5 pt-3">
+      <main className="px-5 py-3">
         {/* 계좌번호 입력(키패드 입력이므로 readOnly) */}
-        <div className="mt-2">
+        <div className="">
           <label className="sr-only" htmlFor="accountNumber">
             계좌번호 입력
           </label>
           <input
             id="accountNumber"
             value={accountNumber}
-            readOnly
+            onChange={(e) =>
+              setAccountNumber(e.target.value.replace(/[^0-9]/g, ''))
+            }
+            inputMode="numeric"
             placeholder="계좌번호 입력"
-            className="h-14 w-full rounded-2xl border border-[#7fd1c8] px-5 text-[16px] outline-none focus:ring-2 focus:ring-[#1EA698]/30"
+            className="h-12 w-full cursor-text rounded-xl border border-gray-200 px-5 text-[16px] outline-none focus:ring-2 focus:ring-[#7fd1c8]"
           />
-          <p className="mt-2 px-1 text-[12px] text-gray-400">
+
+          <p className="mt-2 mb-4 px-2 text-[12px] text-gray-400">
             숫자 키패드로 입력해 주세요.
           </p>
         </div>
 
-        {/* ✅ 은행 선택: BankSelectButton 사용 */}
-        <div className="mt-4 flex items-center gap-3">
+        {/* 은행 선택: BankSelectButton 사용 */}
+        <div className="flex items-center gap-3">
           <BankSelectButton
             value={selectedBank}
             placeholder="은행 선택"
             onClick={() => setBankOpen(true)}
           />
 
-          {/* 오른쪽 안내 텍스트(원하면 제거 가능) */}
-          <div className="flex flex-1 flex-col justify-center">
-            <div className="text-[13px] text-gray-500">
-              은행 또는 증권사를 선택하세요
-            </div>
-            <div className="mt-1 font-semibold text-[14px] text-gray-900">
-              {selectedBank ? selectedBank.name : '미선택'}
-            </div>
-          </div>
         </div>
       </main>
 
-      {/* ✅ 은행 선택: BankSelectModal 사용 */}
+      {/* 은행 선택: BankSelectModal 사용 */}
       <BankSelectModal
         isOpen={bankOpen}
         onClose={() => setBankOpen(false)}
@@ -142,14 +137,14 @@ export default function TransactionPage() {
       />
 
       {/* 하단 고정: 완료 + 키패드 */}
-      <div className="fixed right-0 bottom-0 left-0 mx-auto w-full max-w-[550px]">
+      <div className="mt-auto">
         {/* 완료 바 */}
-        <div className="flex items-center justify-end border-gray-200 border-t bg-gray-50 px-4 py-2">
+        <div className="flex items-center justify-end border-gray-100 border-t px-4 py-2">
           <button
             type="button"
             onClick={handleDone}
             disabled={!canSubmit}
-            className={`rounded-full px-3 py-1 font-semibold text-[14px] ${
+            className={`rounded-full font-semibold text-[14px] cursor-pointer ${
               canSubmit ? 'text-[#1EA698]' : 'text-gray-300'
             }`}
           >
@@ -157,16 +152,11 @@ export default function TransactionPage() {
           </button>
         </div>
 
-        <div className="bg-gray-50 pb-[env(safe-area-inset-bottom)]">
-          <div className="mx-auto max-w-[400px] px-3 py-2">
-            <div className="origin-bottom">
-              <NumberKeypad
-                onInput={handleKeypadInput}
-                onDelete={handleKeypadDelete}
-              />
-            </div>
-          </div>
-        </div>
+        {/* 키패드 */}
+        <NumberKeypad
+          onInput={handleKeypadInput}
+          onDelete={handleKeypadDelete}
+        />
       </div>
     </div>
   );

@@ -1,8 +1,8 @@
 'use client';
 
+import type { Bank } from '@/lib/bank';
 import { ChevronDown } from 'lucide-react';
 import Image from 'next/image';
-import type { Bank } from '@/lib/bank';
 
 type Props = {
   value?: Bank | null;
@@ -19,32 +19,36 @@ export function BankSelectButton({
     <button
       type="button"
       onClick={onClick}
-      className="flex h-[100px] w-[120px] shrink-0 flex-col items-center justify-center gap-2 rounded-xl border border-[#E6E6E6] bg-white text-sm focus:outline-none focus:ring-2 focus:ring-[#1EA698]/30 active:bg-black/[0.02]"
+      className="flex w-full items-center justify-between rounded-xl border border-[#E6E6E6] bg-white px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#1EA698]/30 active:bg-black/2 cursor-pointer hover:bg-gray-100"
       aria-label="은행 선택"
     >
-      {/* 아이콘 영역 */}
-      <div className="relative h-18 w-18">
-        {value?.icon ? (
-          <Image
-            src={value.icon}
-            alt={value.name}
-            fill
-            className="object-contain"
-          />
-        ) : (
-          <ChevronDown className="h-6 w-6 text-black/40" />
-        )}
+      <div className="flex items-center gap-3">
+        {/* 아이콘 영역 */}
+        <div className="relative flex h-6 w-6 items-center justify-center">
+          {value?.icon ? (
+            <Image
+              src={value.icon}
+              alt={value.name}
+              fill
+              className="object-contain"
+            />
+          ) : (
+            <div className="h-6 w-6 rounded-full bg-gray-100" />
+          )}
+        </div>
+
+        {/* 텍스트 */}
+        <span
+          className={[
+            'font-medium text-[15px]',
+            value ? 'text-black' : 'text-gray-400',
+          ].join(' ')}
+        >
+          {value?.name ?? '은행 또는 증권사를 선택하세요'}
+        </span>
       </div>
 
-      {/* 텍스트 */}
-      <span
-        className={[
-          'font-semibold text-[12px]',
-          value ? 'text-black' : 'text-black/40',
-        ].join(' ')}
-      >
-        {value?.name ?? placeholder}
-      </span>
+      <ChevronDown className="h-5 w-5 text-gray-400" />
     </button>
   );
 }

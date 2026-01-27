@@ -20,7 +20,7 @@ export default function TransferAmountPage() {
   const router = useRouter();
   const sp = useSearchParams();
 
-  // ✅ 이전 “계좌번호 입력” 페이지에서 넘어오는 값들 (없으면 기본값)
+  // 이전 “계좌번호 입력” 페이지에서 넘어오는 값들 (없으면 기본값)
   const toName = sp.get('toName') ?? '정그린';
   const bank = sp.get('bank') ?? '국민은행';
   const account = sp.get('account') ?? '55990204144435';
@@ -98,7 +98,7 @@ export default function TransferAmountPage() {
   };
 
   return (
-    <div className="mx-auto h-dvh w-full max-w-[600px] overflow-y-auto bg-white px-6 pt-10 pb-[420px]">
+    <div className="flex flex-col bg-white h-dvh">
       {/* 상단 헤더 */}
       <header className="relative flex h-14 items-center px-4">
         <h1 className="-translate-x-1/2 absolute left-1/2 font-semibold text-[16px]">
@@ -151,10 +151,10 @@ export default function TransferAmountPage() {
         </div>
       </section>
 
-      {/* ✅ 하단 고정 영역 */}
-      <div className="-translate-x-1/2 fixed bottom-0 left-1/2 z-50 w-full max-w-[550px] bg-white">
+      {/* 하단 고정 영역 */}
+      <div className="mt-auto">
         {/* 빠른 금액 버튼 */}
-        <div className="border-gray-200 border-t bg-gray-50 px-4 pt-3">
+        <div className="border-gray-200 bg-gray-50 px-4 py-3">
           <div className="mx-auto grid max-w-[520px] grid-cols-5 gap-2">
             {[
               { label: '1만', add: 10_000 },
@@ -183,12 +183,12 @@ export default function TransferAmountPage() {
         </div>
 
         {/* 완료 바 */}
-        <div className="flex items-center justify-end bg-gray-50 px-4 py-2">
+        <div className="flex items-center border-t border-gray-100 justify-end px-4 py-2">
           <button
             type="button"
             onClick={handleDone}
             disabled={!canSubmit}
-            className={`rounded-full px-3 py-1 font-semibold text-[14px] ${
+            className={`rounded-full font-semibold text-[14px] cursor-pointer ${
               canSubmit ? 'text-[#1EA698]' : 'text-gray-300'
             }`}
           >
@@ -197,10 +197,8 @@ export default function TransferAmountPage() {
         </div>
 
         {/* 키패드 */}
-        <div className="bg-gray-50 pb-[env(safe-area-inset-bottom)]">
-          <div className="mx-auto max-w-[400px] px-3 py-2">
-            <NumberKeypad onInput={handleInput} onDelete={handleDelete} />
-          </div>
+        <div className="">
+          <NumberKeypad onInput={handleInput} onDelete={handleDelete} />
         </div>
       </div>
     </div>

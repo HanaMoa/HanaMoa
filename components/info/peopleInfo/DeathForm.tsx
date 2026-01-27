@@ -3,6 +3,7 @@
 import { ImagePlus } from 'lucide-react';
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
+import { validateKorEngNameNoSpace } from '@/lib/regExp';
 
 export function DeathForm({
   onValidChange,
@@ -15,9 +16,21 @@ export function DeathForm({
   const [photo, setPhoto] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
+  // 공백 없이 한글, 영문만 허용
+  const nameRegex = /^[A-Za-z가-힣]+$/;
+  const [nameError, setNameError] = useState<string | null>(null);
+  const [isComposing, setIsComposing] = useState(false);
+
+  const applyValidate = (v: string) => {
+    setNameError(validateKorEngNameNoSpace(v));
+  };
+
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
+    const ok = validateKorEngNameNoSpace(name) === null;
+    onValidChange?.(ok);
+
     onValidChange?.(name.trim().length > 0);
   }, [name, photo, onValidChange]);
 
@@ -69,12 +82,27 @@ export function DeathForm({
         </span>
         <input
           name="deadName"
-          className="h-[45px] rounded-lg border border-[#E6E6E6] bg-white px-4 text-sm md:text-base lg:text-lg"
+          className={[
+            'h-[45px] rounded-lg border bg-white px-4 text-sm md:text-base lg:text-lg',
+            nameError ? 'border-red-500' : 'border-[#E6E6E6]',
+          ].join(' ')}
           value={name}
-          onChange={(e) => setName(e.target.value)}
+          onCompositionStart={() => setIsComposing(true)}
+          onCompositionEnd={(e) => {
+            setIsComposing(false);
+            const v = e.currentTarget.value;
+            setName(v);
+            applyValidate(v);
+          }}
+          onChange={(e) => {
+            const v = e.target.value;
+            setName(v);
+            if (!isComposing) applyValidate(v);
+          }}
           disabled={disabled}
           placeholder="이름"
         />
+        {nameError && <p className="mt-1 text-red-500 text-xs">{nameError}</p>}
       </label>
 
       <div className="flex flex-col gap-1 pt-2">

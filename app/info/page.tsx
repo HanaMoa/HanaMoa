@@ -1,60 +1,16 @@
 'use client';
 
-import { Baby, Balloon, Flower2, Gift, HeartHandshake } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { MainHeader } from '@/components/common/MainHeader';
 import { SingleButton } from '@/components/common/SingleButton';
+import { EventSelectList } from '@/components/info/EventSelectList';
+import { EVENT_ITEMS, type EventKey } from '@/components/info/eventItem';
 import { StepIndicator } from '@/components/info/StepIndicator';
-
-type EventKey =
-  | 'wedding'
-  | 'funeral'
-  | 'birthday'
-  | 'firstBirthday'
-  | 'party'
-  | 'etc';
-
-type EventItem = {
-  key: EventKey;
-  title: string;
-  icon: React.ReactNode;
-};
 
 export default function Page() {
   const router = useRouter();
   const [selected, setSelected] = useState<EventKey | null>(null);
-
-  const items: EventItem[] = useMemo(
-    () => [
-      {
-        key: 'wedding',
-        title: '결혼을 준비하고 있어요',
-        icon: <HeartHandshake className="h-5 w-5" />,
-      },
-      {
-        key: 'funeral',
-        title: '장례식을 준비하고 있어요',
-        icon: <Flower2 className="h-5 w-5" />,
-      },
-      {
-        key: 'birthday',
-        title: '생일을 준비하고 있어요',
-        icon: <Gift className="h-5 w-5" />,
-      },
-      {
-        key: 'firstBirthday',
-        title: '돌잔치를 준비하고 있어요',
-        icon: <Baby className="h-5 w-5" />,
-      },
-      {
-        key: 'party',
-        title: '수연을 준비하고 있어요',
-        icon: <Balloon className="h-5 w-5" />,
-      },
-    ],
-    [],
-  );
 
   const onNext = () => {
     if (!selected) return;
@@ -91,40 +47,12 @@ export default function Page() {
           준비중이신가요?
         </h2>
 
-        {/* Cards */}
-        <div className="mt-6 flex flex-col gap-3">
-          {items.map((item) => {
-            const active = selected === item.key;
-
-            return (
-              <button
-                key={item.key}
-                type="button"
-                onClick={() => setSelected(item.key)}
-                className={[
-                  'flex w-full items-center gap-3 rounded-xl border px-4 py-4 text-left',
-                  'transition',
-                  active
-                    ? 'border-[#00A998]'
-                    : 'border-black/10 hover:bg-black/[0.02]',
-                ].join(' ')}
-              >
-                <span
-                  className={[
-                    'inline-flex h-10 w-10 items-center justify-center rounded-lg',
-                    active ? 'text-[#00A998]' : 'text-black/70',
-                  ].join(' ')}
-                >
-                  {item.icon}
-                </span>
-
-                <span className="font-semibold text-black/85 text-xs tracking-[-0.2px] md:text-sm lg:text-base">
-                  {item.title}
-                </span>
-              </button>
-            );
-          })}
-        </div>
+        {/* 이벤트 카드 리스트트 */}
+        <EventSelectList
+          items={EVENT_ITEMS}
+          selected={selected}
+          onSelect={setSelected}
+        />
 
         <button
           type="button"
@@ -146,37 +74,5 @@ export default function Page() {
         </div>
       </section>
     </main>
-  );
-}
-
-function StepDot({
-  step,
-  state,
-}: {
-  step: number;
-  state: 'active' | 'inactive';
-}) {
-  return (
-    <div
-      className={[
-        'grid h-6 w-6 place-items-center rounded-full font-bold text-[12px]',
-        state === 'active'
-          ? 'bg-[#00A998] text-white'
-          : 'bg-black/10 text-black/40',
-      ].join(' ')}
-    >
-      {step}
-    </div>
-  );
-}
-
-function StepLine({ active = false }: { active?: boolean }) {
-  return (
-    <div
-      className={[
-        'mx-2 h-[2px] flex-1 rounded',
-        active ? 'bg-[#00A998]' : 'bg-black/10',
-      ].join(' ')}
-    />
   );
 }

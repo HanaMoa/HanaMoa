@@ -9,14 +9,16 @@ import { formatDate, formatKoreaDate } from '@/lib/dateTime';
 type Props = {
   value: string; // 'YYYY-MM-DD'
   onChange: (v: string) => void; // 확정 값
+  disabled?: boolean;
 };
 
-export function DateField({ value, onChange }: Props) {
+export function DateField({ value, onChange, disabled }: Props) {
   const [open, setOpen] = useState(false);
   // Temp 값은 그냥 닫으면 저장X. 확인 눌렀을 때만 저장
   const [temp, setTemp] = useState<Date | null>(null);
 
   const openSheet = () => {
+    if (disabled) return;
     setTemp(value ? new Date(value) : new Date());
     setOpen(true);
   };
@@ -29,6 +31,9 @@ export function DateField({ value, onChange }: Props) {
 
   return (
     <>
+      {/* 서버 전송용 hidden input */}
+      <input type="hidden" name="date" value={value} />
+
       <label
         htmlFor="date"
         className="mb-2 block font-semibold text-black text-sm md:text-base lg:text-lg"

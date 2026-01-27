@@ -7,6 +7,7 @@ import { MainHeader } from '@/components/common/MainHeader';
 import { SingleButton } from '@/components/common/SingleButton';
 import AccountDropdown from '@/components/event/AccountDropdown';
 import SpeechBubble from '@/components/event/SpeechBubble';
+import type { eventhost_role } from '@/lib/generated/prisma/client/enums';
 
 // image 경로
 const BG_SRC = '/images/event/memorial/lounge_bg.png';
@@ -18,12 +19,14 @@ const IC_MESSAGE_SRC = '/images/event/memorial/lounge_ic_message.png';
 type Props = {
   event: {
     eventId: string;
+    userId: string;
     date: Date;
     location: string | null;
     message: string | null;
     hosts: Array<{
       id: bigint | number | string;
       name: string;
+      role: eventhost_role;
       accounts: Array<{
         id: bigint | number | string;
         bank: string;
@@ -44,20 +47,35 @@ export default function MemorialLoungePage({ event }: Props) {
       bank: string;
       account: string;
       ownerName: string;
+      ownerRole: eventhost_role;
+      isPrimary: boolean;
     }> = [];
 
     for (const host of event.hosts ?? []) {
       for (const acc of host.accounts ?? []) {
+        const isPrimary = host.role === 'CHIEF_MOURNER';
         items.push({
           id: String(acc.id),
           bank: acc.bank,
           account: acc.account,
           ownerName: host.name,
+          ownerRole: host.role,
+          isPrimary,
         });
       }
     }
     return items;
   }, [event.hosts]);
+
+  // 발인 날짜 - event date가 바뀔 때만 다시 실행
+  const dateText = useMemo(() => {
+    return Intl.DateTimeFormat('ko-KR', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      weekday: 'long',
+    }).format(new Date(event.date));
+  }, [event.date]);
 
   const handleSendMoney = () => {
     // 기본 계좌 선택 (첫 번째)
@@ -83,16 +101,6 @@ export default function MemorialLoungePage({ event }: Props) {
 
     router.push(`/transaction/amount?${params.toString()}`);
   };
-
-  // 발인 날짜 - event date가 바뀔 때만 다시 실행
-  const dateText = useMemo(() => {
-    return Intl.DateTimeFormat('ko-KR', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      weekday: 'long',
-    }).format(new Date(event.date));
-  }, [event.date]);
 
   return (
     <div className="flex min-h-screen w-full flex-col">
@@ -120,12 +128,14 @@ export default function MemorialLoungePage({ event }: Props) {
           <div className="pointer-events-auto absolute top-3 right-0 left-0 z-20 px-4">
             <div className="flex items-center gap-3">
               {/* 계좌 리스트 */}
-              <AccountDropdown accounts={accounts} className="bg-white/80" />
+              <AccountDropdown accounts={accounts} />
 
               {/* 발인 날짜 */}
-              <div className="flex h-9.5 flex-1 items-center gap-2 rounded-xl bg-black/15 px-3 text-white backdrop-blur-sm md:px-4 lg:px-5">
-                <span className="shrink-0 font-semibold text-[15px]">발인</span>
-                <span className="truncate text-[15px] text-white/90 md:text-[14px] lg:text-[15px]">
+              <div className="flex h-9.5 flex-1 items-center gap-2 rounded-xl bg-black/15 px-4 text-white backdrop-blur-sm md:px-4 lg:px-5">
+                <span className="shrink-0 font-semibold text-[14px] md:text-[14px] lg:text-[15px]">
+                  발인
+                </span>
+                <span className="truncate text-[14px] text-white/90 md:text-[14px] lg:text-[15px]">
                   {dateText}
                 </span>
               </div>
@@ -230,7 +240,7 @@ export default function MemorialLoungePage({ event }: Props) {
             <div className="pointer-events-auto mx-auto flex w-full justify-center px-4">
               <SingleButton
                 onClick={handleSendMoney}
-                className="h-[54px] w-[360px] rounded-[14px] bg-[#232325] font-semibold text-[16px] text-white hover:bg-[#EF5A6E]/90 active:bg-[#EF5A6E]/80 md:w-[360px] md:text-[16px] lg:w-[560px] lg:text-[18px]"
+                className="h-[54px] w-[360px] rounded-[14px] bg-[#232325] font-semibold text-[16px] text-white hover:bg-[#232325]/90 active:bg-[#232325]/80 md:w-[360px] md:text-[16px] lg:w-[560px] lg:text-[18px]"
               >
                 조의금 · 추모 메시지 보내기
               </SingleButton>

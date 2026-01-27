@@ -42,7 +42,7 @@ export default function TransferEventPage() {
   };
 
   return (
-    <div className="mx-auto h-dvh w-full max-w-[600px] overflow-y-auto bg-white px-6 pt-10 pb-10">
+    <div className="mx-auto h-dvh w-full max-w-[600px] overflow-y-auto bg-white px-6">
       {/* 상단 헤더: amount 페이지 규격 유지 */}
       <header className="relative flex h-14 items-center px-4">
         <h1 className="-translate-x-1/2 absolute left-1/2 font-semibold text-[16px]">

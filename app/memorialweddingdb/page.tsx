@@ -172,7 +172,7 @@ export default function HanamoaPage() {
                           </p>
 
                           <p className="font-medium text-[12px] text-gray-900">
-                            {it.eventHost?.name ?? '-'}
+                            {it.name ?? '-'}
                           </p>
 
                           {!!it.message && (

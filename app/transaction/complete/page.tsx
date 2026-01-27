@@ -56,48 +56,7 @@ export default function TransferCompletePage() {
 
   const amountLabel = useMemo(() => `${formatWon(amount)}원`, [amount]);
 
-  const shareText = useMemo(() => {
-    const rel = relationLabel(relationType);
-    const msg = eventMessage(eventType);
 
-    return `${toName} ${rel ? rel + '에게 ' : ''}${msg}.
-${toBank} ${toName}님에게 ${amountLabel}을 보냈어요.
-입금계좌: ${toBank} ${toAccount}
-출금계좌: ${fromBank} ${fromAccount}`;
-  }, [
-    toName,
-    relationType,
-    eventType,
-    toBank,
-    toAccount,
-    fromBank,
-    fromAccount,
-    amountLabel,
-  ]);
-
-  const handleShare = async () => {
-    try {
-      // Web Share API (모바일에서 잘 됨)
-      if (typeof navigator !== 'undefined' && 'share' in navigator) {
-        await navigator.share({
-          title: '완료',
-          text: shareText,
-        });
-        return;
-      }
-
-      // fallback: 클립보드 복사
-      if (typeof navigator !== 'undefined' && (navigator as any).clipboard?.writeText) {
-        await (navigator as any).clipboard.writeText(shareText);
-        alert('공유 내용을 클립보드에 복사했어요.');
-        return;
-      }
-
-      alert(shareText);
-    } catch {
-      // 사용자가 공유 취소한 경우도 여기로 올 수 있음 → 조용히 무시하거나 안내
-    }
-  };
 
   const eventId = sp.get('eventId');
 
@@ -113,7 +72,7 @@ ${toBank} ${toName}님에게 ${amountLabel}을 보냈어요.
   };
 
   return (
-    <div className="mx-auto h-dvh w-full max-w-[600px] bg-white px-6 pt-10 pb-[120px]">
+    <div className="flex flex-col justify-between mx-auto h-dvh w-full max-w-[600px] bg-white px-6 py-10">
       {/* 상단 타이틀 */}
       <header className="relative flex h-14 items-center px-4">
         <h1 className="-translate-x-1/2 absolute left-1/2 font-semibold text-[16px]">
@@ -145,11 +104,8 @@ ${toBank} ${toName}님에게 ${amountLabel}을 보냈어요.
           )}
         </div>
 
-        {/* (PDF에 있는 작은 버튼들 느낌 - 필요 없으면 삭제 가능) */}
-
       </section>
 
-      {/* 계좌 정보 */}
       {/* 계좌 정보 */}
       {(!lastAction || lastAction === 'relation') && (
         <section className="mx-auto mt-8 w-full max-w-[520px] rounded-2xl bg-white">
@@ -170,24 +126,11 @@ ${toBank} ${toName}님에게 ${amountLabel}을 보냈어요.
         </section>
       )}
 
-      {/* 하단 버튼 (PDF처럼 2개) */}
-      <div className="-translate-x-1/2 fixed bottom-0 left-1/2 z-50 w-full max-w-[600px] bg-white px-6 pb-[env(safe-area-inset-bottom)]">
-        <div className="flex gap-3 py-4">
-          <div className="flex-1">
-            <SingleButton
-              onClick={handleShare}
-              className="w-full bg-black/20 text-black/70 hover:bg-black/30"
-            >
-              공유
-            </SingleButton>
-          </div>
-
-          <div className="flex-1">
-            <SingleButton onClick={handleConfirm} className="w-full">
-              확인
-            </SingleButton>
-          </div>
-        </div>
+      {/* 하단 확인 버튼 */}
+      <div className="">
+        <SingleButton onClick={handleConfirm} className="w-full cursor-pointer">
+          확인
+        </SingleButton>
       </div>
     </div>
   );
