@@ -1,3 +1,5 @@
+// app/event/wedding/[eventId]/page.tsx
+
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import WeddingLoungePage from './LoungePage';
