@@ -113,10 +113,8 @@ export default function WeddingLoungePage({ event }: Props) {
         if (!res.ok) throw new Error('status not ok');
         const data: { isLive?: boolean } = await res.json();
         if (mounted) setIsLive(Boolean(data.isLive));
-        setIsLive(true);
       } catch {
         if (mounted) setIsLive(false);
-        setIsLive(true);
       }
     };
 
