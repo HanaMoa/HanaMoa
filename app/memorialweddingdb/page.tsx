@@ -2,7 +2,7 @@
 
 'use client';
 
-import { Download, Plus, Search } from 'lucide-react';
+import { Camera, Download, Plus, Search } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { Card } from '@/components/ui/card';
@@ -43,9 +43,57 @@ export default function HanamoaPage() {
     return `${s} 원`;
   }, [totalAmount]);
 
+  // 기간 조회 rendering
+  const periodLabel = useMemo(() => {
+    const today = new Date();
+
+    if (selectedPeriod === '전체') {
+      return '전체 기간';
+    }
+
+    if (selectedPeriod === '최신') {
+      return '최근 거래순';
+    }
+
+    if (selectedPeriod === '6개월') {
+      const from = new Date();
+      from.setMonth(today.getMonth() - 6);
+
+      const f = from.toISOString().slice(0, 10).replaceAll('-', '.');
+      const t = today.toISOString().slice(0, 10).replaceAll('-', '.');
+
+      return `${f} ~ ${t}`;
+    }
+
+    return '';
+  }, [selectedPeriod]);
+
   return (
     <div className="mx-auto h-dvh w-full max-w-[600px] overflow-hidden bg-[#F6F7F9] md:max-w-[720px] lg:max-w-[800px]">
       <main className="flex h-full w-full flex-col bg-white px-6 pt-6">
+        {/* 상단 헤더 */}
+        <div className="flex items-center justify-between pb-4">
+          {/* 왼쪽: 뒤로가기 */}
+          <button
+            type="button"
+            onClick={() => router.back()}
+            className="rounded-full p-2 transition hover:bg-gray-100"
+            aria-label="뒤로가기"
+          >
+            ←
+          </button>
+
+          {/* 오른쪽: OCR 카메라 */}
+          <button
+            type="button"
+            onClick={() => router.push('/memorialweddingdb/ocr')}
+            className="rounded-full p-2 transition hover:bg-gray-100"
+            aria-label="OCR 인식"
+          >
+            <Camera className="h-5 w-5 text-gray-700" />
+          </button>
+        </div>
+
         {/* 메인 계좌 카드 */}
         <div className="flex h-full flex-col gap-6">
           <div className="flex items-center justify-center">
@@ -97,9 +145,7 @@ export default function HanamoaPage() {
             </div>
 
             <div className="flex items-center justify-between px-1 pb-1">
-              <div className="text-[13px] text-gray-400">
-                2025.07.14~2026.01.13
-              </div>
+              <div className="text-[13px] text-gray-400">{periodLabel}</div>
 
               <button
                 type="button"
