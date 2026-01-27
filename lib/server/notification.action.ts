@@ -1,3 +1,6 @@
+// lib/server/notification.action.ts
+// 인증 체크, 직렬화, 에러 처리를 포함한 서버 액션 함수들
+
 'use server';
 
 import { revalidatePath } from 'next/cache';
@@ -54,13 +57,42 @@ export async function deleteNotification(id: number) {
   }
 }
 
-// 3. 알림 공개
+// 3. 알림 공개 (수정된 버전)
 export async function publishNotification(id: number) {
   try {
+    const notificationId = BigInt(id);
+
+    // [Step 1] 알림 정보를 먼저 조회해서 targetId(갤러리 ID)를 알아냅니다.
+    const notification = await prisma.notification.findUnique({
+      where: { id: notificationId },
+      select: { type: true, targetId: true },
+    });
+
+    if (!notification) {
+      throw new Error('알림을 찾을 수 없습니다.');
+    }
+
+    // [Step 2] 알림 타입이 'GALLERY_ADDED'이고, targetId가 있다면 갤러리 상태 변경
+    if (notification.type === 'GALLERY_ADDED' && notification.targetId) {
+      // targetId는 String으로 저장되어 있으므로 BigInt로 변환
+      const galleryId = BigInt(notification.targetId);
+
+      await prisma.gallery.update({
+        where: { id: galleryId },
+        data: { visibility: 'PUBLIC' }, // 👈 여기가 핵심! 상태를 PUBLIC으로 변경
+      });
+
+      console.log(
+        `갤러리(ID: ${galleryId})가 공개(PUBLIC) 상태로 변경되었습니다.`,
+      );
+    }
+
+    // [Step 3] 알림을 '읽음' 처리 (파란 배경 제거)
     await prisma.notification.update({
-      where: { id: BigInt(id) },
+      where: { id: notificationId },
       data: { readAt: new Date() },
     });
+
     revalidatePath('/notification');
     return { success: true };
   } catch (error) {

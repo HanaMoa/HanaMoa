@@ -158,9 +158,7 @@ export default function NotificationItem({
         dragElastic={0.1} // 끝까지 당겼을 때의 텐션 (고무줄 효과)
         onDragEnd={handleDragEnd} // 드래그 놓았을 때 처리
         onClick={handleItemClick} // 클릭 처리
-        className={`relative z-10 flex h-20 w-full cursor-pointer items-center gap-3 bg-white p-4 shadow-sm active:cursor-grabbing ${
-          !isRead ? 'bg-blue-50/30' : '' // 읽지 않음: 푸른 배경
-        }`}
+        className="relative z-10 flex h-20 w-full cursor-pointer items-center gap-3 bg-white p-4 shadow-sm active:cursor-grabbing"
       >
         {/* 프로필 이미지 영역 */}
         <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full border border-black/5 bg-gray-200">
