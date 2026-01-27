@@ -43,6 +43,7 @@ model Event {
 model EventHost {
   id           BigInt        @id @default(autoincrement())
   name         String
+  role         eventhost_role // 고인인지 상주인지
   eventId      BigInt        @map("events_id")
   accounts     Account[]
   event        Event         @relation(fields: [eventId], references: [id], onDelete: Cascade)
@@ -147,4 +148,17 @@ enum events_category {
   WEDDING
   FUNERAL
   BIRTHDAY
+}
+
+
+enum eventhost_role {
+  DEAD // 고인
+  CHIEF_MOURNER // 대표 상주
+  MOURNER // 상주
+  GROOM // 신랑
+  BRIDE // 신부
+  GROOM_FATHER
+  GROOM_MOTHER
+  BRIDE_FATHER
+  BRIDE_MOTHER
 }
