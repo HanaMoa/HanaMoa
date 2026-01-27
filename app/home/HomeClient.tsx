@@ -1,12 +1,12 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
 import { MainHeader } from '@/components/common/MainHeader';
 import EventCard from '@/components/home/EventCard';
 import HomeBanner from '@/components/home/HomeBanner';
 import HomeMenuList from '@/components/home/HomeMenuList';
 import { LoginSheet } from '@/components/home/LoginSheet';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 type Props = { isLoggedIn: boolean; userName: string; eventCount: number };
 
@@ -28,13 +28,12 @@ export default function HomeClient({
         }}
       />
 
-      <main className="flex flex-col gap-2 pb-4">
+      <main className="flex min-h-[calc(100dvh-56px)] flex-col">
         <HomeBanner name={userName} />
-
-        <div className="px-6 py-3 md:px-7 lg:px-8">
-          <EventCard count={eventCount} />
-        </div>
-
+          <div className="px-6 py-12 md:py-10 lg:py-5 md:px-7 lg:px-8">
+            <EventCard count={eventCount} />
+          </div>
+          
         <HomeMenuList
           onMenuClick={(href) => {
             if (!isLoggedIn) return setLoginOpen(true);

@@ -10,7 +10,10 @@ type MenuItem = {
   href: string;
   className: string; // grid 위치/크기
   image: string;
-  imgSize: number; // 단위는 px
+  imgSize: {
+    md: number;
+    lg: number;
+  } // 단위는 px
   col?: 'right';
 };
 
@@ -29,7 +32,7 @@ export default function HomeMenuList({ onMenuClick }: Props) {
       href: '/info',
       className: 'col-start-1 row-start-1 row-span-5',
       image: '/images/home/invite.png',
-      imgSize: 72,
+      imgSize:{md: 64, lg: 72}
     },
     {
       key: 'event',
@@ -39,7 +42,7 @@ export default function HomeMenuList({ onMenuClick }: Props) {
       href: '/memorialweddingdb',
       className: 'col-start-2 row-start-1 row-span-4',
       image: '/images/home/history.png',
-      imgSize: 54,
+      imgSize: {md: 50, lg: 54},
       col: 'right',
     },
     {
@@ -50,7 +53,7 @@ export default function HomeMenuList({ onMenuClick }: Props) {
       href: '/event',
       className: 'col-start-1 row-start-6 row-span-4',
       image: '/images/home/memory.png',
-      imgSize: 72,
+      imgSize: {md: 64, lg: 72}
     },
     {
       key: 'transfer',
@@ -60,13 +63,13 @@ export default function HomeMenuList({ onMenuClick }: Props) {
       href: '/transaction?mode=transfer',
       className: 'col-start-2 row-start-5 row-span-5',
       image: '/images/home/transfer.png',
-      imgSize: 84,
+      imgSize: {md: 72, lg: 84},
       col: 'right',
     },
   ];
 
   return (
-    <section className="px-4 md:px-5 lg:px-6">
+    <section className="px-4 mb-20 md:mb-10 lg:mb-5 md:px-5 lg:px-6">
       {/* 타이틀 */}
       <div className="mb-3 flex items-baseline gap-2">
         <h2 className="font-bold text-black text-lg md:text-xl lg:text-2xl">
@@ -78,10 +81,11 @@ export default function HomeMenuList({ onMenuClick }: Props) {
       </div>
 
       {/* 그리드 auto-rows로 카드 높이 기준 잡기 */}
-      <div className="grid auto-rows-[38px] grid-cols-2 gap-3">
+      <div className="grid auto-rows-[38px] grid-cols-2 gap-3 md:auto-rows-[40px] lg:auto-rows-[42px]">
         {items.map((item) => (
           <MenuCard
             key={item.key}
+            itemKey={item.key}
             titleMain={item.titleMain}
             titleSub={item.titleSub}
             desc={item.desc}
@@ -98,6 +102,7 @@ export default function HomeMenuList({ onMenuClick }: Props) {
 }
 
 function MenuCard({
+  itemKey,
   titleMain,
   titleSub,
   desc,
@@ -107,11 +112,12 @@ function MenuCard({
   className,
   onClick,
 }: {
+  itemKey: string;
   titleMain: string;
   titleSub: string;
   desc: string;
   image: string;
-  imgSize?: number;
+  imgSize?: {md: number; lg: number};
   col?: string;
   className: string;
   onClick: () => void;
@@ -129,12 +135,12 @@ function MenuCard({
       ].join(' ')}
     >
       <div className="flex h-full flex-col">
-        <div className="mb-3" style={{ width: imgSize, height: imgSize }}>
+        <div className="mb-3" style={{ width: imgSize?.md, height: imgSize?.md }}>
           <Image
             src={image}
             alt={titleMain}
-            width={imgSize}
-            height={imgSize}
+            width={imgSize?.md}
+            height={imgSize?.md}
             className="object-contain"
             priority
           />
@@ -154,7 +160,13 @@ function MenuCard({
             </div>
           ) : (
             <>
-              <p className="whitespace-pre-line text-[#999999] text-lg leading-snug">
+              <p
+                className={[
+                  'whitespace-pre-line text-[#999999] leading-snug',
+                  'text-lg md:text-lg',
+                  itemKey === 'memory' ? 'text-sm md:text-sm lg:text-lg' : 'md:text-lg'
+                ].join(' ')}
+              >
                 {desc}
               </p>
               <p className="mt-auto font-bold text-black leading-tight">

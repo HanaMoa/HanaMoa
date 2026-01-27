@@ -128,7 +128,7 @@ export default function TransferCompletePage() {
 
       {/* 하단 확인 버튼 */}
       <div className="">
-        <SingleButton onClick={handleConfirm} className="w-full cursor-pointer">
+        <SingleButton onClick={handleConfirm} className="w-full! cursor-pointer">
           확인
         </SingleButton>
       </div>
