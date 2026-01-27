@@ -8,18 +8,18 @@ datasource db {
 }
 
 model User {
-  id           BigInt        @id @default(autoincrement())
-  name         String
-  userId       String        @unique @map("user_id")
-  password     String
-  createdAt    DateTime      @default(now()) @map("created_at")
-  updatedAt    DateTime      @updatedAt @map("updated_at")
-  relation     String
-  events       Event[]
-  transactions Transaction[]
-  galleries    Gallery[]
-  notifications      Notification[] @relation("UserNotifications")      // 내가 받은 알림
-  actedNotifications Notification[] @relation("UserNotificationActor")  // 내가 발생시킨 알림(옵션)
+  id                 BigInt         @id @default(autoincrement())
+  name               String
+  userId             String         @unique @map("user_id")
+  password           String
+  createdAt          DateTime       @default(now()) @map("created_at")
+  updatedAt          DateTime       @updatedAt @map("updated_at")
+  relation           String
+  events             Event[]
+  galleries          Gallery[]
+  actedNotifications Notification[] @relation("UserNotificationActor")
+  notifications      Notification[] @relation("UserNotifications")
+  transactions       Transaction[]
 
   @@map("users")
 }
@@ -31,8 +31,9 @@ model Event {
   location     String?
   message      String?         @db.Text
   category     events_category @default(WEDDING)
-  name         String?          
+  name         String?
   eventHosts   EventHost[]
+  galleries    Gallery[]
   user         User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   transactions Transaction[]
 
@@ -41,12 +42,12 @@ model Event {
 }
 
 model EventHost {
-  id           BigInt        @id @default(autoincrement())
+  id           BigInt         @id @default(autoincrement())
   name         String
-  role         eventhost_role // 고인인지 상주인지
-  eventId      BigInt        @map("events_id")
+  role         eventhost_role
+  eventId      BigInt         @map("events_id")
   accounts     Account[]
-  event        Event         @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  event        Event          @relation(fields: [eventId], references: [id], onDelete: Cascade)
   transactions Transaction[]
 
   @@index([eventId])
@@ -68,23 +69,22 @@ model Account {
 }
 
 model Transaction {
-  id          BigInt     @id @default(autoincrement())
-  userId      BigInt     @map("user_id")
-  eventId     BigInt?    @map("events_id")
-  eventHostId BigInt?    @map("eventhost_id")
-  accountId   BigInt?    @map("accounts_id")
-  amount      BigInt
-  message     String?    @db.Text
-  relation    String
-  sentAt      DateTime   @default(now()) @map("sent_at")
-  createdAt   DateTime   @default(now()) @map("created_at")
-  name        String?   @map("ocr_name")
-  
-  account     Account?   @relation(fields: [accountId], references: [id])
-  eventHost   EventHost? @relation(fields: [eventHostId], references: [id])
-  event       Event?     @relation(fields: [eventId], references: [id])
-  user        User       @relation(fields: [userId], references: [id])
+  id            BigInt         @id @default(autoincrement())
+  userId        BigInt         @map("user_id")
+  eventId       BigInt?        @map("events_id")
+  eventHostId   BigInt?        @map("eventhost_id")
+  accountId     BigInt?        @map("accounts_id")
+  amount        BigInt
+  message       String?        @db.Text
+  relation      String
+  sentAt        DateTime       @default(now()) @map("sent_at")
+  createdAt     DateTime       @default(now()) @map("created_at")
+  name          String?        @map("ocr_name")
   notifications Notification[]
+  account       Account?       @relation(fields: [accountId], references: [id])
+  eventHost     EventHost?     @relation(fields: [eventHostId], references: [id])
+  event         Event?         @relation(fields: [eventId], references: [id])
+  user          User           @relation(fields: [userId], references: [id])
 
   @@index([eventId, sentAt], map: "idx_transactions_events_sent_at")
   @@index([userId, createdAt], map: "idx_transactions_user_created_at")
@@ -94,32 +94,23 @@ model Transaction {
 }
 
 model Notification {
-  id        BigInt   @id @default(autoincrement())
-  type      NotificationType
-  text      String   @db.Text
-  createdAt DateTime @default(now()) @map("created_at")
-
-  // 읽음 처리(알림창 필수 기능)
-  readAt    DateTime? @map("read_at")
-
-  // 수신자(알림함 주인)
-  receiverId BigInt @map("receiver_id")
-  receiver   User   @relation("UserNotifications", fields: [receiverId], references: [id], onDelete: Cascade)
-
-  // 누가 발생시켰는지: 송금 보낸 사람, 릴스 올린 사람 등
-  actorId   BigInt? @map("actor_id")
-  actor     User?   @relation("UserNotificationActor", fields: [actorId], references: [id], onDelete: SetNull)
-
-  // “어떤 송금에서 온 알림인지” 연결 (택1로 채워짐)
-  transactionId BigInt? @map("transaction_id")
-  transaction   Transaction? @relation(fields: [transactionId], references: [id], onDelete: SetNull)
-
-  // ✅ “구체 대상”만 저장 (릴스/오너먼트/갤러리를 type으로 구분)
-  targetId String? @map("target_id")
+  id            BigInt           @id @default(autoincrement())
+  type          NotificationType
+  text          String           @db.Text
+  createdAt     DateTime         @default(now()) @map("created_at")
+  readAt        DateTime?        @map("read_at")
+  receiverId    BigInt           @map("receiver_id")
+  actorId       BigInt?          @map("actor_id")
+  transactionId BigInt?          @map("transaction_id")
+  targetId      String?          @map("target_id")
+  actor         User?            @relation("UserNotificationActor", fields: [actorId], references: [id])
+  receiver      User             @relation("UserNotifications", fields: [receiverId], references: [id], onDelete: Cascade)
+  transaction   Transaction?     @relation(fields: [transactionId], references: [id])
 
   @@index([receiverId, createdAt])
   @@index([receiverId, readAt])
   @@index([transactionId])
+  @@index([actorId], map: "notifications_actor_id_fkey")
   @@map("notifications")
 }
 
@@ -128,21 +119,24 @@ model Gallery {
   key       String   @map("s3_key")
   userId    BigInt   @map("user_id")
   createdAt DateTime @default(now()) @map("created_at")
+  visibility GalleryVisibility  @default(PRIVATE)
+  eventId   BigInt   @map("event_id")
 
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+  @@index([eventId])
+  @@index([visibility])
   @@map("gallery")
 }
 
-// 알림 구분
 enum NotificationType {
   GALLERY_ADDED
   REEL_ADDED
   TRANSFER_SENT
   ORNAMENT_ADDED
 }
-
 
 enum events_category {
   WEDDING
@@ -151,13 +145,18 @@ enum events_category {
 }
 
 enum eventhost_role {
-  DEAD // 고인
-  CHIEF_MOURNER // 대표 상주
-  MOURNER // 상주
-  GROOM // 신랑
-  BRIDE // 신부
+  DEAD
+  CHIEF_MOURNER
+  MOURNER
+  GROOM
+  BRIDE
   GROOM_FATHER
   GROOM_MOTHER
   BRIDE_FATHER
   BRIDE_MOTHER
+}
+
+enum GalleryVisibility {
+  PRIVATE
+  PUBLIC
 }

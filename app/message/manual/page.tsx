@@ -19,11 +19,16 @@ export default function MessageManualPage() {
         
         router.push(`/transaction/media?${params.toString()}`);
     } else {
-        // 메시지 페이지 진입 전 페이지로 이동
-        // 보통 홈이나 상세페이지 등에서 진입하므로, 일단 홈으로 이동하거나
-        // router.back()을 여러번 호출해야 함.
-        // 하지만 안전하게 홈으로 이동.
-        router.push('/home'); 
+        const eventId = searchParams.get('eventId');
+        const eventType = searchParams.get('eventType');
+
+        if (eventId && eventType === 'wedding') {
+            router.push(`/event/wedding/${eventId}/dashboard`);
+        } else if (eventId && eventType === 'memorial') {
+            router.push(`/event/memorial/${eventId}/dashboard`);
+        } else {
+            router.push('/home'); 
+        }
     }
   };
 

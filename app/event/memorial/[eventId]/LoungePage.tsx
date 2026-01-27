@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { MainHeader } from '@/components/common/MainHeader';
 import { SingleButton } from '@/components/common/SingleButton';
 import AccountDropdown from '@/components/event/AccountDropdown';
@@ -40,8 +40,8 @@ type Props = {
 export default function MemorialLoungePage({ event }: Props) {
   const router = useRouter();
 
-  // 계좌 정보 - event host가 바뀔 때만 다시 실행
-  const accounts = useMemo(() => {
+  /* account 정보 */
+  const accounts = (() => {
     const items: Array<{
       id: string;
       bank: string;
@@ -53,51 +53,59 @@ export default function MemorialLoungePage({ event }: Props) {
 
     for (const host of event.hosts ?? []) {
       for (const acc of host.accounts ?? []) {
-        const isPrimary = host.role === 'CHIEF_MOURNER';
         items.push({
           id: String(acc.id),
           bank: acc.bank,
           account: acc.account,
           ownerName: host.name,
           ownerRole: host.role,
-          isPrimary,
+          isPrimary: host.role === 'CHIEF_MOURNER',
         });
       }
     }
     return items;
-  }, [event.hosts]);
+  })();
 
-  // 발인 날짜 - event date가 바뀔 때만 다시 실행
-  const dateText = useMemo(() => {
+  /* 발인 날짜 */
+  const dateText = (() => {
     return Intl.DateTimeFormat('ko-KR', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
       weekday: 'long',
     }).format(new Date(event.date));
-  }, [event.date]);
+  })();
+
+  /* account dropdown */
+  useEffect(() => {
+    setSelectedAccountId(null); // 새로고침 or 재진입 시 - Trigger Label 초기화
+  }, [event.eventId]);
+
+  // account dropdown - 선택 o
+  const [selectedAccountId, setSelectedAccountId] = useState<string | null>(
+    null,
+  );
+
+  const selectedAccount = useMemo(() => {
+    if (!selectedAccountId) return null;
+    return accounts.find((a) => a.id === selectedAccountId) ?? null;
+  }, [accounts, selectedAccountId]);
 
   const handleSendMoney = () => {
-    // 기본 계좌 선택 (첫 번째)
-    const defaultAccount = accounts[0];
+    // account dropdown - 선택 x : 주계좌(첫번째 계좌) 우선 설정
+    const target = selectedAccount ?? accounts[0] ?? null;
+    if (!target) return;
 
-    // params 설정
     const params = new URLSearchParams();
-    // 장례식(Memorial)에서 진입했으므로 eventType=FUNERAL
     params.set('eventType', 'FUNERAL');
-    params.set('eventId', event.eventId); // eventId 추가
+    params.set('eventId', event.eventId);
 
-    // 계좌 정보가 있다면 같이 넘김 (Amount 페이지에서 사용)
-    if (defaultAccount) {
-      params.set('toName', defaultAccount.ownerName);
-      params.set('bank', defaultAccount.bank);
-      params.set('account', defaultAccount.account);
+    if (target) {
+      params.set('accountId', target.id); // 추후 서버에서 accountId로 검증/조회 가능
+      params.set('toName', target.ownerName);
+      params.set('bank', target.bank);
+      params.set('account', target.account);
     }
-
-    // mode=transfer 등으로 설정할 수도 있지만,
-    // 여기서는 단순히 송금(Amount) -> 관계(Relation) -> 완료 흐름을 타므로 기본값 사용
-    // 혹은 'mode=transfer'를 명시해야 한다면 param.set('mode', 'transfer') 추가.
-    // 여기서는 기존 로직대로 일반 송금 흐름으로 진입.
 
     router.push(`/transaction/amount?${params.toString()}`);
   };
@@ -126,12 +134,16 @@ export default function MemorialLoungePage({ event }: Props) {
 
           {/* 상단 UI - 계좌/발인 */}
           <div className="pointer-events-auto absolute top-3 right-0 left-0 z-20 px-4">
-            <div className="flex items-center gap-3">
+            <div className="flex flex-col gap-2">
               {/* 계좌 리스트 */}
-              <AccountDropdown accounts={accounts} />
+              <AccountDropdown
+                accounts={accounts}
+                value={selectedAccountId}
+                onSelect={setSelectedAccountId}
+              />
 
               {/* 발인 날짜 */}
-              <div className="flex h-9.5 flex-1 items-center gap-2 rounded-xl bg-black/15 px-4 text-white backdrop-blur-sm md:px-4 lg:px-5">
+              <div className="flex h-[30px] w-fit items-center gap-2 rounded-xl bg-black/15 px-4 text-white backdrop-blur-sm md:px-4 lg:px-5">
                 <span className="shrink-0 font-semibold text-[14px] md:text-[14px] lg:text-[15px]">
                   발인
                 </span>
@@ -240,7 +252,7 @@ export default function MemorialLoungePage({ event }: Props) {
             <div className="pointer-events-auto mx-auto flex w-full justify-center px-4">
               <SingleButton
                 onClick={handleSendMoney}
-                className="h-[54px] w-[360px] rounded-[14px] bg-[#232325] font-semibold text-[16px] text-white hover:bg-[#232325]/90 active:bg-[#232325]/80 md:w-[360px] md:text-[16px] lg:w-[560px] lg:text-[18px]"
+                className="h-[54px] w-[360px] rounded-[14px] bg-[#232325] font-semibold text-[16px] text-white hover:bg-[#232325]/90 active:bg-[#232325]/80 md:w-[420px] md:text-[17px] lg:w-[540px] lg:text-[18px]"
               >
                 조의금 · 추모 메시지 보내기
               </SingleButton>

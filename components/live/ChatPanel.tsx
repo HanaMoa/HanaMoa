@@ -226,14 +226,12 @@ export default function ChatPanel({
     <>
       {/* 1) 채팅 바 (닫힌 상태) - 유튜브 모바일 UI 스타일 */}
       {!open && (
-        <div className="relative z-[45] w-full bg-white">
-          {/* 🚀 z-index를 비디오(50)보다는 낮고, 하단 영역(기본)보다는 높게 설정 */}
+        <div className="w-full bg-white">
           <button
             type="button"
             disabled={!canOpen}
             onClick={() => setOpen(true)}
             className="flex w-full items-center justify-between border-black/10 border-t px-4 py-3 text-left transition-colors active:bg-black/5"
-            style={{ position: 'relative', zIndex: 46 }} // 한 번 더 확실하게 보장
             aria-label="실시간 채팅 열기"
           >
             <span className="font-semibold text-[14px] text-black">
