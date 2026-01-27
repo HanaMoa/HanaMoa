@@ -1,5 +1,5 @@
-import { RoomServiceClient } from "livekit-server-sdk";
-import { NextResponse } from "next/server";
+import { RoomServiceClient } from 'livekit-server-sdk';
+import { NextResponse } from 'next/server';
 
 const roomService = new RoomServiceClient(
   process.env.LIVEKIT_URL!,
@@ -7,7 +7,7 @@ const roomService = new RoomServiceClient(
   process.env.LIVEKIT_API_SECRET!,
 );
 
-const ROOM_NAME = "demo-room";
+const ROOM_NAME = 'demo-room';
 
 export async function GET() {
   try {

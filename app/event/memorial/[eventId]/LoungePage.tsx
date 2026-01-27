@@ -40,8 +40,8 @@ type Props = {
 export default function MemorialLoungePage({ event }: Props) {
   const router = useRouter();
 
-  // 계좌 정보 - event host가 바뀔 때만 다시 실행
-  const accounts = useMemo(() => {
+  /* account 정보 */
+  const accounts = (() => {
     const items: Array<{
       id: string;
       bank: string;
@@ -53,34 +53,32 @@ export default function MemorialLoungePage({ event }: Props) {
 
     for (const host of event.hosts ?? []) {
       for (const acc of host.accounts ?? []) {
-        const isPrimary = host.role === 'CHIEF_MOURNER';
         items.push({
           id: String(acc.id),
           bank: acc.bank,
           account: acc.account,
           ownerName: host.name,
           ownerRole: host.role,
-          isPrimary,
+          isPrimary: host.role === 'CHIEF_MOURNER',
         });
       }
     }
     return items;
-  }, [event.hosts]);
+  })();
 
-  // 발인 날짜 - event date가 바뀔 때만 다시 실행
-  const dateText = useMemo(() => {
+  /* 발인 날짜 */
+  const dateText = (() => {
     return Intl.DateTimeFormat('ko-KR', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
       weekday: 'long',
     }).format(new Date(event.date));
-  }, [event.date]);
+  })();
 
   /* account dropdown */
-  // 새로고침 or 재진입 시 - Trigger Label 초기화
   useEffect(() => {
-    setSelectedAccountId(null);
+    setSelectedAccountId(null); // 새로고침 or 재진입 시 - Trigger Label 초기화
   }, [event.eventId]);
 
   // account dropdown - 선택 o
@@ -254,7 +252,7 @@ export default function MemorialLoungePage({ event }: Props) {
             <div className="pointer-events-auto mx-auto flex w-full justify-center px-4">
               <SingleButton
                 onClick={handleSendMoney}
-                className="h-[54px] w-[360px] rounded-[14px] bg-[#232325] font-semibold text-[16px] text-white hover:bg-[#232325]/90 active:bg-[#232325]/80 md:w-[360px] md:text-[16px] lg:w-[560px] lg:text-[18px]"
+                className="h-[54px] w-[360px] rounded-[14px] bg-[#232325] font-semibold text-[16px] text-white hover:bg-[#232325]/90 active:bg-[#232325]/80 md:w-[420px] md:text-[17px] lg:w-[540px] lg:text-[18px]"
               >
                 조의금 · 추모 메시지 보내기
               </SingleButton>
