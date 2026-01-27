@@ -119,6 +119,7 @@ model Gallery {
   key       String   @map("s3_key")
   userId    BigInt   @map("user_id")
   createdAt DateTime @default(now()) @map("created_at")
+  visibility GalleryVisibility  @default(PRIVATE)
   eventId   BigInt   @map("event_id")
 
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -126,6 +127,7 @@ model Gallery {
 
   @@index([userId])
   @@index([eventId])
+  @@index([visibility])
   @@map("gallery")
 }
 
@@ -152,4 +154,9 @@ enum eventhost_role {
   GROOM_MOTHER
   BRIDE_FATHER
   BRIDE_MOTHER
+}
+
+enum GalleryVisibility {
+  PRIVATE
+  PUBLIC
 }
