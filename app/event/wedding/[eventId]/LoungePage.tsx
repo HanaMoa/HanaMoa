@@ -14,8 +14,7 @@ import type { eventhost_role } from '@/lib/generated/prisma/client/enums';
 const IC_MESSAGE_SRC = '/images/event/wedding/lounge_ic_cake.png';
 const IC_GALLERY_SRC = '/images/event/wedding/lounge_ic_gallery.png';
 const IC_REELS_SRC = '/images/event/wedding/lounge_ic_reels.png';
-
-const streamingText = false;
+const IC_LIVE_SRC = '/images/event/wedding/lounge_ic_live.png';
 
 type Props = {
   event: {
@@ -114,8 +113,10 @@ export default function WeddingLoungePage({ event }: Props) {
         if (!res.ok) throw new Error('status not ok');
         const data: { isLive?: boolean } = await res.json();
         if (mounted) setIsLive(Boolean(data.isLive));
+        setIsLive(true);
       } catch {
         if (mounted) setIsLive(false);
+        setIsLive(true);
       }
     };
 
@@ -149,7 +150,7 @@ export default function WeddingLoungePage({ event }: Props) {
           className="h-auto w-full"
         /> */}
         <div className="relative h-full w-full">
-          {/* 상단 UI (계좌 + 스트리밍 배너) */}
+          {/* 상단 UI (계좌 + 라이브 배너) */}
           <div className="pointer-events-auto absolute top-3 right-0 left-0 z-20 px-4">
             <div className="flex flex-col gap-3">
               <div className="flex items-center gap-3">
@@ -162,17 +163,29 @@ export default function WeddingLoungePage({ event }: Props) {
 
               {/* 결혼식 라이브 진행 중일 때만 */}
               {isLive ? (
-                <div className="flex items-center gap-3 rounded-xl border border-black/10 bg-white/80 px-4 py-3 shadow-sm backdrop-blur">
-                  <div className="grid h-10 w-10 place-items-center rounded-lg bg-white">
-                    <div className="h-6 w-6 rounded-full border-4 border-red-500" />
-                  </div>
-                  <div className="flex-1 text-center font-medium text-[15px] text-black/80 md:text-[15px] lg:text-[16px]">
-                    현재 결혼식 스트리밍 중 ... <br />
-                    {/* <span className="font-normal text-black/60">
+                <button
+                  type="button"
+                  onClick={() => router.push('/live')}
+                  className="group w-full rounded-xl border border-black/10 bg-[#F3C4CB24] px-4 py-3 shadow-sm backdrop-blur"
+                >
+                  <div className="flex items-center gap-2">
+                    <div className="relative h-10 w-20 shrink-0">
+                      <Image
+                        src={IC_LIVE_SRC}
+                        alt="라이브 진행 중"
+                        fill
+                        className="animate-pulse object-contain"
+                        priority
+                      />
+                    </div>
+                    <div className="flex-1 text-left font-medium text-[15px] text-black/80 md:text-[16px] lg:text-[17px]">
+                      현재 결혼식 스트리밍 중 ... <br />
+                      {/* <span className="font-normal text-black/60">
                       ({event.streamingText ?? '30분'})
                     </span> */}
+                    </div>
                   </div>
-                </div>
+                </button>
               ) : null}
             </div>
           </div>
@@ -223,7 +236,7 @@ export default function WeddingLoungePage({ event }: Props) {
             </div>
             <Image
               src={IC_GALLERY_SRC}
-              alt="웨딩 사진관 obj"
+              alt="웨딩 사진관"
               width={1200}
               height={900}
               className="h-auto w-full"
@@ -247,7 +260,7 @@ export default function WeddingLoungePage({ event }: Props) {
             </div>
             <Image
               src={IC_REELS_SRC}
-              alt="영상 시네마 오브젝트"
+              alt="영상 시네마"
               width={1200}
               height={900}
               className="h-auto w-full"
@@ -259,7 +272,7 @@ export default function WeddingLoungePage({ event }: Props) {
             <div className="pointer-events-auto mx-auto flex w-full justify-center px-4">
               <SingleButton
                 onClick={handleSendMoney}
-                className="h-[54px] w-[360px] rounded-[14px] bg-[#EF5A6E] font-semibold text-[16px] text-white hover:bg-[#EF5A6E]/90 active:bg-[#EF5A6E]/80 md:w-[360px] md:text-[16px] lg:w-[560px] lg:text-[18px]"
+                className="h-[54px] w-[360px] rounded-[14px] bg-[#EF5A6E] font-semibold text-[16px] text-white hover:bg-[#EF5A6E]/90 active:bg-[#EF5A6E]/80 md:w-[420px] md:text-[17px] lg:w-[540px] lg:text-[18px]"
               >
                 축의금 · 축하 메시지 보내기
               </SingleButton>

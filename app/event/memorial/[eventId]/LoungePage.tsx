@@ -252,7 +252,7 @@ export default function MemorialLoungePage({ event }: Props) {
             <div className="pointer-events-auto mx-auto flex w-full justify-center px-4">
               <SingleButton
                 onClick={handleSendMoney}
-                className="h-[54px] w-[360px] rounded-[14px] bg-[#232325] font-semibold text-[16px] text-white hover:bg-[#232325]/90 active:bg-[#232325]/80 md:w-[360px] md:text-[16px] lg:w-[560px] lg:text-[18px]"
+                className="h-[54px] w-[360px] rounded-[14px] bg-[#232325] font-semibold text-[16px] text-white hover:bg-[#232325]/90 active:bg-[#232325]/80 md:w-[420px] md:text-[17px] lg:w-[540px] lg:text-[18px]"
               >
                 조의금 · 추모 메시지 보내기
               </SingleButton>
