@@ -18,7 +18,7 @@ export type EventItem = {
 export const EVENT_ITEMS: EventItem[] = [
   {
     key: 'wedding',
-    title: '결혼을 준비하고 있어요',
+    title: '결혼식을 준비하고 있어요',
     icon: <HeartHandshake className="h-5 w-5" />,
   },
   {
@@ -28,7 +28,7 @@ export const EVENT_ITEMS: EventItem[] = [
   },
   {
     key: 'birthday',
-    title: '생일을 준비하고 있어요',
+    title: '생일파티를 준비하고 있어요',
     icon: <Gift className="h-5 w-5" />,
   },
   {
