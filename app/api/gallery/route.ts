@@ -1,8 +1,8 @@
-import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { type NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
-import { prisma } from '@/lib/prisma';
+import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { type NextRequest, NextResponse } from "next/server";
+import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 
 const s3 = new S3Client({
   region: process.env.AWS_REGION!,
@@ -18,16 +18,16 @@ export async function GET(req: NextRequest) {
   const viewerId = session?.user?.id;
 
   if (!viewerId) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   // 2️ query param
   const { searchParams } = new URL(req.url);
-  const eventId = searchParams.get('eventId');
-  const mode = searchParams.get('mode'); // gallery | reels
+  const eventId = searchParams.get("eventId");
+  const mode = searchParams.get("mode"); // gallery | reels
 
   if (!eventId) {
-    return NextResponse.json({ error: 'eventId required' }, { status: 400 });
+    return NextResponse.json({ error: "eventId required" }, { status: 400 });
   }
 
   const eventIdBig = BigInt(eventId);
@@ -39,27 +39,40 @@ export async function GET(req: NextRequest) {
   });
 
   if (!event) {
-    return NextResponse.json({ error: 'Event not found' }, { status: 404 });
+    return NextResponse.json({ error: "Event not found" }, { status: 404 });
   }
 
   const hostId = event.userId;
+  const viewerIdBig = BigInt(viewerId);
+
   let whereCondition = {};
-  if (mode === 'gallery') {
+  if (mode === "gallery") {
     // host 사진만
     whereCondition = {
       eventId: eventIdBig,
       userId: hostId,
     };
-  } else if (mode === 'reels') {
-    // 다른 게스트들이올린 사진전부
+  } else if (mode === "reels") {
+    // type이 REEL인 사진만
     whereCondition = {
       eventId: eventIdBig,
-      userId: {
-        not: hostId,
-      },
+      type: "REEL_ADDED",
+      OR: [
+        // PUBLIC 은 모두에게
+        { visibility: "PUBLIC" },
+
+        // PRIVATE 인 경우
+        {
+          visibility: "PRIVATE",
+          OR: [
+            { userId: viewerIdBig }, // 업로드한 본인
+            { userId: hostId }, // 이벤트 host
+          ],
+        },
+      ],
     };
   } else {
-    return NextResponse.json({ error: 'invalid mode' }, { status: 400 });
+    return NextResponse.json({ error: "invalid mode" }, { status: 400 });
   }
 
   // 5️ 갤러리 조회
@@ -94,11 +107,11 @@ export async function POST(req: Request) {
   const userId = session?.user?.id;
 
   if (!userId) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   if (!eventId) {
-    return NextResponse.json({ error: 'eventId required' }, { status: 400 });
+    return NextResponse.json({ error: "eventId required" }, { status: 400 });
   }
 
   const userIdBig = BigInt(userId);
@@ -111,7 +124,7 @@ export async function POST(req: Request) {
   });
 
   if (!event) {
-    return NextResponse.json({ error: 'Event not found' }, { status: 404 });
+    return NextResponse.json({ error: "Event not found" }, { status: 404 });
   }
 
   // 이 유저가 이 이벤트에 참여한 사람인지 검증
