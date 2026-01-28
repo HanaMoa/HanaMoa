@@ -1,5 +1,3 @@
-// BigInt(JSON 직렬화 불가) -> string 변환
-
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
@@ -10,7 +8,7 @@ type DashboardRow = {
   user: { name: string } | null;
 };
 
-// Prisma에서 BigInt(id/amount 등)가 섞여 나오면 그대로 JSON으로 못 내보내서 필요
+// BigInt(JSON 직렬화 불가) -> string 변환
 function toJSON<T>(data: T) {
   return JSON.parse(
     JSON.stringify(data, (_, v) => (typeof v === 'bigint' ? v.toString() : v)),
@@ -30,7 +28,7 @@ function parsePage(v: string | null): 'last' | number {
   return Math.floor(n);
 }
 
-// 리본 개수 요청 = pageSize (기본 8, 최대 안전장치 50)
+// pageSize 파싱 (기본 8, 최대 안전장치 50)
 function parsePageSize(v: string | null) {
   const n = Number(v);
   if (!Number.isFinite(n) || n <= 0) return DEFAULT_PAGE_SIZE;
@@ -51,7 +49,27 @@ export async function GET(
       eventKey = BigInt(eventId);
     } catch {
       return NextResponse.json(
-        { ok: false, message: 'eventId 형식이 올바르지 않습니다.' },
+        { ok: false, errorMessage: 'eventId 형식이 올바르지 않습니다.' },
+        { status: 400 },
+      );
+    }
+
+    // 이벤트 존재 + 장례식(FUNERAL)인지 검증
+    const event = await prisma.event.findUnique({
+      where: { id: eventKey },
+      select: { category: true },
+    });
+
+    if (!event) {
+      return NextResponse.json(
+        { ok: false, errorMessage: '이벤트를 찾을 수 없습니다.' },
+        { status: 404 },
+      );
+    }
+
+    if (event.category !== 'FUNERAL') {
+      return NextResponse.json(
+        { ok: false, errorMessage: '장례식 이벤트가 아닙니다.' },
         { status: 400 },
       );
     }
@@ -87,12 +105,12 @@ export async function GET(
       where: whereCondition,
       orderBy: { createdAt: 'desc' },
       skip,
-      take: pageSize, // 최대 몇개 가져올지
+      take: pageSize,
       select: {
         id: true,
         message: true,
         createdAt: true,
-        user: { select: { name: true } }, // user.name
+        user: { select: { name: true } },
       },
     });
 
@@ -120,11 +138,10 @@ export async function GET(
         messages,
       }),
     );
-  } catch (e: any) {
+  } catch (e: unknown) {
     console.error(e);
-    return NextResponse.json(
-      { ok: false, message: e?.message ?? '서버 오류' },
-      { status: 500 },
-    );
+    const msg =
+      e instanceof Error ? e.message : '알 수 없는 서버 오류가 발생했습니다.';
+    return NextResponse.json({ ok: false, errorMessage: msg }, { status: 500 });
   }
 }

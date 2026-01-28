@@ -1,8 +1,9 @@
 'use client';
 
-import Dropdown, { type DropdownItem } from '@/components/common/Dropdown';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
+import Dropdown, { type DropdownItem } from '@/components/common/Dropdown';
+import { MainHeader } from '@/components/common/MainHeader';
 
 type Occasion = '결혼' | '장례';
 type Relation = '친구' | '가족/친척' | '직장 동료' | '상사/선배';
@@ -76,26 +77,9 @@ export default function MessageGeneratePage() {
 
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-[440px] flex-col bg-[#F6F7F9] px-5 pt-8 pb-24 lg:max-w-[530px]">
-      {/* Top bar */}
-      <div className="flex items-center justify-between">
-        <button
-          type="button"
-          className="cursor-pointer font-medium text-[#017F70] text-sm"
-          onClick={() => router.back()}
-        >
-          ← 뒤로
-        </button>
-        <button
-          type="button"
-          className="cursor-pointer text-slate-500 text-sm"
-          onClick={() => router.back()}
-        >
-          취소
-        </button>
-      </div>
+      <MainHeader variant="default" title="문구 추천" />
 
-      {/* Title */}
-      <div className="mt-6">
+      <div className="pt-3">
         <h1 className="font-semibold text-slate-900 text-xl leading-snug">
           ✨ 짧은 문장 추천받기
         </h1>
@@ -203,7 +187,7 @@ export default function MessageGeneratePage() {
                 router.push(`/message/manual?${params.toString()}`);
               }}
             >
-              다음 - 메시지 보내기
+              메시지 보내기
             </button>
           </div>
         )}

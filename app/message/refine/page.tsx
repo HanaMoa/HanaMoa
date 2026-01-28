@@ -1,9 +1,10 @@
 'use client';
 
-import type { DropdownItem } from '@/components/common/Dropdown';
-import Dropdown from '@/components/common/Dropdown';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
+import type { DropdownItem } from '@/components/common/Dropdown';
+import Dropdown from '@/components/common/Dropdown';
+import { MainHeader } from '@/components/common/MainHeader';
 
 type Occasion = '결혼' | '장례';
 type Relation = '친구' | '가족/친척' | '직장 동료' | '상사/선배';
@@ -92,24 +93,8 @@ export default function MessageRefinePage() {
 
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-[440px] flex-col bg-[#F6F7F9] px-5 pt-8 pb-24 lg:max-w-[530px]">
-      {/* Top bar */}
-      <div className="flex items-center justify-between">
-        <button
-          type="button"
-          onClick={() => router.back()}
-          className="cursor-pointer font-medium text-[#017F70] text-sm"
-        >
-          ← 뒤로
-        </button>
-
-        <button
-          type="button"
-          onClick={() => router.back()}
-          className="cursor-pointer text-slate-500 text-sm"
-        >
-          취소
-        </button>
-      </div>
+      {/* Header */}
+      <MainHeader variant="default" title="AI 글 다듬기" />
 
       {/* Title */}
       <div className="mt-6">
@@ -216,8 +201,8 @@ export default function MessageRefinePage() {
               type="button"
               className="w-full cursor-pointer rounded-xl bg-[#017F70] py-3 font-semibold text-sm text-white"
               onClick={() => {
-                  const params = new URLSearchParams(searchParams.toString());
-                  router.push(`/message/manual?${params.toString()}`);
+                const params = new URLSearchParams(searchParams.toString());
+                router.push(`/message/manual?${params.toString()}`);
               }}
             >
               다음 - 메시지 보내기
