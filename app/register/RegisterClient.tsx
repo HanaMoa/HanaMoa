@@ -7,6 +7,7 @@ import { useActionState, useState } from 'react';
 import AlertModal from '@/components/common/AlertModal';
 import { SingleButton } from '@/components/common/SingleButton';
 import { SubHeader } from '@/components/common/SubHeader';
+import { validateKorEngNameNoSpace, validatePhoneNumber } from '@/lib/regExp';
 import { checkUserId } from '@/lib/server/checkUserId.action';
 import { regist } from '@/lib/server/register.action';
 import type { ValidError } from '@/lib/validator';
@@ -18,7 +19,7 @@ export default function RegisterClient() {
 
   // 이름 형식 검증
   const [name, setName] = useState('');
-  const nameOk = /^[가-힣a-zA-Z]{2,20}$/.test(name);
+  const [nameError, setNameError] = useState<string | null>(null);
 
   // 아이디 중복 검증
   const [userId, setUserId] = useState('');
@@ -41,7 +42,7 @@ export default function RegisterClient() {
 
   // 전화번호 형식 검증
   const [phone, setPhone] = useState('');
-  const phoneOk = /^01[016789]-?\d{3,4}-?\d{4}$/.test(phone);
+  const [phoneError, setPhoneError] = useState<string | null>(null);
 
   const [validError, makeRegist, isPending] = useActionState(
     async (prev: ValidError | undefined, formData: FormData) => {
@@ -77,7 +78,6 @@ export default function RegisterClient() {
         {/* 로고/설명 */}
         <div className="mt-2">
           <div className="-mx-4 relative h-[96px] w-[96px]">
-            {/* 로고 경로는 프로젝트에 맞게 바꿔주세요 */}
             <Image
               src="/images/common/logo1.png"
               alt="하나모아"
@@ -105,16 +105,18 @@ export default function RegisterClient() {
             <input
               name="name"
               placeholder="이름"
-              defaultValue={validError?.data.name ?? ''}
+              value={name}
               disabled={isPending}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e) => {
+                const v = e.target.value;
+                setName(v);
+                setNameError(validateKorEngNameNoSpace(v));
+              }}
               className="h-[45px] rounded-lg border border-[#E6E6E6] bg-white px-4 text-sm md:text-base lg:text-lg"
             />
 
-            {!nameOk && name.length > 0 && (
-              <p className="px-1.5 text-red-500 text-xs">
-                한글 또는 영문 2~20자만 입력 가능합니다.
-              </p>
+            {nameError && (
+              <p className="px-1.5 text-red-500 text-xs">{nameError}</p>
             )}
 
             {validError?.error.name && (
@@ -132,7 +134,7 @@ export default function RegisterClient() {
               <input
                 name="userId"
                 placeholder="아이디"
-                defaultValue={validError?.data.userId ?? ''}
+                value={userId}
                 onChange={(e) => setUserId(e.target.value)}
                 disabled={isPending}
                 className="h-[45px] w-full! flex-1 rounded-lg border border-[#E6E6E6] bg-white px-4 text-sm md:text-base lg:text-lg"
@@ -220,16 +222,21 @@ export default function RegisterClient() {
             <input
               name="phone"
               placeholder="전화번호"
-              defaultValue={validError?.data.phone ?? ''}
+              value={phone}
               disabled={isPending}
-              onChange={(e) => setPhone(e.target.value)}
-              className="h-[45px] w-full rounded-lg border border-[#E6E6E6] bg-white px-4 text-sm md:text-base lg:text-lg"
+              onChange={(e) => {
+                const onlyNum = e.target.value.replace(/[^0-9]/g, '');
+                setPhone(onlyNum);
+                setPhoneError(validatePhoneNumber(onlyNum));
+              }}
+              className={[
+                'h-[45px] w-full rounded-lg border bg-white px-4 text-sm md:text-base lg:text-lg',
+                phoneError ? 'border-red-500' : 'border-[#E6E6E6]',
+              ].join(' ')}
             />
 
-            {!phoneOk && phone.length > 0 && (
-              <p className="px-1.5 text-red-500 text-xs">
-                010-1234-5678 또는 01012345678 형식으로만 입력 가능합니다.
-              </p>
+            {phoneError && (
+              <p className="px-1.5 text-red-500 text-xs">{phoneError}</p>
             )}
 
             {validError?.error.phone && (
