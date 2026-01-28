@@ -2,6 +2,7 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
+import { MainHeader } from '@/components/common/MainHeader';
 
 export default function MessageManualPage() {
   const router = useRouter();
@@ -38,27 +39,12 @@ export default function MessageManualPage() {
   };
 
   return (
-    <div className="mx-auto flex min-h-dvh w-full max-w-110 flex-col bg-[#F6F7F9] px-5 pt-8 pb-24 lg:max-w-132.5">
-      {/* Top bar */}
-      <div className="flex items-center justify-between">
-        <button
-          type="button"
-          className="cursor-pointer font-medium text-[#017F70] text-sm"
-          onClick={() => router.back()}
-        >
-          ← 뒤로
-        </button>
-        <button
-          type="button"
-          className="cursor-pointer text-slate-500 text-sm"
-          onClick={() => router.back()}
-        >
-          취소
-        </button>
-      </div>
+    <div className="mx-auto flex min-h-dvh w-full max-w-110 flex-col bg-[#F6F7F9] px-5 pb-24 lg:max-w-132.5">
+      {/* Header */}
+      <MainHeader variant="default" title="직접 작성하기" />
 
-      {/* Title */}
-      <div className="mt-6">
+      {/* Title/Desc (기존 Title 영역 유지하되 간격만 조정) */}
+      <div className="pt-3">
         <h1 className="font-semibold text-slate-900 text-xl">
           ✏️ 직접 작성하기
         </h1>

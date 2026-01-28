@@ -54,7 +54,11 @@ export default function MemorialDashboardPage() {
   return (
     <div className="flex min-h-dvh flex-col bg-[#DCDAD9]">
       {/* ✅ header 교체 */}
-      <MainHeader variant="default" title="추모 메시지" />
+      <MainHeader
+        variant="default"
+        title="추모 메시지"
+        className="bg-[#DCDAD9]"
+      />
 
       {/* ✅ header 밑 문구는 따로 */}
       <div className="shrink-0 px-5 pt-2">

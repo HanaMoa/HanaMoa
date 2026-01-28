@@ -1,45 +1,16 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
+import { MainHeader } from '@/components/common/MainHeader';
 
 export default function MessageEntryPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const isTransactionFlow = searchParams.get('flow') === 'transaction';
 
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-110 flex-col bg-[#F6F7F9] px-5 pt-8 pb-24 lg:max-w-132.5">
       {/* Top bar */}
-      <div className="flex items-center justify-between">
-        <button
-          type="button"
-          className="cursor-pointer font-medium text-[#017F70] text-sm"
-          onClick={() => router.back()}
-        >
-          ← 뒤로
-        </button>
-
-        {isTransactionFlow ? (
-          <button
-            type="button"
-            className="cursor-pointer text-slate-500 text-sm"
-            onClick={() => {
-              const params = new URLSearchParams(searchParams.toString());
-              router.push(`/transaction/media?${params.toString()}`);
-            }}
-          >
-            건너뛰기
-          </button>
-        ) : (
-          <button
-            type="button"
-            className="cursor-pointer text-slate-500 text-sm"
-            onClick={() => router.back()}
-          >
-            취소
-          </button>
-        )}
-      </div>
+      <MainHeader variant="default" title="메시지 작성" />
 
       {/* Title */}
       <div className="mt-10">
