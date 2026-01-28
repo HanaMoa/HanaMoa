@@ -3,6 +3,7 @@
 import { ImagePlus, X } from 'lucide-react';
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
+import { useImageUpload } from '@/hooks/useImageUpload';
 
 type PresignRes = { url: string; key: string };
 
@@ -15,27 +16,29 @@ type UploadPhoto = {
 };
 
 type Props = {
-  value: UploadPhoto[]; // 상위에서 상태 소유
+  eventId: string; // string으로 넘겨야 함
+  value: UploadPhoto[];
   onChange: (next: UploadPhoto[]) => void;
   maxCount?: number; // default 15
   maxSizeMB?: number; // default 5
-  saveToGallery?: boolean; // 업로드 성공한 이미지 key들을 DB에 저장하고 싶다면 추가
   disabled?: boolean;
 };
 
 const makeId = (file: File) => `${file.name}-${file.size}-${file.lastModified}`;
 
 export function PhotoUpload({
+  eventId,
   value,
   onChange,
   maxCount = 15, // 최대 15장
   maxSizeMB = 100,
-  saveToGallery = true,
   disabled = false,
 }: Props) {
   const fileRef = useRef<HTMLInputElement | null>(null);
 
   const [busy, setBusy] = useState(false);
+  const { upload, loading } = useImageUpload();
+
   const canAddMore = !disabled && !busy && value.length < maxCount;
 
   // 언마운트 때만 revoke
@@ -54,7 +57,7 @@ export function PhotoUpload({
   }, []);
 
   const openPicker = () => {
-    if (!canAddMore || busy) return;
+    if (!canAddMore) return;
     fileRef.current?.click();
   };
 
@@ -64,98 +67,12 @@ export function PhotoUpload({
     onChange(value.filter((p) => p.id !== id));
   };
 
-  const uploadFilesToS3 = async (files: File[], items: UploadPhoto[]) => {
-    // 1) presign 한번에 발급 (files.length 만큼)
-    const presignRes = await fetch('/api/presign', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        files: files.map((f) => ({ contentType: f.type })),
-      }),
-    });
-
-    if (!presignRes.ok) {
-      const text = await presignRes.text().catch(() => '');
-      throw new Error(`presign 실패 (${presignRes.status}) ${text}`);
-    }
-
-    // presign 응답이 배열/객체 둘 다 올 수 있게 안전 처리
-    const json = await presignRes.json();
-    const presignedList = (Array.isArray(json) ? json : [json]) as PresignRes[];
-
-    if (presignedList.length !== files.length) {
-      throw new Error('presign 응답 개수가 파일 개수와 다릅니다.');
-    }
-
-    // 2) PUT 업로드 (병렬)
-    const results = await Promise.allSettled(
-      files.map(async (file, idx) => {
-        const presigned = presignedList[idx];
-
-        const putRes = await fetch(presigned.url, {
-          method: 'PUT',
-          headers: { 'Content-Type': file.type },
-          body: file,
-        });
-
-        if (!putRes.ok) {
-          const text = await putRes.text().catch(() => '');
-          throw new Error(`S3 업로드 실패 (${putRes.status}) ${text}`);
-        }
-
-        return presigned.key;
-      }),
-    );
-
-    // 3) 결과를 items에 반영
-    const next = [...latestValueRef.current];
-    const keysToSave: string[] = [];
-
-    items.forEach((it, idx) => {
-      const r = results[idx];
-      const i = next.findIndex((p) => p.id === it.id);
-      if (i < 0) return;
-
-      if (r.status === 'fulfilled') {
-        next[i] = {
-          ...next[i],
-          uploading: false,
-          photoKey: r.value,
-          error: undefined,
-        };
-        keysToSave.push(r.value);
-      } else {
-        next[i] = {
-          ...next[i],
-          uploading: false,
-          photoKey: null,
-          error: r.reason?.message ?? '업로드 실패',
-        };
-      }
-    });
-
-    onChange(next);
-
-    // 4) (선택) Gallery에 key 저장
-    if (saveToGallery && keysToSave.length > 0) {
-      const saveRes = await fetch('/api/gallery', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ keys: keysToSave }),
-      });
-
-      if (!saveRes.ok) {
-        // 업로드는 됐는데 DB 저장만 실패한 상태
-        console.error(
-          'gallery 저장 실패:',
-          saveRes.status,
-          await saveRes.text().catch(() => ''),
-        );
-      }
-    }
-  };
-
   const addFiles = async (files: File[]) => {
+    if (!eventId) {
+      alert('eventId가 없습니다. (PhotoUpload props 확인)');
+      return;
+    }
+
     const remaining = maxCount - value.length;
     if (remaining <= 0) {
       alert(`최대 ${maxCount}장까지 업로드할 수 있어요.`);
@@ -163,7 +80,6 @@ export function PhotoUpload({
     }
 
     const existing = new Set(value.map((p) => p.id));
-
     const selected: { file: File; id: string }[] = [];
 
     let dupCount = 0;
@@ -241,23 +157,45 @@ export function PhotoUpload({
     // 업로드
     setBusy(true);
     try {
-      await uploadFilesToS3(
+      // keys 리턴
+      const keys = await upload(
         selected.map((s) => s.file),
-        items,
+        eventId,
       );
+
+      // keys를 방금 추가한 items 순서대로 매핑
+      const ids = new Set(items.map((it) => it.id));
+      let k = 0;
+
+      const next = [...latestValueRef.current].map((p) => {
+        if (!ids.has(p.id)) return p;
+
+        const key = keys[k++];
+        if (!key) {
+          return {
+            ...p,
+            uploading: false,
+            photoKey: null,
+            error: '업로드 실패',
+          };
+        }
+        return { ...p, uploading: false, photoKey: key, error: undefined };
+      });
+
+      onChange(next);
     } catch (e: any) {
       console.error(e);
       alert(e?.message ?? '업로드에 실패했습니다.');
 
       // 전체 실패면 방금 추가한 아이템들을 error로 표시
       const ids = new Set(items.map((it) => it.id));
-      const next: UploadPhoto[] = [...value, ...items].map((p) =>
+      const next = [...latestValueRef.current].map((p) =>
         ids.has(p.id)
           ? {
               ...p,
               uploading: false,
               photoKey: null,
-              error: (e as Error)?.message ?? '업로드 실패',
+              error: e?.message ?? '업로드 실패',
             }
           : p,
       );

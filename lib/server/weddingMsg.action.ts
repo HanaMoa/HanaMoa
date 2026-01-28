@@ -4,30 +4,25 @@ import { z } from 'zod';
 import { auth } from '../auth';
 import { prisma } from '../prisma';
 
-const weddingPhoto = z.object({
+const weddingTitle = z.object({
   eid: z.coerce.bigint(),
 
   title: z
     .string()
     .min(1, '청첩장 제목을 입력해주세요.')
     .max(60, '청첩장 제목은 60자 이내로 입력해주세요.'),
-
-  // S3 key 배열(JSON string)
-  // 예: '["images/uuid1","images/uuid2"]'
-  photos: z.string().min(1, '사진을 1장 이상 추가해주세요.'),
 });
 
-export async function saveWeddingPhoto(_: unknown, formData: FormData) {
+export async function saveWeddingTitle(_: unknown, formData: FormData) {
   const session = await auth();
   if (!session?.user?.id) {
     return { ok: false, message: '로그인이 필요합니다.' as const };
   }
   const userId = BigInt(session.user.id);
 
-  const parsed = weddingPhoto.safeParse({
+  const parsed = weddingTitle.safeParse({
     eid: formData.get('eid'),
     title: formData.get('title'),
-    photos: formData.get('photos'),
   });
 
   if (!parsed.success) {
@@ -39,35 +34,7 @@ export async function saveWeddingPhoto(_: unknown, formData: FormData) {
     };
   }
 
-  const { eid: eventId, title, photos } = parsed.data;
-
-  // 사진 값 보강 검증
-  let photoKeys: string[] = [];
-  try {
-    const arr = JSON.parse(photos);
-
-    if (!Array.isArray(arr)) {
-      return { ok: false, message: '사진 값이 올바르지 않습니다.' as const };
-    }
-    photoKeys = arr
-      .filter((v) => typeof v === 'string')
-      .map((v) => v.trim())
-      .filter(Boolean);
-  } catch {
-    return { ok: false, message: '사진 값이 올바르지 않습니다.' as const };
-  }
-
-  if (photoKeys.length === 0) {
-    return { ok: false, message: '사진을 1장 이상 추가해주세요.' as const };
-  }
-  if (photoKeys.length > 15) {
-    return { ok: false, message: '사진은 최대 15장까지 가능합니다.' as const };
-  }
-
-  // "images/"로 시작하는 key만 허용
-  photoKeys = photoKeys.filter((k) => k.startsWith('images/'));
-  if (photoKeys.length === 0)
-    return { ok: false, message: '사진 값이 올바르지 않습니다.' as const };
+  const { eid: eventId, title } = parsed.data;
 
   // 내 이벤트인지 검증 (+ message도 가져오기)
   const event = await prisma.event.findFirst({
@@ -85,10 +52,10 @@ export async function saveWeddingPhoto(_: unknown, formData: FormData) {
     messageObj = {};
   }
 
-  // s3 key 배열로 저장
+  // 제목만 업데이트 (이미지는 훅 + gallery 테이블이 담당)
   messageObj.wedding = {
+    ...(messageObj.wedding ?? {}),
     title: title.trim(),
-    photos: photoKeys,
   };
 
   await prisma.event.update({
