@@ -63,6 +63,26 @@ export async function GET(
       );
     }
 
+    // ✅ 이벤트 존재 + 결혼식(WEDDING)인지 검증
+    const event = await prisma.event.findUnique({
+      where: { id: eventKey },
+      select: { category: true },
+    });
+
+    if (!event) {
+      return NextResponse.json(
+        { ok: false, errorMessage: '이벤트를 찾을 수 없습니다.' },
+        { status: 404 },
+      );
+    }
+
+    if (event.category !== 'WEDDING') {
+      return NextResponse.json(
+        { ok: false, errorMessage: '결혼식 이벤트가 아닙니다.' },
+        { status: 400 },
+      );
+    }
+
     const url = new URL(req.url);
     const pageParam = parsePage(url.searchParams.get('page'));
     const pageSize = parsePageSize(url.searchParams.get('pageSize'));
@@ -76,6 +96,7 @@ export async function GET(
     const totalCount = await prisma.transaction.count({
       where: whereCondition,
     });
+
     const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
 
     const page =
@@ -102,6 +123,7 @@ export async function GET(
       const senderName = row.user?.name ?? '익명';
       const badge = senderName.trim().slice(0, 1) || '익';
 
+      // 페이지마다 오너먼트 섞기(씨드 = page)
       const ornamentType: OrnamentType =
         ORNAMENT_TYPES[(idx + page) % ORNAMENT_TYPES.length];
 
@@ -125,11 +147,10 @@ export async function GET(
         messages,
       }),
     );
-  } catch (e: any) {
+  } catch (e: unknown) {
     console.error(e);
-    return NextResponse.json(
-      { ok: false, errorMessage: e?.message ?? '서버 오류' },
-      { status: 500 },
-    );
+    const msg =
+      e instanceof Error ? e.message : '알 수 없는 서버 오류가 발생했습니다.';
+    return NextResponse.json({ ok: false, errorMessage: msg }, { status: 500 });
   }
 }

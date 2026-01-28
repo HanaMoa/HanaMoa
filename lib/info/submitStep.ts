@@ -3,7 +3,7 @@
 import { saveDatePlace } from '@/lib/server/datePlace.action';
 import { createDeadHost } from '@/lib/server/dead.action';
 import { savePartyInfo } from '@/lib/server/party.action';
-import { saveWeddingPhoto } from '@/lib/server/weddingMsg.action';
+import { saveWeddingTitle } from '@/lib/server/weddingMsg.action';
 import { eventCache } from './eventCache';
 import type { EventType } from './steps';
 
@@ -39,17 +39,12 @@ export async function submitStep(args: {
 
     if (event === 'funeral') {
       eventCache.clear(userId, 'funeral');
-      console.log(
-        '✅ cleared',
-        `draftEid:${userId}:funeral`,
-        eventCache.get(userId, 'funeral'),
-      );
     }
     return { ok: true };
   }
 
   if (event === 'wedding' && step === 5) {
-    const res = await saveWeddingPhoto(undefined, formData);
+    const res = await saveWeddingTitle(undefined, formData);
     if (!res.ok) return { ok: false, message: res.message };
 
     eventCache.clear(userId, 'wedding');

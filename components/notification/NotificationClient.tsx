@@ -1,13 +1,29 @@
 'use client';
 
 import { startTransition, useOptimistic } from 'react';
+import { MainHeader } from '@/components/common/MainHeader';
 import NotificationItem from '@/components/common/NotificationItem';
 import DateAlert from '@/components/notification/DateAlert';
-import NotificationHeader from './NotificationHeader'; // 위에서 만든 헤더
+import type { NotificationType } from '@/types/notification';
 
-// 타입은 상황에 맞게 가져오세요
+// ✅ 타입 정의 (서버에서 내려오는 데이터 구조)
+interface NotificationData {
+  id: number;
+  type: NotificationType;
+  message: string;
+  createdAt: string;
+  isRead: boolean;
+  thumbnailUrl: string | null; // 썸네일 URL
+  user: {
+    id: number;
+    name: string;
+    userId: string;
+    profileImageUrl: string | null; // 프로필 이미지 URL
+  };
+}
+
 interface Props {
-  initialNotifications: any[]; // 정확한 타입으로 수정 필요
+  initialNotifications: NotificationData[];
   onDeleteAction: (id: number) => Promise<void>;
   onPublishAction: (id: number) => Promise<void>;
 }
@@ -17,7 +33,7 @@ export default function NotificationClient({
   onDeleteAction,
   onPublishAction,
 }: Props) {
-  // 낙관적 업데이트 (서버 응답 전 미리 삭제)
+  // 낙관적 업데이트 (Optimistic UI)
   const [optimisticNotifications, removeOptimistic] = useOptimistic(
     initialNotifications,
     (state, idToRemove: number) => state.filter((n) => n.id !== idToRemove),
@@ -33,9 +49,17 @@ export default function NotificationClient({
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-[600px] flex-col bg-white shadow-xl">
       {/* 헤더 */}
-      <NotificationHeader hasUnread={hasUnread} />
+      <div className="sticky top-0 z-50 bg-white">
+        <MainHeader
+          variant="default"
+          title="알림"
+          showHomeBtn={true}
+          showNotificationBtn={true}
+          showBadge={hasUnread}
+        />
+      </div>
 
-      {/* 메인 컨텐츠 */}
+      {/* 컨텐츠 */}
       <main className="flex-1">
         <DateAlert text="오늘" className="bg-gray-50/50 px-5 py-4" />
 
@@ -48,13 +72,14 @@ export default function NotificationClient({
               message={n.message}
               createdAt={n.createdAt}
               isRead={n.isRead}
-              thumbnailUrl={n.thumbnailUrl}
+              thumbnailUrl={n.thumbnailUrl} // ✅ 썸네일 전달
               onDelete={() => handleDelete(n.id)}
               onPublish={() => onPublishAction(n.id)}
               onItemClick={() => console.log('상세 이동:', n.id)}
             />
           ))}
-          {/* 빈 상태 처리 */}
+
+          {/* 빈 상태 */}
           {optimisticNotifications.length === 0 && (
             <div className="py-20 text-center text-gray-500 text-sm">
               새로운 알림이 없습니다.

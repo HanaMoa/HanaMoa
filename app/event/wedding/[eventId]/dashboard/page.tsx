@@ -1,15 +1,15 @@
 'use client';
 
-import { ChevronLeft } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { MainHeader } from '@/components/common/MainHeader';
 import MessageModal from '@/components/dashboard/MessageModal';
 import PaginationBar from '@/components/dashboard/PaginationBar';
 import WeddingCake from '@/components/dashboard/WeddingCake';
 import {
   useWeddingDashboard,
   type WeddingDashboardMessage,
-} from './_hook/useWeddingDashboard';
+} from '../../../../../hooks/useWeddingDashboard';
 
 export default function WeddingDashboardPage() {
   const router = useRouter();
@@ -24,30 +24,21 @@ export default function WeddingDashboardPage() {
 
   return (
     <div className="flex min-h-dvh flex-col bg-[#FFF6F7]">
-      {/* header */}
-      <header className="shrink-0 px-5 pt-6">
-        <div className="relative flex items-center justify-center">
-          <button
-            type="button"
-            onClick={() => router.back()}
-            className="-translate-y-1/2 absolute top-1/2 left-0 rounded-full p-2 hover:bg-black/5"
-            aria-label="뒤로가기"
-          >
-            <ChevronLeft className="h-6 w-6" />
-          </button>
+      <MainHeader
+        variant="default"
+        title="축하 메시지"
+        className="bg-[#FFF6F7]"
+        onBackClick={() => router.push(`/event/wedding/${eventId}`)}
+      />
 
-          {/* 제목 + 설명 */}
-          <div className="flex flex-col items-center">
-            <div className="font-semibold text-[18px]">축하 메시지</div>
-            <div className="mt-4 text-center text-[13px] text-black/60">
-              🎂 축하의 한마디가 케이크를 더 특별하게 만들어요 🎂
-            </div>
-          </div>
+      <div className="shrink-0 px-5 pt-3">
+        <div className="text-center text-[15px] text-black/60">
+          🎂 축하 메시지로 케이크를 꾸며주세요 🎂
         </div>
-      </header>
+      </div>
 
       {/* main (케이크 영역만 스크롤) */}
-      <main className="flex-1 overflow-y-auto px-5 pb-6">
+      <main className="flex-1 overflow-y-auto px-5 pt-10 pb-6">
         {errorMsg ? (
           <div className="rounded-xl bg-black/10 p-4 text-center text-sm">
             {errorMsg}

@@ -1,8 +1,9 @@
 'use client';
 
-import { Bell, Camera, ChevronLeft, Home } from 'lucide-react';
+import { Bell, Camera, ChevronLeft, Home, LogOut } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { cn } from '@/lib/utils';
 import { Button } from '../ui/button';
 
 /*
@@ -18,6 +19,7 @@ import { Button } from '../ui/button';
     showHomeBtn={true}
     showNotificationBtn={true}
     showBadge={notificationCount > 0}   // 알림 갯수가 1개 이상이면, 표시
+    onBackClick={() => router.push('/home')}
   />
 3. 다크모드 (장례식 - 추억관)
   <MainHeader
@@ -44,9 +46,15 @@ type MainHeaderProps = {
   showNotificationBtn?: boolean; // 알림 버튼
   showBadge?: boolean; // 알림 뱃지(빨간 원)
   showCameraBtn?: boolean; // 카메라 버튼
+  showLogoutBtn?: boolean; // 로그아웃 버튼
 
   // 클릭 시 동작
+  onBackClick?: () => void; // back 버튼
   onCameraClick?: () => void; // 카메라 버튼
+  onLogoutClick?: () => void; // 로그아웃 버튼
+
+  // color 등 header 속성 추가
+  className?: string; // ex) bg-[#222327]
 };
 
 export function MainHeader({
@@ -57,7 +65,11 @@ export function MainHeader({
   showNotificationBtn = false,
   showBadge = false,
   showCameraBtn = false,
+  showLogoutBtn = false,
+  onBackClick,
   onCameraClick,
+  onLogoutClick,
+  className,
 }: MainHeaderProps) {
   const router = useRouter();
 
@@ -85,7 +97,7 @@ export function MainHeader({
   const textColor = isDark ? 'text-white' : 'text-black';
 
   return (
-    <header className={`safe-top w-full ${bgColor}`}>
+    <header className={cn('safe-top w-full', bgColor, className)}>
       <div className="relative flex h-15 w-full items-center px-5">
         {/* Left */}
         <div className="flex shrink-0 items-center">
@@ -101,7 +113,7 @@ export function MainHeader({
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => router.back()}
+              onClick={onBackClick ?? (() => router.back())}
               aria-label="뒤로가기"
               className={`rounded-full ${hoverColor}`}
             >
@@ -134,6 +146,19 @@ export function MainHeader({
               className={`rounded-full ${hoverColor}`}
             >
               <Home className={`h-8 w-8 ${iconColor}`} />
+            </Button>
+          )}
+
+          {/* Logout 버튼 */}
+          {showLogoutBtn && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onLogoutClick}
+              aria-label="로그아웃"
+              className={`rounded-full ${hoverColor}`}
+            >
+              <LogOut className={`h-8 w-8 ${iconColor}`} />
             </Button>
           )}
 
