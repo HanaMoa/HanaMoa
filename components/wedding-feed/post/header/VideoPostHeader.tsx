@@ -4,13 +4,16 @@ import { Eye, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { type User, UserProfile } from "@/components/common/UserProfile";
 import { Button } from "@/components/ui/button";
+import type { FeedPermission } from "@/lib/server/feedPermission.action";
 import DeletePostModal from "../DeletePostModal";
 
 type Props = {
   user: User;
+  permission: FeedPermission; // ✅ 추가
+  onDelete?: () => void; // ✅ 추가
 };
 
-export function VideoPostHeader({ user }: Props) {
+export function VideoPostHeader({ user, permission, onDelete }: Props) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -30,48 +33,55 @@ export function VideoPostHeader({ user }: Props) {
           </div>
 
           <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-7 border border-white/20 bg-white/10 px-2 text-[12px] text-white backdrop-blur-sm hover:bg-white/20"
-            >
-              <Eye className="h-3.5 w-3.5" />
-              전체 공개
-            </Button>
+            {/* ✅ 행사 host만 전체 공개 */}
+            {permission.canPublish && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 border border-white/20 bg-white/10 px-2 text-[12px] text-white backdrop-blur-sm hover:bg-white/20"
+              >
+                <Eye className="h-3.5 w-3.5" />
+                전체 공개
+              </Button>
+            )}
 
-            {/* 🔥 삭제 버튼 */}
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setOpen(true)}
-              className="h-7 w-7 border border-red-500/30 bg-red-500/10 text-red-400 backdrop-blur-sm hover:bg-red-500/25"
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
+            {/* ✅ host 또는 작성자만 삭제 */}
+            {permission.canDelete && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setOpen(true)}
+                className="h-7 w-7 border border-red-500/30 bg-red-500/10 text-red-400 backdrop-blur-sm hover:bg-red-500/25"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            )}
           </div>
         </div>
       </header>
 
-      {/* 삭제 모달 */}
-      <DeletePostModal
-        open={open}
-        onClose={() => setOpen(false)}
-        onDelete={() => {
-          console.log("삭제 실행");
-          setOpen(false);
-        }}
-        icon={<Trash2 className="h-7 w-7" />}
-        title="이 추억을 삭제할까요? 📸"
-        description={
-          <>
-            소중한 사람들이 남긴 축하가 담겨 있어요.
-            <br />
-            삭제하면 다시 되돌릴 수 없어요.
-          </>
-        }
-        deleteLabel="삭제"
-        cancelLabel="취소"
-      />
+      {/* ✅ 삭제 권한 있을 때만 모달 */}
+      {permission.canDelete && (
+        <DeletePostModal
+          open={open}
+          onClose={() => setOpen(false)}
+          onDelete={() => {
+            onDelete?.(); // ✅ 상위 삭제 로직 호출
+            setOpen(false);
+          }}
+          icon={<Trash2 className="h-7 w-7" />}
+          title="이 추억을 삭제할까요? 📸"
+          description={
+            <>
+              소중한 사람들이 남긴 축하가 담겨 있어요.
+              <br />
+              삭제하면 다시 되돌릴 수 없어요.
+            </>
+          }
+          deleteLabel="삭제"
+          cancelLabel="취소"
+        />
+      )}
     </>
   );
 }

@@ -76,6 +76,10 @@ export default function WeddingFeedPage() {
           videoUrl: "/videos/wedding-feed/feedVideo01.mp4",
         }}
         content="별돌 삼촌! 저 콩콩이에요 🐾 결혼 정말 축하드려요! 앞으로 저 간식 많이 사주셔야 해요!"
+        permission={{
+          canDelete: false,
+          canPublish: true,
+        }}
       />
 
       <WeddingPost
@@ -85,6 +89,10 @@ export default function WeddingFeedPage() {
           imageUrl: "/images/wedding-feed/feed01.jpg",
         }}
         content="하나야… 10년지기 친구가 결혼이라니 믿기지가 않아. 벌써부터 눈물 나려고 해. 진짜 너무너무 축하해 💐"
+        permission={{
+          canDelete: true,
+          canPublish: false,
+        }}
       />
 
       {items.map((item) => (
@@ -96,6 +104,11 @@ export default function WeddingFeedPage() {
             type: "image", // reels는 현재 이미지/영상 구분 없음 → 추후 확장
             imageUrl: item.url,
           }}
+          permission={{
+            canDelete: true,
+            canPublish: true,
+          }}
+          // permission={permission}  //TODO: 서버 컴포넌트로 수정 후 권한 전달
         />
       ))}
     </section>
