@@ -2,9 +2,10 @@
 
 'use client';
 
-import { Camera, Download, Plus, Search } from 'lucide-react';
+import { Download, Plus, Search } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
+import { MainHeader } from '@/components/common/MainHeader';
 import { Card } from '@/components/ui/card';
 
 export default function HanamoaPage() {
@@ -72,27 +73,12 @@ export default function HanamoaPage() {
     <div className="mx-auto h-dvh w-full max-w-[600px] overflow-hidden bg-[#F6F7F9] md:max-w-[720px] lg:max-w-[800px]">
       <main className="flex h-full w-full flex-col bg-white px-6 pt-6">
         {/* 상단 헤더 */}
-        <div className="flex items-center justify-between pb-4">
-          {/* 왼쪽: 뒤로가기 */}
-          <button
-            type="button"
-            onClick={() => router.back()}
-            className="rounded-full p-2 transition hover:bg-gray-100"
-            aria-label="뒤로가기"
-          >
-            ←
-          </button>
-
-          {/* 오른쪽: OCR 카메라 */}
-          <button
-            type="button"
-            onClick={() => router.push('/memorialweddingdb/ocr')}
-            className="rounded-full p-2 transition hover:bg-gray-100"
-            aria-label="OCR 인식"
-          >
-            <Camera className="h-5 w-5 text-gray-700" />
-          </button>
-        </div>
+        <MainHeader
+          variant="default"
+          title="경조사비 내역"
+          showCameraBtn={true}
+          onCameraClick={() => router.push('/memorialweddingdb/ocr')}
+        />
 
         {/* 메인 계좌 카드 */}
         <div className="flex h-full flex-col gap-6">
@@ -196,7 +182,7 @@ export default function HanamoaPage() {
             {/* 리스트 상단(날짜 + 추가 버튼) */}
             <div className="flex items-center justify-between px-1">
               <span className="font-bold text-gray-800 text-sm">
-                2026.01.09 (금)
+                2026.01.28 (수)
               </span>
 
               <button
