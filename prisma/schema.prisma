@@ -114,6 +114,13 @@ model Notification {
   @@map("notifications")
 }
 
+enum NotificationType {
+  GALLERY_ADDED
+  REEL_ADDED
+  TRANSFER_SENT
+  ORNAMENT_ADDED
+}
+
 model Gallery {
   id        BigInt   @id @default(autoincrement())
   key       String   @map("s3_key")
@@ -132,12 +139,7 @@ model Gallery {
   @@map("gallery")
 }
 
-enum NotificationType {
-  GALLERY_ADDED
-  REEL_ADDED
-  TRANSFER_SENT
-  ORNAMENT_ADDED
-}
+
 
 enum events_category {
   WEDDING
