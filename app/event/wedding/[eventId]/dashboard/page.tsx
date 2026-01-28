@@ -28,6 +28,7 @@ export default function WeddingDashboardPage() {
         variant="default"
         title="축하 메시지"
         className="bg-[#FFF6F7]"
+        onBackClick={() => router.push(`/event/wedding/${eventId}`)}
       />
 
       <div className="shrink-0 px-5 pt-3">

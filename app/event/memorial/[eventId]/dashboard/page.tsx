@@ -53,14 +53,14 @@ export default function MemorialDashboardPage() {
 
   return (
     <div className="flex min-h-dvh flex-col bg-[#DCDAD9]">
-      {/* ✅ header 교체 */}
       <MainHeader
         variant="default"
         title="추모 메시지"
         className="bg-[#DCDAD9]"
+        onBackClick={() => router.push(`/event/memorial/${eventId}`)}
       />
 
-      {/* ✅ header 밑 문구는 따로 */}
+      {/* header 밑 문구는 따로 */}
       <div className="shrink-0 px-5 pt-2">
         <div className="text-center text-[13px] text-black/45">
           소중한 기억과 마음을 남겨주세요
