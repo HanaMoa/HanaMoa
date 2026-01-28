@@ -160,7 +160,7 @@ export default function MemorialWeddingDbEditPage() {
           </button>
         </div>
 
-        <div className="mt-6 flex flex-col gap-4">
+        <div className="mt-6 flex flex-1 flex-col gap-4 overflow-y-auto overscroll-contain pb-28">
           {/* PDF 타이틀: "박성원 내역 수정" */}
           <h2 className="text-center font-bold text-gray-900 text-xl">
             {name} 내역 수정

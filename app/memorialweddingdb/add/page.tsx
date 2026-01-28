@@ -90,7 +90,7 @@ export default function MemorialWeddingDbAddPage() {
           </button>
         </div>
 
-        <div className="mt-6 flex flex-col gap-4">
+        <div className="mt-6 flex flex-1 flex-col gap-4 overflow-y-auto overscroll-contain pb-28">
           <h2 className="text-center font-bold text-gray-900 text-xl">
             경조사 내역 추가
           </h2>
