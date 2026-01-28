@@ -12,10 +12,12 @@ type UploadItem = {
 
 export default function GalleryUploadModal({
   onClose,
-  onAdd,
+  onConfirm,
+  loading,
 }: {
   onClose: () => void;
-  onAdd: (items: { type: 'image' | 'video'; src: string }[]) => void;
+  onConfirm: (files: File[]) => void;
+  loading?: boolean;
 }) {
   const [items, setItems] = useState<UploadItem[]>([]);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -38,7 +40,7 @@ export default function GalleryUploadModal({
     setItems((prev) => [
       ...prev,
       {
-        id: `upload-${Date.now()}`,
+        id: `upload-${crypto.randomUUID()}`,
         file,
         preview,
       },
@@ -55,7 +57,6 @@ export default function GalleryUploadModal({
     });
   };
 
-  // ✅ 린트 에러 해결된 부분
   useEffect(() => {
     return () => {
       items.forEach((i) => {
@@ -65,12 +66,7 @@ export default function GalleryUploadModal({
   }, [items]);
 
   const handleConfirm = () => {
-    onAdd(
-      items.map((i) => ({
-        type: i.file.type.startsWith('video/') ? 'video' : 'image',
-        src: i.preview,
-      })),
-    );
+    onConfirm(items.map((i) => i.file));
     onClose();
   };
 
@@ -80,7 +76,7 @@ export default function GalleryUploadModal({
         type="button"
         aria-label="Close upload modal"
         onClick={onClose}
-        className="absolute inset-0 cursor-pointer bg-black/60"
+        className="absolute inset-0 bg-black/60"
       />
 
       <div className="relative w-90 rounded-xl bg-white p-6">
@@ -91,7 +87,7 @@ export default function GalleryUploadModal({
             {items.map((item) => (
               <div
                 key={item.id}
-                className="group relative h-22.5 w-22.5 cursor-pointer overflow-hidden rounded-lg bg-black/4"
+                className="group relative h-22.5 w-22.5 overflow-hidden rounded-lg bg-black/5"
               >
                 <Image
                   src={item.preview}
@@ -100,16 +96,10 @@ export default function GalleryUploadModal({
                   className="object-cover"
                 />
 
-                <div className="pointer-events-none absolute inset-0 rounded-lg bg-black/0 transition-colors group-hover:bg-black/30" />
-
                 <button
                   type="button"
-                  aria-label="Delete item"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    removeItem(item.id);
-                  }}
-                  className="absolute top-2 right-2 hidden cursor-pointer rounded-full bg-red-600 p-1 text-white shadow-md transition hover:bg-red-700 group-hover:block"
+                  onClick={() => removeItem(item.id)}
+                  className="absolute top-2 right-2 hidden rounded-full bg-red-600 p-1 text-white group-hover:block"
                 >
                   <Trash2 className="h-4 w-4" />
                 </button>
@@ -119,10 +109,9 @@ export default function GalleryUploadModal({
             <button
               type="button"
               onClick={openPicker}
-              className="group relative flex h-22.5 w-22.5 cursor-pointer items-center justify-center overflow-hidden rounded-lg bg-black/4"
+              className="flex h-22.5 w-22.5 items-center justify-center rounded-lg bg-black/5"
             >
-              <ImagePlus className="z-10 text-gray-400" />
-              <div className="pointer-events-none absolute inset-0 rounded-lg bg-black/0 transition-colors group-hover:bg-black/30" />
+              <ImagePlus className="text-gray-400" />
             </button>
           </div>
         </div>
@@ -131,7 +120,6 @@ export default function GalleryUploadModal({
           ref={fileInputRef}
           type="file"
           accept="image/*,video/*"
-          capture
           className="hidden"
           onChange={onFileChange}
         />
@@ -140,18 +128,18 @@ export default function GalleryUploadModal({
           <button
             type="button"
             onClick={onClose}
-            className="cursor-pointer rounded-md px-4 py-2 text-gray-500 text-sm transition hover:bg-black/5"
+            className="rounded-md px-4 py-2 text-gray-500 text-sm hover:bg-black/5"
           >
             취소
           </button>
 
           <button
             type="button"
-            disabled={items.length === 0}
+            disabled={items.length === 0 || loading}
             onClick={handleConfirm}
-            className="cursor-pointer rounded-md bg-[#017F70] px-4 py-2 text-sm text-white transition hover:bg-[#016b5f] disabled:cursor-not-allowed disabled:opacity-40"
+            className="rounded-md bg-[#017F70] px-4 py-2 text-sm text-white disabled:opacity-40"
           >
-            추가
+            {loading ? '업로드 중...' : '추가'}
           </button>
         </div>
       </div>
