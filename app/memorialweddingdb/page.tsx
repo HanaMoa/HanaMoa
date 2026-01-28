@@ -5,6 +5,7 @@
 import { Download, Plus, Search } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
+import { MainHeader } from '@/components/common/MainHeader';
 import { Card } from '@/components/ui/card';
 
 export default function HanamoaPage() {
@@ -43,9 +44,42 @@ export default function HanamoaPage() {
     return `${s} 원`;
   }, [totalAmount]);
 
+  // 기간 조회 rendering
+  const periodLabel = useMemo(() => {
+    const today = new Date();
+
+    if (selectedPeriod === '전체') {
+      return '전체 기간';
+    }
+
+    if (selectedPeriod === '최신') {
+      return '최근 거래순';
+    }
+
+    if (selectedPeriod === '6개월') {
+      const from = new Date();
+      from.setMonth(today.getMonth() - 6);
+
+      const f = from.toISOString().slice(0, 10).replaceAll('-', '.');
+      const t = today.toISOString().slice(0, 10).replaceAll('-', '.');
+
+      return `${f} ~ ${t}`;
+    }
+
+    return '';
+  }, [selectedPeriod]);
+
   return (
     <div className="mx-auto h-dvh w-full max-w-[600px] overflow-hidden bg-[#F6F7F9] md:max-w-[720px] lg:max-w-[800px]">
       <main className="flex h-full w-full flex-col bg-white px-6 pt-6">
+        {/* 상단 헤더 */}
+        <MainHeader
+          variant="default"
+          title="경조사비 내역"
+          showCameraBtn={true}
+          onCameraClick={() => router.push('/memorialweddingdb/ocr')}
+        />
+
         {/* 메인 계좌 카드 */}
         <div className="flex h-full flex-col gap-6">
           <div className="flex items-center justify-center">
@@ -97,15 +131,44 @@ export default function HanamoaPage() {
             </div>
 
             <div className="flex items-center justify-between px-1 pb-1">
-              <div className="text-[13px] text-gray-400">
-                2025.07.14~2026.01.13
-              </div>
+              <div className="text-[13px] text-gray-400">{periodLabel}</div>
 
               <button
                 type="button"
                 className="flex items-center gap-1 text-[13px] text-gray-500 hover:text-gray-700"
-                onClick={() => {
-                  console.log('excel download');
+                // export/route.ts 연결
+                onClick={async () => {
+                  // UI 라벨 → query param 값으로 매핑
+                  const periodParam =
+                    selectedPeriod === '6개월'
+                      ? '6m'
+                      : selectedPeriod === '전체'
+                        ? 'all'
+                        : 'latest';
+
+                  const res = await fetch(
+                    `/api/memorialweddingdb/export?period=${periodParam}`,
+                    {
+                      cache: 'no-store',
+                    },
+                  );
+
+                  if (!res.ok) {
+                    alert('엑셀 다운로드 실패');
+                    return;
+                  }
+
+                  const blob = await res.blob();
+                  const url = window.URL.createObjectURL(blob);
+
+                  const a = document.createElement('a');
+                  a.href = url;
+                  a.download = `hanamoa_export_${periodParam}_${new Date().toISOString().slice(0, 10)}.xlsx`;
+                  document.body.appendChild(a);
+                  a.click();
+                  a.remove();
+
+                  window.URL.revokeObjectURL(url);
                 }}
               >
                 <Download className="h-4 w-4" />
@@ -119,7 +182,7 @@ export default function HanamoaPage() {
             {/* 리스트 상단(날짜 + 추가 버튼) */}
             <div className="flex items-center justify-between px-1">
               <span className="font-bold text-gray-800 text-sm">
-                2026.01.09 (금)
+                2026.01.28 (수)
               </span>
 
               <button
