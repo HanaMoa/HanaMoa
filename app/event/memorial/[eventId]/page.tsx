@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import MemorialLoungePage from './LoungePage';
+import { auth } from '@/lib/auth';
 
 /* 장례식 라운지 - Server : auth 체크 + DB 조회 */
 export default async function MemorialLounge({
@@ -8,8 +9,8 @@ export default async function MemorialLounge({
 }: {
   params: Promise<{ eventId: string }>;
 }) {
-  // const session = await auth();
-  // if (!session?.user) notFound();
+  const session = await auth();
+  if (!session?.user) notFound();
 
   const { eventId } = await params;
   if (!eventId) notFound();
