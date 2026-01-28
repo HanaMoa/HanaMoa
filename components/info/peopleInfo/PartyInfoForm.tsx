@@ -1,6 +1,7 @@
 'use client';
 
-import { ChevronDown, PlusIcon, XIcon } from 'lucide-react';
+import { PlusIcon, XIcon } from 'lucide-react';
+import Image from 'next/image';
 import { useEffect, useMemo, useState } from 'react';
 import type { DropdownItem } from '@/components/common/Dropdown';
 import type { Bank } from '@/lib/bank';
@@ -16,8 +17,11 @@ import {
   WEDDING_BRIDE_SIDE_EXTRA_ROLE,
   WEDDING_GROOM_SIDE_EXTRA_ROLE,
 } from '@/lib/role';
-import { BankSelectModal } from '../../common/BankSelectModal';
 import { AddMemberModal, type PartyMemberPayload } from './AddMemberModal';
+
+// 대표는 무조건 하나은행
+const FIXED_BANK_KEY = 'hn';
+const FIXED_BANK = BANKS.find((b) => b.key === FIXED_BANK_KEY)!;
 
 type Props = {
   event: 'funeral' | 'wedding';
@@ -38,8 +42,7 @@ export function PartyInfoForm({
   const [repPhone, setRepPhone] = useState('');
   const [repAccount, setRepAccount] = useState('');
 
-  const [bank, setBank] = useState<Bank | null>(null);
-  const [isBankOpen, setIsBankOpen] = useState(false);
+  const [bank] = useState<Bank>(FIXED_BANK);
 
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [extraMembers, setExtraMembers] = useState<PartyMemberPayload[]>([]);
@@ -103,7 +106,7 @@ export function PartyInfoForm({
         <input type="hidden" name="extraRole" value="MOURNER" />
       )}
 
-      <input type="hidden" name="repBank" value={bank?.name ?? ''} />
+      <input type="hidden" name="repBank" value={bank.name} />
 
       {/* 결혼은 role 포함, 장례는 role 없어도 됨 */}
       <input
@@ -163,6 +166,10 @@ export function PartyInfoForm({
           placeholder="01012345678"
           inputMode="tel"
         />
+
+        {repPhoneError && (
+          <p className="mt-1 text-red-500 text-xs">{repPhoneError}</p>
+        )}
       </label>
 
       <label className="flex flex-col gap-1">
@@ -173,14 +180,20 @@ export function PartyInfoForm({
         <div className="flex items-center gap-3">
           <button
             type="button"
-            onClick={() => setIsBankOpen(true)}
+            disabled
             className="flex h-[45px] w-[140px] shrink-0 items-center justify-between rounded-lg border border-[#E6E6E6] bg-white px-3 text-sm md:text-base lg:text-lg"
-            aria-label="은행 선택"
+            aria-label="하나은행 고정"
           >
-            <span className={bank ? 'text-black' : 'text-[#B2B2B2]'}>
-              {bank?.name ?? '은행 선택'}
-            </span>
-            <ChevronDown className="h-4 w-4 text-[#B2B2B2]" />
+            <div className="flex items-center gap-2">
+              <Image
+                src={bank.icon}
+                alt={bank.name}
+                width={25}
+                height={25}
+                className="rounded-sm"
+              />
+              <span className="font-semibold text-black">{bank.name}</span>
+            </div>
           </button>
 
           <input
@@ -203,14 +216,6 @@ export function PartyInfoForm({
         {repAccountError && (
           <p className="mt-1 text-red-500 text-xs">{repAccountError}</p>
         )}
-
-        <BankSelectModal
-          isOpen={isBankOpen}
-          onClose={() => setIsBankOpen(false)}
-          banks={BANKS}
-          value={bank}
-          onChange={(b: Bank) => setBank(b)}
-        />
       </label>
 
       <div className="mt-1">
