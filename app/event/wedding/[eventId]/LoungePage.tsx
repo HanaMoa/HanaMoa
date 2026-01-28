@@ -221,14 +221,14 @@ export default function WeddingLoungePage({ event }: Props) {
             onClick={() =>
               router.push(`/event/wedding/${event.eventId}/dashboard`)
             }
-            className="-translate-x-1/2 absolute top-[200px] left-1/2 w-[270px] cursor-pointer border-0 bg-transparent p-0 md:w-[270px] lg:w-[320px]"
+            className="-translate-x-1/2 absolute top-[27%] left-1/2 w-[245px] cursor-pointer border-0 bg-transparent p-0 md:top-[26%] md:w-[280px] lg:top-[25%] lg:w-[320px]"
           >
-            <div className="-translate-x-1/2 pointer-events-none absolute bottom-full left-1/2 z-20 mb-[15px]">
+            <div className="-translate-x-1/2 absolute bottom-full left-1/2 z-20 mb-[15px] md:mb-[14px] lg:mb-[13px]">
               <SpeechBubble
                 title="축하 메시지"
                 desc="축하 메시지로 케이크 꾸며주기"
                 href={`/event/wedding/${event.eventId}/dashboard`}
-                className="w-[175px] md:w-[175px] lg:w-[205px]"
+                className="w-[170px] md:w-[180px] lg:w-[200px]"
               />
             </div>
             <div className="pointer-events-none">
@@ -249,14 +249,14 @@ export default function WeddingLoungePage({ event }: Props) {
               router.push(`/event/wedding/${event.eventId}/gallery`)
             }
             aria-label="웨딩 사진관으로 이동"
-            className="absolute top-[460px] left-0 z-10 w-[220px] cursor-pointer border-0 bg-transparent md:w-[220px] lg:w-[280px]"
+            className="absolute top-[62%] left-0 z-10 w-[190px] cursor-pointer border-0 bg-transparent md:top-[61%] md:w-[210px] lg:top-[60%] lg:w-[250px]"
           >
-            <div className="pointer-events-none absolute bottom-full left-[5%] z-20 mb-[20px]">
+            <div className="absolute bottom-full left-[5%] z-20 mb-[25px]">
               <SpeechBubble
                 title="웨딩 사진관"
-                desc="웨딩 사진관 식전 영상 구경"
+                desc="웨딩 사진 & 식전 영상 구경"
                 href={`/event/wedding/${event.eventId}/gallery`}
-                className="w-[185px] md:w-[185px] lg:w-[215px]"
+                className="w-[160px] md:w-[170px] lg:w-[190px]"
               />
             </div>
             <Image
@@ -273,14 +273,14 @@ export default function WeddingLoungePage({ event }: Props) {
             type="button"
             onClick={() => router.push(`/event/wedding/${event.eventId}/reels`)}
             aria-label="영상 시네마로 이동"
-            className="absolute top-[460px] right-0 z-10 w-[220px] cursor-pointer border-0 bg-transparent md:w-[220px] lg:w-[280px]"
+            className="absolute top-[63%] right-0 z-10 w-[190px] cursor-pointer border-0 bg-transparent md:top-[62%] md:w-[210px] lg:top-[61%] lg:w-[250px]"
           >
-            <div className="pointer-events-none absolute right-[5%] bottom-full z-20 mb-[20px]">
+            <div className="absolute right-[5%] bottom-full z-20 mb-[25px]">
               <SpeechBubble
                 title="영상 시네마"
                 desc="축하 영상 구경하기"
                 href={`/event/wedding/${event.eventId}/reels`}
-                className="w-[185px] md:w-[185px] lg:w-[215px]"
+                className="w-[150px] md:w-[160px] lg:w-[180px]"
               />
             </div>
             <Image
