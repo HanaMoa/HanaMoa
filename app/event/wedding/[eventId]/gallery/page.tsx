@@ -3,7 +3,7 @@
 import { Plus } from 'lucide-react';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { MainHeader } from '@/components/common/MainHeader';
 import GalleryModal from '@/components/event/GalleryModal';
@@ -15,7 +15,7 @@ type GalleryItem =
   | { id: string; type: 'image'; src: string }
   | { id: string; type: 'video'; src: string; poster: string };
 
-const PAGE_SIZE = 6;
+const PAGE_SIZE = 20;
 
 export default function WeddingGalleryPage() {
   const { eventId } = useParams<{ eventId: string }>();
@@ -28,69 +28,54 @@ export default function WeddingGalleryPage() {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [uploadOpen, setUploadOpen] = useState(false);
 
-  /**
-   * 서버에서 갤러리 다시 불러오기
-   */
-  const fetchGallery = useCallback(async () => {
-    if (!eventId) return;
+  const loaderRef = useRef<HTMLDivElement | null>(null);
 
-    try {
-      const res = await fetch(`/api/gallery?eventId=${eventId}&mode=${mode}`);
-      if (!res.ok) {
-        console.error('gallery fetch failed');
-        return;
-      }
-
-      const data: { key: string; url: string }[] = await res.json();
-
-      setAllItems(
-        data.map((d) => ({
-          id: d.key,
-          type: 'image',
-          src: d.url,
-        })),
-      );
-      setVisibleCount(PAGE_SIZE);
-    } catch (e) {
-      console.error(e);
-    }
-  }, [eventId, mode]);
-
-  /**
-   * 최초 로드 / eventId 변경 시
-   */
+  // TODO: GET /api/gallery?eventId=&mode=gallery
   useEffect(() => {
+    async function fetchGallery() {
+      try {
+        const res = await fetch(`/api/gallery?eventId=${eventId}&mode=${mode}`);
+
+        if (!res.ok) {
+          const errorData = await res.json();
+          console.error('API Error:', errorData); // 401, 404, 500 에러 확인 가능
+          return;
+        }
+
+        const data = await res.json();
+        console.log('Fetched Data:', data); // 데이터가 비어있는지 확인
+
+        setAllItems(
+          data.map((d: any) => ({
+            id: d.key,
+            type: 'image',
+            src: d.url,
+          })),
+        );
+      } catch (err) {
+        console.error('Fetch Failed:', err);
+      }
+    }
+
     fetchGallery();
-  }, [fetchGallery]);
+  }, [eventId, mode]);
 
   const visibleItems = allItems.slice(0, visibleCount);
 
-  /**
-   * 업로드 confirm
-   */
   const handleUploadConfirm = async (files: File[]) => {
-    if (!eventId) return;
-
-    // 1️⃣ optimistic UI
-    const previews: GalleryItem[] = files.map((file) => ({
+    // optimistic UI
+    const previews = files.map((file) => ({
       id: `temp-${crypto.randomUUID()}`,
-      type: 'image',
+      type: 'image' as const,
       src: URL.createObjectURL(file),
     }));
-
-    const tempIds = previews.map((p) => p.id);
 
     setAllItems((prev) => [...previews, ...prev]);
 
     try {
-      // 2️⃣ 실제 업로드
       await upload(files, eventId);
-
-      // 3️⃣ 서버 데이터로 동기화
-      await fetchGallery();
+      // 👉 필요하면 여기서 fetchGallery()로 동기화
     } catch (e) {
-      // 4️⃣ 실패 시 rollback
-      setAllItems((prev) => prev.filter((i) => !tempIds.includes(i.id)));
       alert((e as Error).message);
     }
   };
@@ -101,14 +86,13 @@ export default function WeddingGalleryPage() {
 
       <div className="flex justify-between px-5 py-4">
         <span>총 {allItems.length}개</span>
-        <Button type="button" onClick={() => setUploadOpen(true)}>
+        <Button onClick={() => setUploadOpen(true)}>
           사진·영상 추가하기 <Plus className="h-4 w-4" />
         </Button>
       </div>
 
       <div className="columns-2 gap-2 px-5 sm:columns-3">
         {visibleItems.map((item, index) => (
-          // biome-ignore lint/a11y/useSemanticElements
           <div
             key={item.id}
             role="button"
@@ -121,15 +105,13 @@ export default function WeddingGalleryPage() {
                 setSelectedIndex(index);
               }
             }}
-            className="mb-2 cursor-pointer overflow-hidden rounded-lg focus:outline-none"
+            className="mb-2 cursor-pointer overflow-hidden rounded-lg rounded-lg focus:outline-none"
           >
             <Image
               src={item.type === 'image' ? item.src : item.poster}
               alt=""
               width={600}
               height={800}
-              sizes="(max-width: 640px) 50vw, 33vw"
-              loading="lazy"
             />
           </div>
         ))}
