@@ -75,9 +75,10 @@ export function PartyInfoForm({
     return (
       validateKorEngNameNoSpace(repName) === null &&
       validateOnlyNumber(repAccount) === null &&
+      validatePhoneNumber(repPhone) === null &&
       Boolean(bank)
     );
-  }, [repName, repAccount, bank]);
+  }, [repName, repAccount, repPhone, bank]);
 
   useEffect(() => {
     onValidChange?.(Boolean(isValid));
@@ -156,6 +157,7 @@ export function PartyInfoForm({
           {label} 전화번호
         </span>
         <input
+          name="repPhone"
           className="h-[45px] rounded-lg border border-[#E6E6E6] bg-white px-4 text-sm md:text-base lg:text-lg"
           value={repPhone}
           onChange={(e) => {
