@@ -53,8 +53,6 @@ export default function HomeClient({ userName, eventCount, isAuthed }: Props) {
     setLoginOpen(true);
   };
 
-  console.log('HomeClient render', status, !!session?.user);
-
   return (
     <div className="flex flex-col">
       <MainHeader
