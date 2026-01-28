@@ -1,5 +1,7 @@
-import type { ReactNode } from "react";
-import { SubHeader } from "@/components/common/SubHeader";
+// app/live/layout.tsx
+
+import type { ReactNode } from 'react';
+import { SubHeader } from '@/components/common/SubHeader';
 
 export default function LiveLayout({ children }: { children: ReactNode }) {
   return (

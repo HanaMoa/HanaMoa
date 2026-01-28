@@ -1,3 +1,4 @@
+// app/live/LiveEntryClient.tsx
 'use client';
 
 import { useRouter } from 'next/navigation';

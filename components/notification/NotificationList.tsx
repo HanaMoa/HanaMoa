@@ -1,7 +1,10 @@
+// components/notification/NotificationList.tsx
+// 알림 목록 컴포넌트
+// server action 함수를 Props로 받아서 각 알림 아이템에 전달
+// server 에서 받은 데이터와 함수를 받아서 알림 목록을 렌더링
 'use client';
 
 import NotificationItem from '@/components/common/NotificationItem';
-// 만약 types 경로가 다르다면 수정해주세요.
 import type { NotificationType, NotificationUser } from '@/types/notification';
 
 // 서버 컴포넌트(Page)에서 내려줄 Props 타입 정의
