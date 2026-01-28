@@ -2,8 +2,22 @@
 "use client";
 
 import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import type { User } from "@/components/common/UserProfile";
+import WeddingFeedCTA from "@/components/wedding-feed/post/WeddingFeedCTA";
 import { WeddingPost } from "@/components/wedding-feed/post/WeddingPost";
+
+type FeedItem = {
+  key: string;
+  url: string;
+};
+
+const TEMP_USER: User = {
+  id: 0,
+  name: "",
+  userId: "",
+  profileImageUrl: undefined,
+};
 
 const users: User[] = [
   { id: 1, name: "별돌이", userId: "stardol" },
@@ -15,10 +29,45 @@ export default function WeddingFeedPage() {
   const params = useParams();
   const eventId = params.eventId as string;
 
+  const [items, setItems] = useState<FeedItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!eventId) return;
+
+    async function loadFeed() {
+      try {
+        const res = await fetch(`/api/gallery?eventId=${eventId}&mode=reels`);
+
+        if (!res.ok) return;
+
+        const data: FeedItem[] = await res.json();
+        setItems(data);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadFeed();
+  }, [eventId]);
+
   return (
     <section className="flex flex-col gap-0 divide-y-0">
-      {/* 임시 확인용 (정상 나오면 제거) */}
-      <div className="px-4 py-2 text-gray-400 text-sm">eventId: {eventId}</div>
+      {/* CTA 카드 */}
+      <WeddingFeedCTA eventId={eventId} />
+
+      {/* Feed */}
+      {loading && (
+        <div className="py-10 text-center text-black/40 text-sm">
+          피드를 불러오는 중이에요…
+        </div>
+      )}
+
+      {!loading && items.length === 0 && (
+        <div className="py-10 text-center text-black/40 text-sm">
+          아직 올라온 축하가 없어요
+        </div>
+      )}
 
       <WeddingPost
         user={users[0]}
@@ -38,59 +87,17 @@ export default function WeddingFeedPage() {
         content="하나야… 10년지기 친구가 결혼이라니 믿기지가 않아. 벌써부터 눈물 나려고 해. 진짜 너무너무 축하해 💐"
       />
 
-      <WeddingPost
-        user={users[2]}
-        media={{
-          type: "video",
-          videoUrl: "/videos/wedding-feed/feedVideo02.mp4",
-        }}
-        content="하나 이모 결혼 축하해요! 사랑해요! 💖 별돌 삼촌이랑 꼭 놀러 와요!"
-      />
-
-      <WeddingPost
-        user={users[0]}
-        media={{
-          type: "image",
-          imageUrl: "/images/wedding-feed/feed02.jpg",
-        }}
-        content="하나야, 언니야. 우리 어릴 때 엄마한테 혼나고 손 들고 서 있던 사진 기억나? 지금 보니까 진짜 애기네. 하나뿐인 내 동생, 결혼 정말 축하해."
-      />
-
-      <WeddingPost
-        user={users[1]}
-        media={{
-          type: "image",
-          imageUrl: "/images/wedding-feed/feed03.jpg",
-        }}
-        content="야 별돌돌!! 😂 결혼 축하한다ㅋㅋ 신혼여행 갔다 와서 술 한잔 하자!"
-      />
-
-      <WeddingPost
-        user={users[2]}
-        media={{
-          type: "video",
-          videoUrl: "/videos/wedding-feed/feedVideo03.mp4",
-        }}
-        content="별돌아, 우리 같이 고생 많이 했잖아. 이제 평생 함께할 짝이 생겨서 다행이다. 진심으로 축하해."
-      />
-
-      <WeddingPost
-        user={users[0]}
-        media={{
-          type: "image",
-          imageUrl: "/images/wedding-feed/feed04.jpg",
-        }}
-        content="처제 결혼 축하해요! 우리처럼 예쁘고 따뜻하게 오래오래 잘 살아요 💕"
-      />
-
-      <WeddingPost
-        user={users[1]}
-        media={{
-          type: "image",
-          imageUrl: "/images/wedding-feed/feed05.jpg",
-        }}
-        content="누나, 나는 언제나 누나 편이야 🐶💛 항상 행복해야 해!"
-      />
+      {items.map((item) => (
+        <WeddingPost
+          key={item.key}
+          user={TEMP_USER}
+          content="" // 아직 content 없음
+          media={{
+            type: "image", // reels는 현재 이미지/영상 구분 없음 → 추후 확장
+            imageUrl: item.url,
+          }}
+        />
+      ))}
     </section>
   );
 }
