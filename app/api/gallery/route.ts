@@ -77,7 +77,8 @@ export async function GET(req: NextRequest) {
       });
 
       const url = await getSignedUrl(s3, command, {
-        expiresIn: 300,
+        expiresIn: 3600,
+
       });
 
       return { key, url };
