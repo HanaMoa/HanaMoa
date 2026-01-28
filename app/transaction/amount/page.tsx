@@ -1,8 +1,8 @@
 'use client';
 
-import NumberKeypad from '@/components/common/NumberKeypad';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useMemo, useState } from 'react';
+import NumberKeypad from '@/components/common/NumberKeypad';
 
 function formatWon(n: string) {
   const onlyNum = n.replace(/[^\d]/g, '');
@@ -21,7 +21,7 @@ export default function TransferAmountPage() {
   const sp = useSearchParams();
 
   // 이전 “계좌번호 입력” 페이지에서 넘어오는 값들 (없으면 기본값)
-  const toName = sp.get('toName') ?? '정그린';
+  const toName = sp.get('toName') ?? '';
   const bank = sp.get('bank') ?? '국민은행';
   const account = sp.get('account') ?? '55990204144435';
   const mode = sp.get('mode');
@@ -66,39 +66,39 @@ export default function TransferAmountPage() {
       account, // 계좌번호
       amount, // 금액 (숫자 문자열)
     });
-    
+
     if (eventType) {
       params.set('eventType', eventType);
     }
     if (eventId) {
       params.set('eventId', eventId);
     }
-    
+
     if (mode) {
-        params.set('mode', mode);
-        router.push(`/transaction/relation?${params.toString()}`); // Direct to relation, but relation needs to handle mode
+      params.set('mode', mode);
+      router.push(`/transaction/relation?${params.toString()}`); // Direct to relation, but relation needs to handle mode
     } else {
-        // Normal flow? Actually path was `/transaction/event`?
-        // Wait, the file I viewed (`app/transaction/amount/page.tsx`) had `router.push(/transaction/event?...`
-        // But Relation page is `app/transaction/relation/page.tsx`?
-        // Let me check if `event` page exists or if it was a placeholder.
-        // `app/transaction` has `event` directory? `relation` directory?
-        // `list_dir` output Step 207 showed `transaction` has 6 children.
-        // `event` was in `app/event`.
-        // Wait, `app/transaction/relation/page.tsx` exists (Step 203).
-        // `app/transaction/amount/page.tsx` (Step 211) push to `/transaction/event`.
-        // Is `event` the Relation page? Or is there an `event` page?
-        // Let's check `app/transaction` directory listing again.
-        // I will assume Relation page is the target and the previous code might have been using `event` as name?
-        // Or `app/transaction/event` exists.
-        
-        // I'll check `app/transaction` dir content.
-        router.push(`/transaction/relation?${params.toString()}`);
+      // Normal flow? Actually path was `/transaction/event`?
+      // Wait, the file I viewed (`app/transaction/amount/page.tsx`) had `router.push(/transaction/event?...`
+      // But Relation page is `app/transaction/relation/page.tsx`?
+      // Let me check if `event` page exists or if it was a placeholder.
+      // `app/transaction` has `event` directory? `relation` directory?
+      // `list_dir` output Step 207 showed `transaction` has 6 children.
+      // `event` was in `app/event`.
+      // Wait, `app/transaction/relation/page.tsx` exists (Step 203).
+      // `app/transaction/amount/page.tsx` (Step 211) push to `/transaction/event`.
+      // Is `event` the Relation page? Or is there an `event` page?
+      // Let's check `app/transaction` directory listing again.
+      // I will assume Relation page is the target and the previous code might have been using `event` as name?
+      // Or `app/transaction/event` exists.
+
+      // I'll check `app/transaction` dir content.
+      router.push(`/transaction/relation?${params.toString()}`);
     }
   };
 
   return (
-    <div className="flex flex-col bg-white h-dvh">
+    <div className="flex h-dvh flex-col bg-white">
       {/* 상단 헤더 */}
       <header className="relative flex h-14 items-center px-4">
         <h1 className="-translate-x-1/2 absolute left-1/2 font-semibold text-[16px]">
@@ -183,12 +183,12 @@ export default function TransferAmountPage() {
         </div>
 
         {/* 완료 바 */}
-        <div className="flex items-center border-t border-gray-100 justify-end px-4 py-2">
+        <div className="flex items-center justify-end border-gray-100 border-t px-4 py-2">
           <button
             type="button"
             onClick={handleDone}
             disabled={!canSubmit}
-            className={`rounded-full font-semibold text-[14px] cursor-pointer ${
+            className={`cursor-pointer rounded-full font-semibold text-[14px] ${
               canSubmit ? 'text-[#1EA698]' : 'text-gray-300'
             }`}
           >

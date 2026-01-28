@@ -1,11 +1,11 @@
 'use client';
 
-import { BankSelectButton } from '@/components/common/BankSelectButton';
-import { BankSelectModal } from '@/components/common/BankSelectModal';
-import NumberKeypad from '@/components/common/NumberKeypad';
 import { X } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useMemo, useState } from 'react';
+import { BankSelectButton } from '@/components/common/BankSelectButton';
+import { BankSelectModal } from '@/components/common/BankSelectModal';
+import NumberKeypad from '@/components/common/NumberKeypad';
 
 // 프로젝트에 이미 있을 가능성이 높은 Bank 타입/은행목록 사용
 // BankSelectModal/Button가 동일 타입을 쓰고 있음:contentReference[oaicite:3]{index=3}:contentReference[oaicite:4]{index=4}
@@ -20,6 +20,7 @@ export default function TransactionPage() {
   const [accountNumber, setAccountNumber] = useState('');
   const [bankOpen, setBankOpen] = useState(false);
   const [selectedBank, setSelectedBank] = useState<Bank | null>(null);
+  const [toName, setToName] = useState('');
 
   // 계좌번호는 숫자만 입력 + 최대 20자리
   const handleKeypadInput = (value: string) => {
@@ -40,7 +41,9 @@ export default function TransactionPage() {
   };
 
   const canSubmit = useMemo(() => {
-    return accountNumber.length >= 8 && !!selectedBank;
+    return (
+      toName.trim().length > 0 && accountNumber.length >= 8 && !!selectedBank
+    );
   }, [accountNumber, selectedBank]);
 
   // amount page router.push
@@ -48,11 +51,11 @@ export default function TransactionPage() {
     if (!canSubmit) return;
 
     const params = new URLSearchParams({
-      toName: '정그린', // TODO: 받는 사람 이름 입력 UI가 생기면 그 값으로 교체
+      toName: toName.trim(),
       bank: selectedBank!.name,
       account: accountNumber,
     });
-    
+
     if (isTransferMode) {
       params.set('mode', 'transfer');
     }
@@ -61,13 +64,13 @@ export default function TransactionPage() {
   };
 
   return (
-    <div className="flex flex-col h-dvh w-full max-w-[800px] bg-white">
+    <div className="flex h-dvh w-full max-w-[800px] flex-col bg-white">
       {/* 상단 헤더 */}
       <header className="relative flex h-14 items-center px-4">
         <button
           type="button"
           onClick={() => router.back()}
-          className="rounded-full p-2 hover:bg-gray-100 cursor-pointer"
+          className="cursor-pointer rounded-full p-2 hover:bg-gray-100"
           aria-label="닫기"
         >
           <X className="h-6 w-6" />
@@ -92,7 +95,7 @@ export default function TransactionPage() {
       {/* 본문 */}
       <main className="px-5 py-3">
         {/* 계좌번호 입력(키패드 입력이므로 readOnly) */}
-        <div className="">
+        <div className="space-y-3">
           <label className="sr-only" htmlFor="accountNumber">
             계좌번호 입력
           </label>
@@ -105,6 +108,12 @@ export default function TransactionPage() {
             inputMode="numeric"
             placeholder="계좌번호 입력"
             className="h-12 w-full cursor-text rounded-xl border border-gray-200 px-5 text-[16px] outline-none focus:ring-2 focus:ring-[#7fd1c8]"
+          />
+          <input
+            value={toName}
+            onChange={(e) => setToName(e.target.value)}
+            placeholder="이름 입력"
+            className="h-12 w-full rounded-xl border border-gray-200 px-5 text-[16px] outline-none focus:ring-2 focus:ring-[#7fd1c8]"
           />
 
           <p className="mt-2 mb-4 px-2 text-[12px] text-gray-400">
@@ -119,7 +128,6 @@ export default function TransactionPage() {
             placeholder="은행 선택"
             onClick={() => setBankOpen(true)}
           />
-
         </div>
       </main>
 
@@ -144,7 +152,7 @@ export default function TransactionPage() {
             type="button"
             onClick={handleDone}
             disabled={!canSubmit}
-            className={`rounded-full font-semibold text-[14px] cursor-pointer ${
+            className={`cursor-pointer rounded-full font-semibold text-[14px] ${
               canSubmit ? 'text-[#1EA698]' : 'text-gray-300'
             }`}
           >
