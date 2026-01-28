@@ -84,7 +84,7 @@ export default function OcrUploader({ onOcrResult, onError }: Props) {
         type="button"
         onClick={pickFile}
         disabled={isLoading}
-        className="rounded border px-3 py-2 text-sm hover:bg-gray-100 disabled:opacity-50"
+        className="rounded border bg-[#1EA698] px-3 py-2 text-sm text-white hover:bg-[#1EA698]/90 disabled:opacity-50"
       >
         {isLoading ? 'OCR 처리 중…' : '이미지 선택해서 OCR 실행'}
       </button>
