@@ -78,7 +78,6 @@ export default function RegisterClient() {
         {/* 로고/설명 */}
         <div className="mt-2">
           <div className="-mx-4 relative h-[96px] w-[96px]">
-            {/* 로고 경로는 프로젝트에 맞게 바꿔주세요 */}
             <Image
               src="/images/common/logo1.png"
               alt="하나모아"
