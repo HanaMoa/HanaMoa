@@ -112,6 +112,7 @@ export default function WeddingGalleryPage() {
               alt=""
               width={600}
               height={800}
+              unoptimized
             />
           </div>
         ))}
