@@ -36,7 +36,7 @@ const POSITIONS: Array<{ top: string; left: string }> = [
 // 오너먼트 10개를 absolute로 얹는 역할만 담당
 export default function WeddingCake({ items, className, onSelect }: Props) {
   return (
-    <div className={cn('relative mx-auto w-full max-w-[480px]', className)}>
+    <div className={cn('relative mx-auto w-full max-w-[550px]', className)}>
       {/* cake background */}
       <Image
         src="/images/event/wedding/dashboard_cake.svg"

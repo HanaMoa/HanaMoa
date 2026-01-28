@@ -48,7 +48,7 @@ export default function WeddingOrnament({
         <Image
           src={`/images/event/wedding/${msg.ornamentType}.svg`}
           alt="wedding ornament"
-          width={60}
+          width={80}
           height={48}
           priority
         />

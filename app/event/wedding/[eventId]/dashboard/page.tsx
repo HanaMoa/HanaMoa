@@ -9,7 +9,7 @@ import WeddingCake from '@/components/dashboard/WeddingCake';
 import {
   useWeddingDashboard,
   type WeddingDashboardMessage,
-} from './_hook/useWeddingDashboard';
+} from '../../../../../hooks/useWeddingDashboard';
 
 export default function WeddingDashboardPage() {
   const router = useRouter();
@@ -39,7 +39,7 @@ export default function WeddingDashboardPage() {
           {/* 제목 + 설명 */}
           <div className="flex flex-col items-center">
             <div className="font-semibold text-[18px]">축하 메시지</div>
-            <div className="mt-4 text-center text-[13px] text-black/60">
+            <div className="mt-4 text-center text-[15px] text-black/60">
               🎂 축하의 한마디가 케이크를 더 특별하게 만들어요 🎂
             </div>
           </div>
@@ -47,7 +47,7 @@ export default function WeddingDashboardPage() {
       </header>
 
       {/* main (케이크 영역만 스크롤) */}
-      <main className="flex-1 overflow-y-auto px-5 pb-6">
+      <main className="flex-1 overflow-y-auto px-5 pt-10 pb-6">
         {errorMsg ? (
           <div className="rounded-xl bg-black/10 p-4 text-center text-sm">
             {errorMsg}
