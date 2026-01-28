@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useSession } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import { MainHeader } from '@/components/common/MainHeader';
 import EventCard from '@/components/home/EventCard';
@@ -10,12 +10,19 @@ import HomeMenuList from '@/components/home/HomeMenuList';
 import { LoginSheet } from '@/components/home/LoginSheet';
 import { syncDraftOwner } from '@/lib/info/draftOwner';
 
-type Props = { userName: string; eventCount: number };
+type Props = { userName: string; eventCount: number; isAuthed: boolean };
 
-export default function HomeClient({ userName, eventCount }: Props) {
+export default function HomeClient({ userName, eventCount, isAuthed }: Props) {
   const router = useRouter();
   const { data: session, status, update } = useSession();
   const [loginOpen, setLoginOpen] = useState(false);
+
+  const logOut = async () => {
+    await signOut({
+      redirect: true,
+      callbackUrl: '/home',
+    });
+  };
 
   // 로그인 사용자 변경 시 draft 소유자 동기화
   useEffect(() => {
@@ -27,7 +34,10 @@ export default function HomeClient({ userName, eventCount }: Props) {
 
   // 로그인 되면 모달 자동 닫기
   useEffect(() => {
-    if (loginOpen && status === 'authenticated') setLoginOpen(false);
+    if (loginOpen && status === 'authenticated') {
+      setLoginOpen(false);
+      router.refresh();
+    }
   }, [loginOpen, status]);
 
   const requireAuth = async (action: () => void) => {
@@ -45,7 +55,11 @@ export default function HomeClient({ userName, eventCount }: Props) {
 
   return (
     <div className="flex flex-col">
-      <MainHeader variant="home" />
+      <MainHeader
+        variant="home"
+        showLogoutBtn={isAuthed}
+        onLogoutClick={logOut}
+      />
 
       <main className="flex h-full flex-col">
         <HomeBanner name={userName} />

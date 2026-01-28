@@ -22,6 +22,7 @@ export default async function HomePage() {
     <HomeClient
       userName={session?.user?.name ?? '비회원'}
       eventCount={eventCount}
+      isAuthed={!!session?.user}
     />
   );
 }
