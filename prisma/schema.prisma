@@ -33,8 +33,8 @@ model Event {
   category     events_category @default(WEDDING)
   name         String?
   eventHosts   EventHost[]
-  galleries    Gallery[]
   user         User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  galleries    Gallery[]
   transactions Transaction[]
 
   @@index([userId])
@@ -115,16 +115,15 @@ model Notification {
 }
 
 model Gallery {
-  id        BigInt   @id @default(autoincrement())
-  key       String   @map("s3_key")
-  type      NotificationType
-  userId    BigInt   @map("user_id")
-  createdAt DateTime @default(now()) @map("created_at")
-  visibility GalleryVisibility  @default(PRIVATE)
-  eventId   BigInt   @map("event_id")
-
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  id         BigInt            @id @default(autoincrement())
+  key        String            @map("s3_key")
+  userId     BigInt            @map("user_id")
+  createdAt  DateTime          @default(now()) @map("created_at")
+  eventId    BigInt            @map("event_id")
+  visibility GalleryVisibility @default(PRIVATE)
+  type       NotificationType
+  event      Event             @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user       User              @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([eventId])
