@@ -19,6 +19,7 @@ import { Button } from '../ui/button';
     showHomeBtn={true}
     showNotificationBtn={true}
     showBadge={notificationCount > 0}   // 알림 갯수가 1개 이상이면, 표시
+    onBackClick={() => router.push('/home')}
   />
 3. 다크모드 (장례식 - 추억관)
   <MainHeader
@@ -47,6 +48,7 @@ type MainHeaderProps = {
   showCameraBtn?: boolean; // 카메라 버튼
 
   // 클릭 시 동작
+  onBackClick?: () => void; // back 버튼
   onCameraClick?: () => void; // 카메라 버튼
 
   // color 등 header 속성 추가
@@ -61,6 +63,7 @@ export function MainHeader({
   showNotificationBtn = false,
   showBadge = false,
   showCameraBtn = false,
+  onBackClick,
   onCameraClick,
   className,
 }: MainHeaderProps) {
@@ -106,7 +109,7 @@ export function MainHeader({
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => router.back()}
+              onClick={onBackClick ?? (() => router.back())}
               aria-label="뒤로가기"
               className={`rounded-full ${hoverColor}`}
             >
