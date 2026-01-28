@@ -39,11 +39,6 @@ export async function submitStep(args: {
 
     if (event === 'funeral') {
       eventCache.clear(userId, 'funeral');
-      console.log(
-        '✅ cleared',
-        `draftEid:${userId}:funeral`,
-        eventCache.get(userId, 'funeral'),
-      );
     }
     return { ok: true };
   }
