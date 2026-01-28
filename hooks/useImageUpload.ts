@@ -3,7 +3,11 @@ import { useState } from 'react';
 export function useImageUpload() {
   const [loading, setLoading] = useState(false);
 
-  async function upload(files: File[], eventId: string): Promise<string[]> {
+  async function upload(
+    files: File[],
+    eventId: string,
+    mode: 'gallery' | 'reels',
+  ): Promise<string[]> {
     if (files.length === 0) return [];
 
     setLoading(true);
@@ -47,7 +51,11 @@ export function useImageUpload() {
       const saveRes = await fetch('/api/gallery', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ eventId, keys: presigned.map((p) => p.key) }),
+        body: JSON.stringify({
+          eventId,
+          keys: presigned.map((p) => p.key),
+          mode,
+        }),
       });
 
       if (!saveRes.ok) {
