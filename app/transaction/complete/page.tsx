@@ -1,8 +1,8 @@
 'use client';
 
-import { SingleButton } from '@/components/common/SingleButton';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState, useRef } from 'react';
+import { SingleButton } from '@/components/common/SingleButton';
 
 function formatWon(n: string) {
   const onlyNum = (n ?? '').replace(/[^\d]/g, '');
@@ -37,8 +37,12 @@ function eventMessage(type: string | null) {
 }
 
 export default function TransferCompletePage() {
+  const postedRef = useRef(false);
+  const sentAtRef = useRef(new Date().toISOString()); // ✅ 딱 한번만 생성
   const router = useRouter();
   const sp = useSearchParams();
+  const txId = sp.get('txId'); // ✅ 이미 저장됐는지 체크용
+  const [saving, setSaving] = useState(false);
 
   // ✅ 이전 단계에서 넘어온 값들 (없으면 데모 기본값)
   const toName = sp.get('toName') ?? '정그린';
@@ -49,6 +53,7 @@ export default function TransferCompletePage() {
   const eventType = sp.get('eventType'); // WEDDING | FUNERAL
   const relationType = sp.get('relationType'); // FRIEND | COLLEAGUE | FAMILY | ACQUAINTANCE | MANUAL
   const lastAction = sp.get('lastAction'); // media | message | relation (or undefined)
+  const shouldCreateTransaction = !lastAction || lastAction === 'relation'; // 송금 재확인 인자
 
   // 출금 계좌(프로젝트에서 아직 없으면 임시값)
   const fromBank = sp.get('fromBank') ?? '하나은행';
@@ -56,23 +61,70 @@ export default function TransferCompletePage() {
 
   const amountLabel = useMemo(() => `${formatWon(amount)}원`, [amount]);
 
+  // 송금 입력 정보 DB 저장
+  useEffect(() => {
+    if (!shouldCreateTransaction) return; // media/message면 저장 X
+    if (txId) return; // 이미 저장됨
+    if (saving) return;
+    if (postedRef.current) return;
+    postedRef.current = true;
 
+    (async () => {
+      try {
+        setSaving(true);
+
+        const relation = relationLabel(relationType) || '지인';
+
+        const res = await fetch('/api/transfer/complete', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            toName,
+            toBank,
+            toAccount,
+            amount,
+            relation,
+            eventType,
+            eventId,
+            sentAt: sentAtRef.current,
+          }),
+        });
+
+        const data = await res.json().catch(() => null);
+        if (!res.ok || !data?.ok) {
+          console.error('저장 실패:', data);
+          return;
+        }
+
+        const newTxId = data?.transaction?.id;
+        if (newTxId) {
+          // ✅ 쿼리에 txId 붙여서 replace (새로고침해도 중복 저장 방지)
+          const next = new URLSearchParams(sp.toString());
+          next.set('txId', String(newTxId));
+          router.replace(`/transaction/complete?${next.toString()}`);
+        }
+      } finally {
+        setSaving(false);
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [shouldCreateTransaction, txId]);
 
   const eventId = sp.get('eventId');
 
   const handleConfirm = () => {
     // 장례(FUNERAL)이면서 eventId가 있다면 memorial lounge로 이동
     if (eventType === 'FUNERAL' && eventId) {
-       router.push(`/event/memorial/${eventId}`);
+      router.push(`/event/memorial/${eventId}`);
     } else if (eventType === 'WEDDING' && eventId) {
-       router.push(`/event/wedding/${eventId}`);
+      router.push(`/event/wedding/${eventId}`);
     } else {
-       router.push('/home'); // app/home/page.tsx
+      router.push('/home'); // app/home/page.tsx
     }
   };
 
   return (
-    <div className="flex flex-col justify-between mx-auto h-dvh w-full max-w-[600px] bg-white px-6 py-10">
+    <div className="mx-auto flex h-dvh w-full max-w-[600px] flex-col justify-between bg-white px-6 py-10">
       {/* 상단 타이틀 */}
       <header className="relative flex h-14 items-center px-4">
         <h1 className="-translate-x-1/2 absolute left-1/2 font-semibold text-[16px]">
@@ -98,12 +150,13 @@ export default function TransferCompletePage() {
               <div className="mb-1">
                 {toName} {relationLabel(relationType)}에게
               </div>
-              <div className="mb-1 text-[#00A998]">{eventMessage(eventType)}</div>
+              <div className="mb-1 text-[#00A998]">
+                {eventMessage(eventType)}
+              </div>
               <div>{amountLabel}을 보냈어요</div>
             </>
           )}
         </div>
-
       </section>
 
       {/* 계좌 정보 */}
@@ -120,7 +173,9 @@ export default function TransferCompletePage() {
             <div className="text-gray-500">출금계좌</div>
             <div className="text-right font-semibold text-gray-900">
               {fromBank}
-              <div className="mt-1 font-normal text-gray-700">{fromAccount}</div>
+              <div className="mt-1 font-normal text-gray-700">
+                {fromAccount}
+              </div>
             </div>
           </div>
         </section>
@@ -128,7 +183,10 @@ export default function TransferCompletePage() {
 
       {/* 하단 확인 버튼 */}
       <div className="">
-        <SingleButton onClick={handleConfirm} className="w-full! cursor-pointer">
+        <SingleButton
+          onClick={handleConfirm}
+          className="w-full! cursor-pointer"
+        >
           확인
         </SingleButton>
       </div>
