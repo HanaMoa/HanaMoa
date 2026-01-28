@@ -11,10 +11,16 @@ type Media =
   | { type: "image"; imageUrl: string }
   | { type: "video"; videoUrl: string };
 
+type FeedPermission = {
+  canDelete: boolean;
+  canPublish: boolean;
+};
+
 type WeddingPostProps = {
   user: User;
   media: Media;
   content: string;
+  permission: FeedPermission;
   onDelete?: () => void;
 };
 
@@ -22,13 +28,18 @@ export function WeddingPost({
   user,
   media,
   content,
+  permission,
   onDelete,
 }: WeddingPostProps) {
   return (
     <article className="w-full bg-transparent">
       {media.type === "image" && (
         <>
-          <ImagePostHeader user={user} />
+          <ImagePostHeader
+            user={user}
+            permission={permission}
+            onDelete={onDelete}
+          />
           <PostMedia type="image" imageUrl={media.imageUrl} />
         </>
       )}
@@ -36,7 +47,11 @@ export function WeddingPost({
       {media.type === "video" && (
         <div className="relative">
           <PostMedia type="video" videoUrl={media.videoUrl} />
-          <VideoPostHeader user={user} />
+          <VideoPostHeader
+            user={user}
+            permission={permission}
+            onDelete={onDelete}
+          />
         </div>
       )}
 
