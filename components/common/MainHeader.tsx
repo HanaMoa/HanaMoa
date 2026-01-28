@@ -3,6 +3,7 @@
 import { Bell, Camera, ChevronLeft, Home } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { cn } from '@/lib/utils';
 import { Button } from '../ui/button';
 
 /*
@@ -47,6 +48,9 @@ type MainHeaderProps = {
 
   // 클릭 시 동작
   onCameraClick?: () => void; // 카메라 버튼
+
+  // color 등 header 속성 추가
+  className?: string; // ex) bg-[#222327]
 };
 
 export function MainHeader({
@@ -58,6 +62,7 @@ export function MainHeader({
   showBadge = false,
   showCameraBtn = false,
   onCameraClick,
+  className,
 }: MainHeaderProps) {
   const router = useRouter();
 
@@ -85,7 +90,7 @@ export function MainHeader({
   const textColor = isDark ? 'text-white' : 'text-black';
 
   return (
-    <header className={`safe-top w-full ${bgColor}`}>
+    <header className={cn('safe-top w-full', bgColor, className)}>
       <div className="relative flex h-15 w-full items-center px-5">
         {/* Left */}
         <div className="flex shrink-0 items-center">
