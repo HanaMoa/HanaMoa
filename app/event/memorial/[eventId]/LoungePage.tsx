@@ -113,12 +113,7 @@ export default function MemorialLoungePage({ event }: Props) {
   return (
     <div className="flex min-h-screen w-full flex-col">
       {/* 헤더 */}
-      <MainHeader
-        title="하나모아"
-        showHomeBtn={true}
-        onBackClick={() => router.push('/event')} // 라운지 리스트
-        onHomeClick={() => router.push('/home')} // 홈
-      />
+      <MainHeader title="하나모아" showHomeBtn={true} />
 
       {/* 라운지 */}
       <main className="w-full flex-1">

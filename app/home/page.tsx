@@ -20,7 +20,6 @@ export default async function HomePage() {
 
   return (
     <HomeClient
-      isLoggedIn={!!session?.user}
       userName={session?.user?.name ?? '비회원'}
       eventCount={eventCount}
     />

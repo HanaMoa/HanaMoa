@@ -22,5 +22,5 @@ export async function checkUserId(userId: string) {
       available: false,
       message: '이미 사용 중인 아이디입니다.',
     };
-  return { ok: true, available: true, message: '사용 가능한 아이디입니다.' };
+  return { ok: true, available: true, message: '회원가입을 계속해 주세요.' };
 }

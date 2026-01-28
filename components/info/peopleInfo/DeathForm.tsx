@@ -5,6 +5,8 @@ import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 import { validateKorEngNameNoSpace } from '@/lib/regExp';
 
+type PresignRes = { url: string; key: string };
+
 export function DeathForm({
   onValidChange,
   disabled = false,
@@ -13,11 +15,11 @@ export function DeathForm({
   disabled?: boolean;
 }) {
   const [name, setName] = useState('');
-  const [photo, setPhoto] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
-  // 공백 없이 한글, 영문만 허용
-  const nameRegex = /^[A-Za-z가-힣]+$/;
+  const [photoKey, setPhotoKey] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+
   const [nameError, setNameError] = useState<string | null>(null);
   const [isComposing, setIsComposing] = useState(false);
 
@@ -30,42 +32,80 @@ export function DeathForm({
   useEffect(() => {
     const ok = validateKorEngNameNoSpace(name) === null;
     onValidChange?.(ok);
-
-    onValidChange?.(name.trim().length > 0);
-  }, [name, photo, onValidChange]);
+  }, [name, onValidChange]);
 
   const openFilePicker = () => {
     fileInputRef.current?.click();
   };
 
-  const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]; // 처음 한 장만
     if (!file) return;
 
-    if (!file.type.startsWith('image/')) {
-      alert('이미지 파일만 업로드할 수 있습니다.');
-      return;
+    try {
+      if (!file.type.startsWith('image/')) {
+        alert('이미지 파일만 업로드할 수 있습니다.');
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        alert('5MB 이하 이미지만 업로드 가능합니다.');
+        return;
+      }
+
+      if (previewUrl)
+        // 로컬 프리뷰(먼저 보여주기)
+        URL.revokeObjectURL(previewUrl);
+      setPreviewUrl(URL.createObjectURL(file));
+
+      setUploading(true);
+
+      // 1) presigned PUT url 발급
+      const presignRes = await fetch('/api/presign', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ files: [{ contentType: file.type }] }),
+      });
+
+      if (!presignRes.ok) {
+        const text = await presignRes.text();
+        console.error('[presign failed]', presignRes.status, text);
+        throw new Error(`presign failed: ${presignRes.status}`);
+      }
+
+      const [presigned] = (await presignRes.json()) as PresignRes[];
+      console.log('[presign ok]', presigned);
+
+      // 2) S3 PUT 업로드
+      const putRes = await fetch(presigned.url, {
+        method: 'PUT',
+        headers: { 'Content-Type': file.type },
+        body: file,
+      });
+
+      if (!putRes.ok) {
+        const text = await putRes.text().catch(() => '');
+        console.error('[s3 put failed]', putRes.status, text);
+        throw new Error(`s3 put failed: ${putRes.status}`);
+      }
+
+      console.log('[s3 put ok]', presigned.key);
+      setPhotoKey(presigned.key);
+    } catch (err) {
+      console.error(err);
+      alert('이미지 업로드에 실패했습니다. 다시 시도해주세요.');
+      // 실패 시 key 초기화
+      setPhotoKey(null);
+    } finally {
+      setUploading(false);
+      // 같은 파일 다시 선택 가능하게
+      e.target.value = '';
     }
-
-    if (file.size > 5 * 1024 * 1024) {
-      alert('5MB 이하 이미지만 업로드 가능합니다.');
-      return;
-    }
-
-    // 기존 previewUrl 있으면 메모리 해제
-    if (previewUrl) URL.revokeObjectURL(previewUrl);
-
-    setPhoto(file);
-    setPreviewUrl(URL.createObjectURL(file));
-
-    // 같은 파일 다시 선택 가능하게
-    e.target.value = '';
   };
 
   const removePhoto = () => {
     if (previewUrl) URL.revokeObjectURL(previewUrl);
     setPreviewUrl(null);
-    setPhoto(null);
+    setPhotoKey(null);
   };
 
   useEffect(() => {
@@ -115,7 +155,7 @@ export function DeathForm({
           <button
             type="button"
             onClick={openFilePicker}
-            disabled={disabled}
+            disabled={disabled || uploading}
             className="relative flex h-[90px] w-[90px] items-center justify-center overflow-hidden rounded-lg bg-black/[0.04]"
           >
             {previewUrl ? (
@@ -138,6 +178,12 @@ export function DeathForm({
                 >
                   삭제
                 </button>
+
+                {uploading && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/40 text-white text-xs">
+                    업로드 중...
+                  </div>
+                )}
               </>
             ) : (
               <span className="text-[12px] text-gray-400">

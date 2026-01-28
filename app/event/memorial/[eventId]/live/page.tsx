@@ -1,15 +1,10 @@
 'use client';
 
-import { MainHeader } from '@/components/common/MainHeader';
-import {
-  Flower2,
-  Mic,
-  MicOff,
-  X
-} from 'lucide-react';
+import { Flower2, Mic, MicOff, X } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { MainHeader } from '@/components/common/MainHeader';
 
 type PlacedFlower = {
   id: string;
@@ -36,19 +31,20 @@ export default function MemorialLivePage() {
   const [flowers, setFlowers] = useState<PlacedFlower[]>([]);
   const [hasPlacedFlower, setHasPlacedFlower] = useState(false);
 
-
   const [myFlowerId, setMyFlowerId] = useState<string | null>(null);
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [flowerSize, setFlowerSize] = useState<number>(150);
-
-
 
   const [pointer, setPointer] = useState<{ x: number; y: number } | null>(null);
 
   /** 커서 */
   const cursorStyle = useMemo(() => {
     if (!pointer) return { display: 'none' as const };
-    return { left: pointer.x, top: pointer.y, transform: 'translate(-50%, -50%)' };
+    return {
+      left: pointer.x,
+      top: pointer.y,
+      transform: 'translate(-50%, -50%)',
+    };
   }, [pointer]);
 
   /** 마우스 추적 */
@@ -64,7 +60,6 @@ export default function MemorialLivePage() {
     if (!placingMode) setPointer(null);
   }, [placingMode]);
 
-
   /** 음성 */
   const [recording, setRecording] = useState(false);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
@@ -77,8 +72,6 @@ export default function MemorialLivePage() {
 
   const stageRef = useRef<HTMLDivElement | null>(null);
   const portraitRef = useRef<HTMLDivElement | null>(null);
-
-
 
   /** 드래그 */
   useEffect(() => {
@@ -97,7 +90,7 @@ export default function MemorialLivePage() {
             x: e.clientX - s.left,
             y: e.clientY - s.top,
           };
-        })
+        }),
       );
     };
 
@@ -112,8 +105,6 @@ export default function MemorialLivePage() {
       window.removeEventListener('pointerup', onUp);
     };
   }, [draggingId]);
-
-
 
   /** 헌화 */
   const placeFlower = (x: number, y: number) => {
@@ -208,7 +199,6 @@ export default function MemorialLivePage() {
         variant="default"
         title="라이브 추모관"
         subtitle="故 김민준"
-        onBackClick={() => router.back()}
       />
 
       {/* 단상 (Flex-1) */}
@@ -216,12 +206,12 @@ export default function MemorialLivePage() {
         ref={stageRef}
         onPointerDown={onStageClick}
         className={[
-          'relative mx-auto mt-4 w-full flex-1 max-w-[520px] bg-white border-x border-t border-gray-100 shadow-sm',
+          'relative mx-auto mt-4 w-full max-w-[520px] flex-1 border-gray-100 border-x border-t bg-white shadow-sm',
           placingMode ? 'cursor-none' : 'cursor-default',
         ].join(' ')}
       >
         {/* 배경 라인 (단상 구분선) */}
-        <div className="absolute inset-x-0 bottom-0 top-1/3 z-0 flex flex-col justify-evenly pointer-events-none">
+        <div className="pointer-events-none absolute inset-x-0 top-1/3 bottom-0 z-0 flex flex-col justify-evenly">
           <div className="h-2 w-full bg-stone-900/5 shadow-sm" />
           <div className="h-2 w-full bg-stone-900/5 shadow-sm" />
           <div className="h-2 w-full bg-stone-900/5 shadow-sm" />
@@ -230,32 +220,34 @@ export default function MemorialLivePage() {
 
         {/* 상단 정보 + 헌화 버튼 (단상 내부로 이동) */}
         <div className="relative z-30 flex w-full items-center justify-between p-5">
-          <div className="text-sm text-[#4B5C57]">
-            <p>모두 <b>{todayFlowerCount}분</b>이 헌화에 참여하셨습니다</p>
+          <div className="text-[#4B5C57] text-sm">
+            <p>
+              모두 <b>{todayFlowerCount}분</b>이 헌화에 참여하셨습니다
+            </p>
           </div>
-          
+
           <div className="flex flex-col items-end gap-1">
             <button
               onClick={togglePlacing}
               disabled={hasPlacedFlower}
-              onPointerDown={(e) => e.stopPropagation()} 
-              className="flex items-center gap-2 rounded-full bg-[#F4F6F5] border border-gray-200 px-4 py-1.5 text-xs font-medium shadow-sm transition-colors hover:bg-gray-100 disabled:opacity-50"
+              onPointerDown={(e) => e.stopPropagation()}
+              className="flex items-center gap-2 rounded-full border border-gray-200 bg-[#F4F6F5] px-4 py-1.5 font-medium text-xs shadow-sm transition-colors hover:bg-gray-100 disabled:opacity-50"
             >
               {placingMode ? <X size={14} /> : <Flower2 size={14} />} 헌화하기
             </button>
-            <p className="text-[10px] text-[#5E6F6A]">
+            <p className="text-[#5E6F6A] text-[10px]">
               1인당 1송이만 가능합니다
             </p>
           </div>
         </div>
 
-        <div className="absolute w-full h-[470px] z-0">
+        <div className="absolute z-0 h-[470px] w-full">
           <Image src={LIVE_BG_SRC} alt="배경" fill className="object-cover" />
         </div>
 
         <div
           ref={portraitRef}
-          className="relative z-10 left-1/2 top-20 w-[240px] -translate-x-1/2"
+          className="-translate-x-1/2 relative top-20 left-1/2 z-10 w-[240px]"
         >
           <Image src={PORTRAIT_SRC} alt="영정사진" width={240} height={320} />
         </div>
@@ -299,12 +291,11 @@ export default function MemorialLivePage() {
                       e.stopPropagation();
                       removeFlower(f.id);
                     }}
-                    className="absolute right-0 top-0 hidden h-5 w-5 items-center justify-center rounded-full bg-red-500 text-white shadow-md group-hover:flex transform hover:scale-110 transition-transform"
+                    className="absolute top-0 right-0 hidden h-5 w-5 transform items-center justify-center rounded-full bg-red-500 text-white shadow-md transition-transform hover:scale-110 group-hover:flex"
                     title="삭제"
                   >
                     <X size={12} />
                   </button>
-
                 </>
               )}
             </div>
@@ -313,12 +304,20 @@ export default function MemorialLivePage() {
       </div>
 
       {/* 하단 버튼 (음성만 남음) */}
-      <div className="fixed bottom-10 left-1/2 z-50 flex w-full -translate-x-1/2 flex-col items-center gap-3">
+      <div className="-translate-x-1/2 fixed bottom-10 left-1/2 z-50 flex w-full flex-col items-center gap-3">
         {/* 위패 (맨 앞에 보이게, 버튼 위) */}
-        <div className="relative w-[130px] h-[240px]">
-          <Image src={SPIRIT_TABLET_SRC} alt="위패" fill className="object-contain" />
+        <div className="relative h-[240px] w-[130px]">
+          <Image
+            src={SPIRIT_TABLET_SRC}
+            alt="위패"
+            fill
+            className="object-contain"
+          />
           <div className="absolute inset-0 flex items-center justify-center">
-            <span className="text-black text-2xl font-serif writing-vertical-rl text-center tracking-widest leading-none drop-shadow-sm opacity-80" style={{ writingMode: 'vertical-rl' }}>
+            <span
+              className="writing-vertical-rl text-center font-serif text-2xl text-black leading-none tracking-widest opacity-80 drop-shadow-sm"
+              style={{ writingMode: 'vertical-rl' }}
+            >
               김민준
             </span>
           </div>
@@ -327,28 +326,36 @@ export default function MemorialLivePage() {
         <button
           onClick={toggleRecording}
           className={[
-            'relative flex items-center gap-2 rounded-full border px-5 py-2 text-sm cursor-pointer transition-colors shadow-sm',
+            'relative flex cursor-pointer items-center gap-2 rounded-full border px-5 py-2 text-sm shadow-sm transition-colors',
             recording
-              ? 'border-[#017F70] text-[#017F70] bg-[#017F70]/5'
+              ? 'border-[#017F70] bg-[#017F70]/5 text-[#017F70]'
               : 'bg-white hover:bg-black/5',
           ].join(' ')}
         >
           {recording && (
-            <span className="absolute inset-0 -z-10 animate-ping rounded-full bg-[#017F70]/20" />
+            <span className="-z-10 absolute inset-0 animate-ping rounded-full bg-[#017F70]/20" />
           )}
           {recording ? <MicOff /> : <Mic />}
           {recording ? '녹음 종료' : '마지막 인사 남기기'}
         </button>
 
         {audioUrl && (
-          <audio controls src={audioUrl} className="mt-3 w-full max-w-[300px]" />
+          <audio
+            controls
+            src={audioUrl}
+            className="mt-3 w-full max-w-[300px]"
+          />
         )}
       </div>
 
-
       {placingMode && pointer && (
         <div className="pointer-events-none fixed z-9999" style={cursorStyle}>
-          <Image src={FLOWER_SRC} alt="" width={flowerSize} height={flowerSize} />
+          <Image
+            src={FLOWER_SRC}
+            alt=""
+            width={flowerSize}
+            height={flowerSize}
+          />
         </div>
       )}
     </div>

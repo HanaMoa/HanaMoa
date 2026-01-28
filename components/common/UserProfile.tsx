@@ -1,3 +1,4 @@
+//  components/common/UserProfile.tsx
 /*
 사용 예시
 const mockUsers: User[] = [

@@ -24,11 +24,7 @@ export default function Page() {
   return (
     <main className="flex min-h-dvh flex-col bg-[#F6F7F9]">
       {/* 공통 헤더 사용 */}
-      <MainHeader
-        variant="default"
-        title="안내장 생성"
-        onBackClick={() => router.push('/home')}
-      />
+      <MainHeader variant="default" title="안내장 생성" />
 
       <section className="mx-auto w-full max-w-[360px] flex-1 px-5 pt-4 md:max-w-[420px] lg:max-w-[480px]">
         {/* 인디케이터 */}

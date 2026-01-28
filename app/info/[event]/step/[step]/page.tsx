@@ -6,11 +6,12 @@ import {
   useRouter,
   useSearchParams,
 } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import { useEffect, useMemo, useRef, useState } from 'react';
-
 import { InfoLayout } from '@/components/info/InfoLayout';
 import { InfoTitle } from '@/components/info/InfoTitle';
 import { StepContent } from '@/components/info/StepContent';
+import { infoConfig } from '@/lib/info/infoConfig';
 import {
   type EventType,
   getStepCfg,
@@ -19,7 +20,6 @@ import {
   parseEvent,
 } from '@/lib/info/steps';
 import { submitStep } from '@/lib/info/submitStep';
-import { infoConfig } from '@/lib/info/infoConfig';
 
 export default function Page() {
   const router = useRouter();
@@ -29,6 +29,9 @@ export default function Page() {
   const eid = sp.get('eid');
   if (!eid) notFound();
   const eventId = BigInt(eid);
+
+  const { data: session, status } = useSession();
+  const userId = String(session?.user?.id);
 
   const [canNext, setCanNext] = useState(false);
   const [isPending, setIsPending] = useState(false);
@@ -59,6 +62,11 @@ export default function Page() {
 
   const onNext = () => {
     if (!canNext || isPending) return;
+    if (status === 'loading') return;
+    if (!userId) {
+      alert('로그인이 필요합니다.');
+      return;
+    }
     formRef.current?.requestSubmit();
   };
 
@@ -86,10 +94,22 @@ export default function Page() {
         ref={formRef}
         action={async (formData) => {
           if (isPending) return;
+          if (status === 'loading') return;
+          if (!userId) {
+            alert('로그인이 필요합니다.');
+            return;
+          }
+
           setIsPending(true);
 
           try {
-            const res = await submitStep({ event, step, formData, eventId });
+            const res = await submitStep({
+              event,
+              step,
+              formData,
+              eventId,
+              userId,
+            });
             if (!res.ok) {
               alert(res.message);
               return;

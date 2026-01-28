@@ -37,9 +37,6 @@ export default function InvitationsPage() {
         showHomeBtn
         showNotificationBtn
         showBadge={notificationCount > 0}
-        onBackClick={() => router.push('/home')}
-        onHomeClick={() => router.push('/')}
-        onNotificationClick={() => router.push('/notifications')}
       />
 
       <div className="min-h-screen space-y-6 bg-gray-50 p-6">

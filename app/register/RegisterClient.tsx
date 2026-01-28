@@ -1,15 +1,15 @@
 'use client';
 
+import { Check, XCircleIcon, XIcon } from 'lucide-react';
+import Image from 'next/image';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useActionState, useState } from 'react';
 import AlertModal from '@/components/common/AlertModal';
 import { SingleButton } from '@/components/common/SingleButton';
 import { SubHeader } from '@/components/common/SubHeader';
 import { checkUserId } from '@/lib/server/checkUserId.action';
 import { regist } from '@/lib/server/register.action';
 import type { ValidError } from '@/lib/validator';
-import { Check, XCircleIcon, XIcon } from 'lucide-react';
-import Image from 'next/image';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useActionState, useState } from 'react';
 
 export default function RegisterClient() {
   const router = useRouter();
@@ -135,13 +135,13 @@ export default function RegisterClient() {
                 defaultValue={validError?.data.userId ?? ''}
                 onChange={(e) => setUserId(e.target.value)}
                 disabled={isPending}
-                className="w-full! h-[45px] flex-1 rounded-lg border border-[#E6E6E6] bg-white px-4 text-sm md:text-base lg:text-lg"
+                className="h-[45px] w-full! flex-1 rounded-lg border border-[#E6E6E6] bg-white px-4 text-sm md:text-base lg:text-lg"
               />
 
               <SingleButton
                 type="button"
                 disabled={isPending}
-                className="w-[120px]! h-[45px] shrink-0 whitespace-nowrap px-0 text-sm md:text-base lg:text-lg"
+                className="h-[45px] w-[120px]! shrink-0 whitespace-nowrap px-0 text-sm md:text-base lg:text-lg"
                 onClick={onCheckUserId}
               >
                 중복확인

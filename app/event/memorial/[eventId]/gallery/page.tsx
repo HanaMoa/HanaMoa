@@ -135,7 +135,7 @@ export default function MemorialGalleryPage() {
         id,
         type: 'video',
         src: item.src,
-        poster: item.src, 
+        poster: item.src,
       };
     });
 
@@ -151,14 +151,11 @@ export default function MemorialGalleryPage() {
         subtitle="故 홍길동"
         showHomeBtn
         showNotificationBtn
-        onBackClick={() => router.back()}
-        onHomeClick={() => router.push('/')}
-        onNotificationClick={() => router.push('/notifications')}
       />
 
       <div className="px-5 py-4">
         <div className="flex items-center justify-between">
-          <span className="text-white/60 text-sm">
+          <span className="text-sm text-white/60">
             총{' '}
             <span className="font-medium text-[#017F70] text-lg">
               {allItems.length}
@@ -259,7 +256,7 @@ export default function MemorialGalleryPage() {
         {hasMore && <div ref={loaderRef} className="h-10 w-full" />}
 
         {loading && (
-          <p className="py-4 text-center text-white/45 text-sm">
+          <p className="py-4 text-center text-sm text-white/45">
             불러오는 중...
           </p>
         )}

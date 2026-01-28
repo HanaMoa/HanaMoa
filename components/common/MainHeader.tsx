@@ -1,5 +1,8 @@
+'use client';
+
 import { Bell, Camera, ChevronLeft, Home } from 'lucide-react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { Button } from '../ui/button';
 
 /*
@@ -7,7 +10,6 @@ import { Button } from '../ui/button';
 1. 메인 홈 탭
   <MainHeader
     variant='home'
-    onNotificationClick={() => router.push("/notifications")}
   />
 2. 서브 탭
   <MainHeader
@@ -16,9 +18,6 @@ import { Button } from '../ui/button';
     showHomeBtn={true}
     showNotificationBtn={true}
     showBadge={notificationCount > 0}   // 알림 갯수가 1개 이상이면, 표시
-    onBackClick={() => router.push("/home")}
-    onHomeClick={() => router.push("/")}
-    onNotificationClick={() => router.push("/notifications")}
   />
 3. 다크모드 (장례식 - 추억관)
   <MainHeader
@@ -28,8 +27,6 @@ import { Button } from '../ui/button';
     showHomeBtn={true}
     showNotificationBtn={true}
     showBadge={notificationCount > 0}   // 알림 갯수가 1개 이상이면, 표시
-    onHomeClick={() => router.push("/")}
-    onNotificationClick={() => router.push("/notifications")}
   />
 */
 
@@ -49,9 +46,6 @@ type MainHeaderProps = {
   showCameraBtn?: boolean; // 카메라 버튼
 
   // 클릭 시 동작
-  onBackClick?: () => void; // (서브 탭일 경우) back 버튼
-  onHomeClick?: () => void; // Home
-  onNotificationClick?: () => void; // 알림 버튼
   onCameraClick?: () => void; // 카메라 버튼
 };
 
@@ -63,11 +57,10 @@ export function MainHeader({
   showNotificationBtn = false,
   showBadge = false,
   showCameraBtn = false,
-  onBackClick,
-  onHomeClick,
-  onNotificationClick,
   onCameraClick,
 }: MainHeaderProps) {
+  const router = useRouter();
+
   const isMainHome = variant === 'home';
   const isDark = variant === 'dark';
 
@@ -108,7 +101,7 @@ export function MainHeader({
             <Button
               variant="ghost"
               size="icon"
-              onClick={onBackClick}
+              onClick={() => router.back()}
               aria-label="뒤로가기"
               className={`rounded-full ${hoverColor}`}
             >
@@ -136,7 +129,7 @@ export function MainHeader({
             <Button
               variant="ghost"
               size="icon"
-              onClick={onHomeClick}
+              onClick={() => router.push('/home')}
               aria-label="홈"
               className={`rounded-full ${hoverColor}`}
             >
@@ -149,7 +142,7 @@ export function MainHeader({
             <Button
               variant="ghost"
               size="icon"
-              onClick={onNotificationClick}
+              onClick={() => router.push('/notification')}
               aria-label="알림"
               className={`relative rounded-full ${hoverColor}`}
             >
