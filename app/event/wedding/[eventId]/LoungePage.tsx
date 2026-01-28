@@ -23,6 +23,7 @@ type Props = {
     date: Date;
     location: string | null;
     message: string | null;
+    isHost: boolean;
     hosts: Array<{
       id: bigint | number | string;
       name: string;
@@ -39,6 +40,9 @@ type Props = {
 /* 결혼식 라운지 - Client : 클릭 시 동작 */
 export default function WeddingLoungePage({ event }: Props) {
   const router = useRouter();
+
+  /* Event Host or Guest */
+  const isHost = event.isHost;
 
   /* account 정보 */
   const accounts = (() => {
@@ -172,8 +176,35 @@ export default function WeddingLoungePage({ event }: Props) {
                       />
                     </div>
                     <div className="flex-1 text-left font-medium text-[15px] text-black/80 md:text-[16px] lg:text-[17px]">
-                      현재 결혼식 스트리밍 중 ... <br />
-                      {/* <span className="font-normal text-black/60">
+                      현재 결혼식 라이브 진행 중 ...
+                      {/* <br />
+                      <span className="font-normal text-black/60">
+                      ({event.streamingText ?? '30분'})
+                    </span> */}
+                    </div>
+                  </div>
+                </button>
+              ) : isHost ? (
+                <button
+                  type="button"
+                  onClick={() => router.push('/live')}
+                  className="group w-full rounded-xl border border-black/10 bg-[#F3C4CB24] px-4 py-3 shadow-sm backdrop-blur"
+                >
+                  <div className="flex items-center gap-2">
+                    <div className="relative h-10 w-20 shrink-0">
+                      <Image
+                        src={IC_LIVE_SRC}
+                        alt="라이브 시작하기"
+                        fill
+                        className="animate-pulse object-contain"
+                        priority
+                      />
+                    </div>
+                    <div className="flex-1 text-left font-medium text-[15px] text-black md:text-[16px] lg:text-[17px]">
+                      결혼식 라이브 시작하기
+                      <span className="text-red-500"> START</span>
+                      {/* <br />
+                      <span className="font-normal text-black/60">
                       ({event.streamingText ?? '30분'})
                     </span> */}
                     </div>

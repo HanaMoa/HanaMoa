@@ -1,6 +1,7 @@
 // app/event/wedding/[eventId]/page.tsx
 
 import { notFound } from 'next/navigation';
+import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import WeddingLoungePage from './LoungePage';
 
@@ -10,8 +11,8 @@ export default async function WeddingLounge({
 }: {
   params: Promise<{ eventId: string }>;
 }) {
-  // const session = await auth();
-  // if (!session?.user) notFound();
+  const session = await auth();
+  if (!session?.user) notFound();
 
   const { eventId } = await params;
   if (!eventId) notFound();
@@ -62,6 +63,9 @@ export default async function WeddingLounge({
   if (!event) notFound();
   if (!event.eventHosts || event.eventHosts.length === 0) notFound();
 
+  /* Event Host or Guest */
+  const isHost = String(event.userId) === String(session.user.id);
+
   return (
     <WeddingLoungePage
       event={{
@@ -71,6 +75,7 @@ export default async function WeddingLounge({
         location: event.location ?? null,
         message: event.message ?? null,
         hosts: event.eventHosts,
+        isHost,
       }}
     />
   );
