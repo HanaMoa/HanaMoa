@@ -1,6 +1,6 @@
 'use client';
 
-import { Bell, Camera, ChevronLeft, Home } from 'lucide-react';
+import { Bell, Camera, ChevronLeft, Home, LogOut } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
@@ -46,10 +46,12 @@ type MainHeaderProps = {
   showNotificationBtn?: boolean; // 알림 버튼
   showBadge?: boolean; // 알림 뱃지(빨간 원)
   showCameraBtn?: boolean; // 카메라 버튼
+  showLogoutBtn?: boolean; // 로그아웃 버튼
 
   // 클릭 시 동작
   onBackClick?: () => void; // back 버튼
   onCameraClick?: () => void; // 카메라 버튼
+  onLogoutClick?: () => void; // 로그아웃 버튼
 
   // color 등 header 속성 추가
   className?: string; // ex) bg-[#222327]
@@ -63,8 +65,10 @@ export function MainHeader({
   showNotificationBtn = false,
   showBadge = false,
   showCameraBtn = false,
+  showLogoutBtn = false,
   onBackClick,
   onCameraClick,
+  onLogoutClick,
   className,
 }: MainHeaderProps) {
   const router = useRouter();
@@ -142,6 +146,19 @@ export function MainHeader({
               className={`rounded-full ${hoverColor}`}
             >
               <Home className={`h-8 w-8 ${iconColor}`} />
+            </Button>
+          )}
+
+          {/* Logout 버튼 */}
+          {(isMainHome || showLogoutBtn) && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onLogoutClick}
+              aria-label="로그아웃"
+              className={`rounded-full ${hoverColor}`}
+            >
+              <LogOut className={`h-8 w-8 ${iconColor}`} />
             </Button>
           )}
 
