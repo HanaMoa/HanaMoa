@@ -1,6 +1,6 @@
 'use client';
 
-import { ImagePlus } from 'lucide-react';
+import { ImagePlus, X } from 'lucide-react';
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 import { validateKorEngNameNoSpace } from '@/lib/regExp';
@@ -47,15 +47,15 @@ export function DeathForm({
         alert('이미지 파일만 업로드할 수 있습니다.');
         return;
       }
-      if (file.size > 5 * 1024 * 1024) {
-        alert('5MB 이하 이미지만 업로드 가능합니다.');
+      if (file.size > 100 * 1024 * 1024) {
+        alert('100MB 이하 이미지만 업로드 가능합니다.');
         return;
       }
 
-      if (previewUrl)
-        // 로컬 프리뷰(먼저 보여주기)
-        URL.revokeObjectURL(previewUrl);
-      setPreviewUrl(URL.createObjectURL(file));
+      // 기존 프리뷰 정리 후 새 프리뷰
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+      const nextPreview = URL.createObjectURL(file);
+      setPreviewUrl(nextPreview);
 
       setUploading(true);
 
@@ -67,7 +67,7 @@ export function DeathForm({
       });
 
       if (!presignRes.ok) {
-        const text = await presignRes.text();
+        const text = await presignRes.text().catch(() => '');
         console.error('[presign failed]', presignRes.status, text);
         throw new Error(`presign failed: ${presignRes.status}`);
       }
@@ -151,33 +151,24 @@ export function DeathForm({
         </div>
 
         {/* 고인 사진은 1장만 */}
-        <div className="flex items-center gap-4">
+        <div className="relative h-[90px] w-[90px]">
+          {/* 파일 선택 버튼 */}
           <button
             type="button"
             onClick={openFilePicker}
             disabled={disabled || uploading}
-            className="relative flex h-[90px] w-[90px] items-center justify-center overflow-hidden rounded-lg bg-black/[0.04]"
+            className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-lg bg-black/[0.04]"
+            aria-label={previewUrl ? '고인 사진 변경' : '고인 사진 추가'}
           >
             {previewUrl ? (
               <>
                 <Image
                   src={previewUrl}
                   alt="preview"
-                  width={150}
-                  height={150}
+                  fill
+                  className="object-cover"
+                  sizes="90px"
                 />
-
-                {/* 삭제 */}
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation(); // 슬롯 클릭 방지
-                    removePhoto();
-                  }}
-                  className="absolute top-1 right-1 rounded-full bg-black/60 px-2 py-1 text-[10px] text-white"
-                >
-                  삭제
-                </button>
 
                 {uploading && (
                   <div className="absolute inset-0 flex items-center justify-center bg-black/40 text-white text-xs">
@@ -186,11 +177,27 @@ export function DeathForm({
                 )}
               </>
             ) : (
-              <span className="text-[12px] text-gray-400">
+              <span className="text-gray-400">
                 <ImagePlus />
               </span>
             )}
           </button>
+
+          {/* 삭제 버튼: 바깥 버튼 "밖"에 둬서 중첩 방지 */}
+          {previewUrl && (
+            <button
+              type="button"
+              aria-label="사진 삭제"
+              onClick={(e) => {
+                e.stopPropagation(); // 혹시 상위 클릭 핸들러가 생겨도 안전
+                removePhoto();
+              }}
+              disabled={disabled || uploading}
+              className="absolute top-1 right-1 inline-flex h-6 w-6 items-center justify-center rounded-full bg-[#00A998] text-white"
+            >
+              <X size={14} />
+            </button>
+          )}
         </div>
 
         {/* multiple 없음 -> 한 장만 선택 */}
