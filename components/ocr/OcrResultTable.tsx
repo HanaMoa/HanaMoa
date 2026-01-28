@@ -1,5 +1,6 @@
 'use client';
 
+import { Trash2 } from 'lucide-react';
 import { makeOcrRowId, type OcrRow } from '@/lib/ocr/parseGiftRows';
 
 type Props = {
@@ -25,7 +26,6 @@ export default function OcrResultTable({
     const next = [...rows];
 
     if (key === 'amount') {
-      // NaN 방지: 비어있거나 숫자로 변환 불가하면 null
       const n = Number(value);
       next[idx] = {
         ...next[idx],
@@ -43,8 +43,7 @@ export default function OcrResultTable({
 
   /** 행 삭제 */
   const removeRow = (id: string) => {
-    const next = rows.filter((r) => r.id !== id);
-    onChangeRows(next);
+    onChangeRows(rows.filter((r) => r.id !== id));
   };
 
   /** 행 추가 */
@@ -57,85 +56,93 @@ export default function OcrResultTable({
 
   return (
     <div className="space-y-3">
-      <table className="w-full border-collapse border border-gray-300 text-sm">
-        <thead className="bg-gray-100">
-          <tr>
-            <th className="border px-2 py-1">이름</th>
-            <th className="border px-2 py-1">금액</th>
-            {editable && <th className="border px-2 py-1">삭제</th>}
-          </tr>
-        </thead>
+      {/* 테이블 + 삭제버튼(오른쪽) */}
+      <div className="overflow-hidden rounded-xl border border-black/10 bg-white">
+        {/* 헤더 */}
+        <div className="grid grid-cols-[1fr_1fr_60px] items-center gap-2 bg-gray-50 px-3 py-2 font-medium text-gray-700 text-sm">
+          <div className="text-center">이름</div>
+          <div className="text-center">금액</div>
+          <div className="text-center">삭제</div>
+        </div>
 
-        <tbody>
-          {rows.map((row) => (
-            <tr key={row.id}>
-              <td className="border px-2 py-1">
-                {editable ? (
-                  // 이름칸
-                  <input
-                    value={row.senderName}
-                    onChange={(e) =>
-                      updateRow(row.id, 'senderName', e.target.value)
-                    }
-                    className="w-full rounded border px-1 py-0.5"
-                  />
-                ) : (
-                  row.senderName
-                )}
-              </td>
-
-              <td className="border px-2 py-1">
-                {editable ? (
-                  // 금액칸
-                  <input
-                    type="number"
-                    inputMode="numeric"
-                    value={row.amount ?? ''}
-                    onChange={(e) =>
-                      updateRow(row.id, 'amount', e.target.value)
-                    }
-                    className="w-full rounded border px-1 py-0.5 text-right"
-                  />
-                ) : (
-                  (row.amount?.toLocaleString() ?? '-')
-                )}
-              </td>
-
-              {/* 삭제 버튼 */}
-              {editable && (
-                <td className="border px-2 py-1 text-center">
-                  <button
-                    type="button"
-                    onClick={() => removeRow(row.id)}
-                    className="text-red-500 hover:underline"
-                  >
-                    삭제
-                  </button>
-                </td>
-              )}
-            </tr>
-          ))}
-
-          {/* rows가 비었을 때 */}
-          {rows.length === 0 && (
-            <tr>
-              <td
-                colSpan={editable ? 3 : 2}
-                className="border px-2 py-4 text-center text-gray-400"
+        {/* 바디 */}
+        {rows.length === 0 ? (
+          <div className="px-3 py-6 text-center text-gray-400 text-sm">
+            인식된 데이터가 없습니다
+          </div>
+        ) : (
+          <div className="divide-y divide-black/5">
+            {rows.map((row) => (
+              <div
+                key={row.id}
+                className="grid grid-cols-[1fr_1fr_60px] items-center gap-2 px-3 py-2"
               >
-                인식된 데이터가 없습니다
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+                {/* 이름 */}
+                <div>
+                  {editable ? (
+                    <input
+                      value={row.senderName}
+                      onChange={(e) =>
+                        updateRow(row.id, 'senderName', e.target.value)
+                      }
+                      className="w-full rounded-lg border border-black/10 px-2 py-1 text-center text-sm outline-none focus:border-[#1EA698]/60 focus:ring-2 focus:ring-[#1EA698]/20"
+                      placeholder="이름"
+                    />
+                  ) : (
+                    <div className="text-center text-gray-900 text-sm">
+                      {row.senderName}
+                    </div>
+                  )}
+                </div>
+
+                {/* 금액 */}
+                <div>
+                  {editable ? (
+                    <input
+                      type="number"
+                      inputMode="numeric"
+                      value={row.amount ?? ''}
+                      onChange={(e) =>
+                        updateRow(row.id, 'amount', e.target.value)
+                      }
+                      className="w-full rounded-lg border border-black/10 px-2 py-1 pl-[20px] text-center text-sm outline-none focus:border-[#1EA698]/60 focus:ring-2 focus:ring-[#1EA698]/20"
+                      placeholder="0"
+                    />
+                  ) : (
+                    <div className="text-center text-gray-900 text-sm">
+                      {row.amount?.toLocaleString() ?? '-'}
+                    </div>
+                  )}
+                </div>
+
+                {/* 삭제 버튼: 표 '밖' 느낌으로 마지막 칸에 아이콘만 */}
+                <div className="flex justify-center">
+                  {editable ? (
+                    <button
+                      type="button"
+                      onClick={() => removeRow(row.id)}
+                      className="inline-flex h-9 w-9 items-center justify-center rounded-lg hover:bg-red-50"
+                      aria-label="삭제"
+                      title="삭제"
+                    >
+                      <Trash2 className="h-4 w-4 text-red-500" />
+                    </button>
+                  ) : (
+                    <div className="h-9 w-9" />
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
 
       {/* 행 추가 버튼 */}
       {editable && showAddRow && (
         <button
           type="button"
           onClick={addRow}
-          className="rounded border px-3 py-1 text-sm hover:bg-gray-100"
+          className="rounded-xl border border-black/10 bg-[#1EA698] px-3 py-2 text-sm text-white hover:bg-[#1EA698]/90"
         >
           + 행 추가
         </button>

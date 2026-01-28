@@ -2,44 +2,33 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useMemo, useState } from 'react';
+
+import { MainHeader } from '@/components/common/MainHeader';
 import OcrResultTable from '@/components/ocr/OcrResultTable';
 import OcrUploader from '@/components/ocr/OcrUploader';
 import type { OcrRow } from '@/lib/ocr/parseGiftRows';
 
-export default function OurPage() {
+export default function OcrPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const eventId = searchParams.get('eventId'); // querystring에서 가져오기
+  const eventId = searchParams.get('eventId');
 
-  // OCR 원본 텍스트
   const [rawText, setRawText] = useState('');
-
-  // UI에서 수정하는 표 데이터(핵심)
-  // { id, senderName, amount } - 수정될 때마다 갱신
   const [rows, setRows] = useState<OcrRow[]>([]);
-
-  // 에러메시지
   const [error, setError] = useState<string | null>(null);
-
-  // 저장 버튼용
   const [isSaving, setIsSaving] = useState(false);
 
-  const totalAmount = useMemo(() => {
-    return rows.reduce((sum, r) => sum + (r.amount ?? 0), 0);
-  }, [rows]);
+  const totalAmount = useMemo(
+    () => rows.reduce((sum, r) => sum + (r.amount ?? 0), 0),
+    [rows],
+  );
 
-  // 저장 가능 여부 : 빈 이름/빈 금액 있으면 막기
   const canSave = useMemo(() => {
+    if (!eventId) return false;
     if (rows.length === 0) return false;
+    return !rows.some((r) => r.senderName.trim() === '' || r.amount === null);
+  }, [eventId, rows]);
 
-    // 이름 비거나, 금액 null이면 저장 불가
-    const hasInvalid = rows.some(
-      (r) => r.senderName.trim() === '' || r.amount === null,
-    );
-    return !hasInvalid;
-  }, [rows]);
-
-  // 저장버튼 클릭
   const handleSave = async () => {
     setError(null);
 
@@ -47,7 +36,6 @@ export default function OurPage() {
       setError('eventId가 없어요. 내역 페이지에서 다시 들어와주세요.');
       return;
     }
-
     if (!canSave) {
       setError('이름/금액이 비어있는 항목이 있어요. 먼저 수정해주세요.');
       return;
@@ -56,19 +44,15 @@ export default function OurPage() {
     try {
       setIsSaving(true);
 
-      // 서버가 원하는 형태로 변환 (id 제거)
       const payloadRows = rows.map((r) => ({
         senderName: r.senderName.trim(),
-        amount: r.amount, // canSave에서 null 아닌 거 보장
+        amount: r.amount,
       }));
 
       const res = await fetch('/api/ocr/bulk-create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          eventId, // string이어도 route.ts에서 Number()로 파싱됨
-          rows: payloadRows,
-        }),
+        body: JSON.stringify({ eventId, rows: payloadRows }),
       });
 
       const data = await res.json();
@@ -77,7 +61,6 @@ export default function OurPage() {
         throw new Error(data?.message ?? '저장에 실패했습니다.');
       }
 
-      // ✅ 저장 성공 → 해당 이벤트 내역 페이지로 복귀
       router.push(`/memorialweddingdb?eventId=${eventId}`);
     } catch (e) {
       setError(e instanceof Error ? e.message : '저장 중 오류가 발생했어요.');
@@ -87,61 +70,131 @@ export default function OurPage() {
   };
 
   return (
-    <div className="mx-auto max-w-xl space-y-6 p-5">
-      <header className="space-y-1">
-        <h1 className="font-semibold text-lg">OCR로 장부 등록</h1>
-        <p className="text-gray-500 text-sm">
-          사진을 올리면 자동으로 표로 변환되고, 수정 후 저장할 수 있어요.
-        </p>
-      </header>
-
-      {/* 업로드 + OCR */}
-      <OcrUploader
-        onOcrResult={({ rawText, rows }) => {
-          setError(null);
-          setRawText(rawText);
-          setRows(rows);
-        }}
-        onError={(msg) => setError(msg)}
+    <div className="mx-auto min-h-dvh max-w-xl pb-24">
+      <MainHeader
+        variant="default"
+        title="OCR로 장부 등록"
+        onBackClick={() => router.back()}
       />
 
-      {/* 에러 표시 */}
-      {error ? (
-        <div className="rounded border border-red-200 bg-red-50 p-3 text-red-700 text-sm">
-          {error}
-        </div>
-      ) : null}
-
-      {/* (선택) 원본 텍스트 보기 - 나중에 지우기*/}
-      {rawText ? (
-        <details className="rounded border p-3">
-          <summary className="cursor-pointer font-medium text-sm">
-            OCR 원본 텍스트 보기
-          </summary>
-          <pre className="mt-2 whitespace-pre-wrap text-gray-700 text-xs">
-            {rawText}
-          </pre>
-        </details>
-      ) : null}
-
-      {/* 결과 편집 테이블 */}
-      <OcrResultTable rows={rows} onChangeRows={setRows} />
-
-      {/* 합계 + 저장 */}
-      <div className="flex items-center justify-between rounded border p-3">
-        <div className="text-sm">
-          총 금액:{' '}
-          <span className="font-semibold">{totalAmount.toLocaleString()}</span>
+      <div className="space-y-5 px-5 pt-5">
+        {/* 설명 */}
+        <div className="space-y-1">
+          <p className="text-gray-700 text-sm">
+            사진을 올리면 표로 변환되고, 수정 후 저장할 수 있어요.
+          </p>
+          <p className="text-gray-400 text-xs">
+            인식이 흔들리면 스크린샷보다 사진 원본(JPG)을 권장해요.
+          </p>
         </div>
 
-        <button
-          type="button"
-          onClick={handleSave}
-          disabled={!canSave || isSaving}
-          className="rounded bg-black px-4 py-2 text-sm text-white disabled:opacity-40"
-        >
-          {isSaving ? '저장 중…' : '저장'}
-        </button>
+        {/* 업로드 카드 */}
+        <section className="rounded-2xl border border-black/5 bg-white p-4 shadow-sm">
+          <div className="mb-3 flex items-center justify-between">
+            <div className="font-semibold text-gray-900 text-sm">
+              이미지 업로드
+            </div>
+            <span className="rounded-full bg-[#017F70]/10 px-2 py-1 font-medium text-[#017F70] text-[11px]">
+              JPG 권장
+            </span>
+          </div>
+
+          <div className="rounded-xl border border-black/10 border-dashed bg-[#017F70]/[0.04] p-4">
+            <OcrUploader
+              onOcrResult={({ rawText, rows }) => {
+                setError(null);
+                setRawText(rawText);
+                setRows(rows);
+              }}
+              onError={(msg) => setError(msg)}
+            />
+            <p className="mt-2 text-gray-500 text-xs leading-relaxed">
+              스크린샷 PNG는 종종 “Bad image data”가 날 수 있어요. 가능하면 사진
+              원본(JPG)로 올려주세요.
+            </p>
+          </div>
+        </section>
+
+        {/* 에러 */}
+        {error ? (
+          <div className="rounded-2xl border border-red-200 bg-red-50 p-3 text-red-700 text-sm">
+            {error}
+          </div>
+        ) : null}
+
+        {/* 결과 카드 */}
+        <section className="rounded-2xl border border-black/5 bg-white p-4 shadow-sm">
+          <div className="mb-3 flex items-center">
+            <div className="font-semibold text-gray-900 text-sm">인식 결과</div>
+
+            <span className="ml-auto rounded-full bg-gray-100 px-2 py-0.5 text-[11px] text-gray-600">
+              {rows.length}건
+            </span>
+          </div>
+
+          {/* ✅ 원본보기는 “바 아래”로 (덜 거슬리게) */}
+          {rawText ? (
+            <details className="group mt-3 pb-5">
+              <summary className="cursor-pointer select-none text-gray-500 text-xs hover:text-gray-700">
+                OCR 원본 텍스트 보기
+              </summary>
+
+              <div className="mt-2 rounded-xl border border-black/10 bg-gray-50/70 p-3 text-xs">
+                {/* 2열 헤더 */}
+                <div className="grid grid-cols-2 pb-2 font-medium text-gray-600">
+                  <div className="text-center">이름</div>
+                  <div className="text-center">금액</div>
+                </div>
+
+                {/* 2열 내용 */}
+                <div className="divide-y divide-black/5">
+                  {rows.map((r) => (
+                    <div
+                      key={r.id}
+                      className="grid grid-cols-2 py-1 text-gray-800"
+                    >
+                      <div className="text-center">{r.senderName || '-'}</div>
+                      <div className="text-center">
+                        {r.amount?.toLocaleString() ?? '-'}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </details>
+          ) : null}
+
+          {rows.length === 0 ? (
+            <div className="rounded-xl border border-black/10 border-dashed bg-gray-50 p-6 text-center text-gray-500 text-sm">
+              아직 인식된 데이터가 없어요. 위에서 이미지를 올려주세요.
+            </div>
+          ) : (
+            <>
+              <OcrResultTable rows={rows} onChangeRows={setRows} />
+
+              {/* ✅ 총 금액 + 저장 (정돈된 바) */}
+              <div className="mt-4 rounded-2xl border border-black/5 bg-[#017F70]/[0.04] px-4 py-3">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="text-gray-700 text-sm">
+                    총 금액 :{' '}
+                    <span className="ml-1 font-semibold text-gray-900">
+                      {totalAmount.toLocaleString()}
+                    </span>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handleSave}
+                    disabled={!canSave || isSaving}
+                    className="h-10 rounded-xl bg-[#1EA698] px-5 font-semibold text-sm text-white shadow-sm hover:bg-[#1EA698]/90 disabled:opacity-40"
+                  >
+                    {isSaving ? '저장 중…' : '저장'}
+                  </button>
+                </div>
+              </div>
+            </>
+          )}
+        </section>
       </div>
     </div>
   );
