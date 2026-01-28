@@ -150,7 +150,7 @@ export function MainHeader({
           )}
 
           {/* Logout 버튼 */}
-          {(isMainHome || showLogoutBtn) && (
+          {showLogoutBtn && (
             <Button
               variant="ghost"
               size="icon"
