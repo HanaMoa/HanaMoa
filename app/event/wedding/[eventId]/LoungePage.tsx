@@ -10,7 +10,7 @@ import SpeechBubble from '@/components/event/SpeechBubble';
 import type { eventhost_role } from '@/lib/generated/prisma/client/enums';
 
 // image 경로
-// const BG_SRC = '/images/event/wedding/lounge_bg.png';
+const BG_SRC = '/images/event/wedding/lounge_bg.png';
 const IC_MESSAGE_SRC = '/images/event/wedding/lounge_ic_cake.png';
 const IC_GALLERY_SRC = '/images/event/wedding/lounge_ic_gallery.png';
 const IC_REELS_SRC = '/images/event/wedding/lounge_ic_reels.png';
@@ -137,16 +137,17 @@ export default function WeddingLoungePage({ event }: Props) {
       <MainHeader title="하나모아" showHomeBtn={true} />
 
       {/* 라운지 */}
-      <main className="w-full flex-1 bg-[#FFF6F7]">
-        {/* Background */}
-        {/* <Image
-          src={BG_SRC}
-          alt="라운지 배경"
-          fill
-          priority
-          className="h-auto w-full"
-        /> */}
-        <div className="relative h-full w-full">
+      <main className="w-full flex-1">
+        <div className="relative min-h-[calc(100vh-56px)] w-full">
+          {/* Background */}
+          <Image
+            src={BG_SRC}
+            alt="라운지 배경"
+            fill
+            priority
+            className="h-auto w-full"
+          />
+
           {/* 상단 UI (계좌 + 라이브 배너) */}
           <div className="pointer-events-auto absolute top-3 right-0 left-0 z-20 px-4">
             <div className="flex flex-col gap-3">
