@@ -1,49 +1,56 @@
-'use client';
+// app/event/page.tsx
 
-import { useRouter } from 'next/navigation';
 import { MainHeader } from '@/components/common/MainHeader';
 import LoungeCard from '@/components/lounge/LoungeCard';
+import { auth } from '@/lib/auth';
+import { prisma } from '@/lib/prisma';
 
-const MOCK_INVITATIONS = [
-  {
-    id: 1,
-    groomName: '이민준',
-    brideName: '홍미연',
-    location: '비비드예식장 2F, 바우스홀',
-    dateText: '2026년 01월 16일 일요일, AM 11:00',
-    role: 'host',
-    status: 'ongoing',
-  },
-  {
-    id: 2,
-    groomName: '김철수',
-    brideName: '박영희',
-    location: '루미너스홀 3F',
-    dateText: '2026년 03월 02일 토요일, PM 2:00',
-    role: 'guest',
-    status: 'upcoming',
-  },
-];
+export default async function EventPage() {
+  const session = await auth();
 
-export default function InvitationsPage() {
-  const router = useRouter();
-  const notificationCount = 3;
+  // 로그인 유저 ID를 BigInt로 안전하게 변환
+  const loginUserId =
+    session?.user?.id !== undefined ? BigInt(session.user.id) : null;
+
+  const events = await prisma.event.findMany({
+    orderBy: { date: 'desc' },
+    include: {
+      eventHosts: true, // (지금은 안 쓰지만 추후 확장 대비 유지 가능)
+    },
+  });
 
   return (
-    <>
+    <div className="mx-auto flex min-h-dvh w-full flex-col bg-[#F6F7F9]">
+      {/* Header */}
       <MainHeader
         variant="default"
-        title="라운지"
+        title="경조사 라운지"
         showHomeBtn
         showNotificationBtn
-        showBadge={notificationCount > 0}
       />
 
-      <div className="min-h-screen space-y-6 bg-gray-50 p-6">
-        {MOCK_INVITATIONS.map((invitation) => (
-          <LoungeCard key={invitation.id} data={invitation} />
-        ))}
-      </div>
-    </>
+      {/* Content */}
+      <main className="flex-1 p-5">
+        <div className="space-y-4">
+          {events.map((event) => {
+            // 로그인 상태일 때만 Host 판별
+            const isHost = loginUserId !== null && event.userId === loginUserId;
+
+            return (
+              <LoungeCard
+                key={event.id.toString()}
+                eventId={event.id}
+                title={event.name ?? '이름 없는 행사'}
+                date={event.date}
+                category={event.category}
+                location={event.location}
+                imageUrl={null} // 추후 대표 이미지 연결 가능
+                isHost={isHost}
+              />
+            );
+          })}
+        </div>
+      </main>
+    </div>
   );
 }
