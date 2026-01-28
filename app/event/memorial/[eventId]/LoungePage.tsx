@@ -13,7 +13,7 @@ import type { eventhost_role } from '@/lib/generated/prisma/client/enums';
 const BG_SRC = '/images/event/memorial/lounge_bg.png';
 const IC_FLOWER_SRC = '/images/event/memorial/lounge_ic_flower.png';
 const IC_GALLERY_SRC = '/images/event/memorial/lounge_ic_gallery.png';
-const IC_LIVE_SRC = '/images/event/memorial/lounge_ic_live.png';
+const IC_ONLINE_SRC = '/images/event/memorial/lounge_ic_online.png';
 const IC_MESSAGE_SRC = '/images/event/memorial/lounge_ic_message.png';
 
 type Props = {
@@ -117,7 +117,7 @@ export default function MemorialLoungePage({ event }: Props) {
 
       {/* 라운지 */}
       <main className="w-full flex-1">
-        <div className="relative min-h-[calc(100vh-56px)] w-full">
+        <div className="relative min-h-[calc(100vh-56px)] w-full overflow-hidden">
           {/* Background */}
           <Image
             src={BG_SRC}
@@ -154,9 +154,9 @@ export default function MemorialLoungePage({ event }: Props) {
             type="button"
             onClick={() => router.push(`/event/memorial/${event.eventId}/live`)}
             aria-label="온라인 조문으로 이동"
-            className="-translate-x-1/2 absolute top-[30%] left-1/2 z-10 w-[450px] cursor-pointer border-0 bg-transparent p-0 md:top-[30%] md:w-[450px] lg:top-[27%] lg:w-[480px]"
+            className="-translate-x-1/2 absolute top-[35%] left-1/2 z-10 w-[280px] cursor-pointer border-0 bg-transparent p-0 md:top-[33%] md:w-[305px] lg:top-[29%] lg:w-[355px]"
           >
-            <div className="-translate-x-1/2 pointer-events-none absolute bottom-full left-1/2 z-20">
+            <div className="-translate-x-1/2 absolute bottom-full left-1/2 z-20 mb-[20px]">
               <SpeechBubble
                 title="온라인 조문"
                 desc="조문 참여하기"
@@ -166,7 +166,7 @@ export default function MemorialLoungePage({ event }: Props) {
             </div>
             <div className="pointer-events-none">
               <Image
-                src={IC_LIVE_SRC}
+                src={IC_ONLINE_SRC}
                 alt="온라인 조문 오브젝트"
                 width={1400}
                 height={900}
@@ -182,12 +182,12 @@ export default function MemorialLoungePage({ event }: Props) {
               router.push(`/event/memorial/${event.eventId}/gallery`)
             }
             aria-label="추억관으로 이동"
-            className="absolute top-[50%] left-0 z-10 w-[260px] cursor-pointer border-0 bg-transparent p-0 md:top-[50%] md:w-[260px] lg:top-[47%] lg:w-[300px]"
+            className="absolute top-[54%] left-0 z-10 w-[160px] cursor-pointer border-0 bg-transparent p-0 md:top-[52%] md:w-[180px] lg:top-[50%] lg:w-[220px]"
           >
-            <div className="pointer-events-none absolute bottom-full left-[3%] z-20">
+            <div className="absolute bottom-full left-[3%] z-20 mb-[20px]">
               <SpeechBubble
                 title="추억관"
-                desc={'사진과 영상으로\n기억을 남기기'}
+                desc={'사진과 영상으로 기억을 남기기'}
                 href={`/event/memorial/${event.eventId}/gallery`}
                 className="w-[175px] md:w-[175px] lg:w-[205px]"
               />
@@ -210,9 +210,9 @@ export default function MemorialLoungePage({ event }: Props) {
               router.push(`/event/memorial/${event.eventId}/dashboard`)
             }
             aria-label="추모 메시지로 이동"
-            className="absolute top-[55%] right-0 z-10 w-[260px] cursor-pointer border-0 bg-transparent p-0 md:top-[55%] md:w-[260px] lg:top-[52%] lg:w-[300px]"
+            className="absolute top-[56%] right-0 z-10 w-[160px] cursor-pointer border-0 bg-transparent p-0 md:top-[54%] md:w-[180px] lg:top-[52%] lg:w-[220px]"
           >
-            <div className="pointer-events-none absolute right-[1%] bottom-full z-20">
+            <div className="absolute right-[1%] bottom-full z-20 mb-[20px]">
               <SpeechBubble
                 title="추모 메시지 보내기"
                 desc="조의금과 함께 마음을 전하세요"
@@ -232,7 +232,7 @@ export default function MemorialLoungePage({ event }: Props) {
           </button>
 
           {/* 꽃 */}
-          <div className="-translate-x-1/2 pointer-events-none absolute top-[65%] left-1/2 z-10 w-[400px] md:top-[65%] md:w-[400px] lg:bottom-[62%] lg:w-[440px]">
+          <div className="-translate-x-1/2 absolute top-[70%] left-1/2 z-10 w-[290px] md:top-[70%] md:w-[320px] lg:bottom-[72%] lg:w-[380px]">
             <Image
               src={IC_FLOWER_SRC}
               alt=""
