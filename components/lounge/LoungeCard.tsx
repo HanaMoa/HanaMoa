@@ -1,115 +1,168 @@
-import { Calendar, MapPin, Share2 } from 'lucide-react';
+// components/lounge/LoungeCard.tsx
+'use client';
 
-/* =====================
-   타입
-===================== */
-export type Role = 'host' | 'guest';
-export type Status = 'ended' | 'ongoing' | 'upcoming';
+import { CalendarDays, MapPin, Share2 } from 'lucide-react';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import type { events_category } from '@/lib/generated/prisma/client/enums';
 
-export interface LoungeCardData {
-  groomName: string;
-  brideName: string;
-  location: string;
-  dateText: string;
-  imageUrl?: string;
-  role: Role;
-  status: Status;
+/* =========================
+   DB category → URL segment
+========================= */
+function categoryToRoute(category: events_category): 'wedding' | 'memorial' {
+  switch (category) {
+    case 'WEDDING':
+      return 'wedding';
+    case 'FUNERAL':
+      return 'memorial';
+    default:
+      return 'wedding';
+  }
 }
 
-interface Props {
-  data: LoungeCardData;
-}
-
-/* =====================
-   스타일 매핑
-===================== */
-const ROLE_STYLE: Record<Role, string> = {
-  host: 'from-orange-400 to-orange-500 text-white',
-  guest: 'from-blue-400 to-blue-500 text-white',
+type LoungeCardProps = {
+  eventId: bigint;
+  title: string;
+  date: Date;
+  category: events_category;
+  location?: string | null;
+  imageUrl?: string | null;
+  isHost?: boolean;
 };
 
-const STATUS_STYLE: Record<Status, string> = {
-  ended: 'bg-gray-400 text-white',
-  ongoing: 'bg-green-500 text-white',
-  upcoming: 'bg-blue-500 text-white',
-};
+export default function LoungeCard({
+  eventId,
+  title,
+  date,
+  category,
+  location,
+  imageUrl,
+  isHost = false,
+}: LoungeCardProps) {
+  const router = useRouter();
+  const routeCategory = categoryToRoute(category);
 
-const STATUS_LABEL: Record<Status, string> = {
-  ended: '종료',
-  ongoing: '진행중',
-  upcoming: '예정',
-};
+  /* =========================
+     행사 상태 계산
+  ========================= */
+  const now = new Date();
+  const eventDate = new Date(date);
 
-/* =====================
-   컴포넌트
-===================== */
-export default function LoungeCard({ data }: Props) {
+  let statusLabel: '예정' | '진행중' | '종료';
+  let statusColor: string;
+
+  if (eventDate > now) {
+    statusLabel = '예정';
+    statusColor = 'text-black';
+  } else if (Math.abs(now.getTime() - eventDate.getTime()) < 86400000) {
+    statusLabel = '진행중';
+    statusColor = 'text-[#017F70]';
+  } else {
+    statusLabel = '종료';
+    statusColor = 'text-slate-400';
+  }
+
   return (
-    <div className="relative w-full max-w-xl rounded-2xl bg-white p-4 shadow-md">
-      {/* Role Badge (축소 & 위치 조정) */}
-      <div className="absolute top-4 right-4">
-        <div
-          className={`bg-gradient-to-r ${ROLE_STYLE[data.role]} rounded-full px-3 py-1 font-semibold text-xs`}
-        >
-          {data.role === 'host' ? 'Host' : 'Guest'}
-        </div>
+    <button
+      type="button"
+      className="relative flex w-full cursor-pointer gap-3 rounded-xl bg-white p-4 text-left shadow-sm transition hover:shadow-md"
+      onClick={() =>
+        router.push(`/event/${routeCategory}/${eventId.toString()}`)
+      }
+    >
+      {/* =========================
+          썸네일
+      ========================= */}
+      <div className="relative h-22 w-22 shrink-0 overflow-hidden rounded-lg bg-slate-100">
+        {imageUrl ? (
+          <Image
+            src={imageUrl}
+            alt="event thumbnail"
+            fill
+            className="object-cover"
+          />
+        ) : (
+          <div className="flex h-full w-[100px] items-center justify-center text-slate-400 text-xs">
+            No Image
+          </div>
+        )}
       </div>
 
-      <div className="flex gap-4">
-        {/* Image */}
-        <div className="flex-shrink-0">
-          <div className="flex h-40 w-32 items-center justify-center overflow-hidden rounded-xl bg-gray-200">
-            {data.imageUrl ? (
-              <img
-                src={data.imageUrl}
-                alt="event"
-                className="h-full w-full object-cover"
-              />
-            ) : (
-              <p className="text-gray-500 text-sm">사진</p>
-            )}
+      {/* =========================
+          본문
+      ========================= */}
+      <div className="flex flex-1 flex-col justify-between">
+        {/* 제목 + 공유 + Host */}
+        <div className="flex items-center gap-2">
+          <div className="font-semibold text-[16px] text-slate-900">
+            {title}
           </div>
+
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              navigator.share?.({
+                title,
+                text: `${title} 행사에 초대합니다.`,
+                url: `${window.location.origin}/event/${routeCategory}/${eventId.toString()}`,
+              });
+            }}
+            className="cursor-pointer rounded-full p-1 hover:bg-black/5"
+            aria-label="공유"
+          >
+            <Share2 className="h-4 w-4 text-slate-500" />
+          </button>
+
+          {isHost && (
+            <div className="rounded-full bg-red-500 px-2 py-0.5 font-semibold text-white text-xs">
+              Host
+            </div>
+          )}
         </div>
 
-        {/* Content */}
-        <div className="flex-1 pt-1">
-          {/* Names */}
-          <div className="mb-4 flex items-center gap-2 pr-14">
-            <h1 className="font-bold text-gray-900 text-xl">
-              {data.groomName}
-            </h1>
-            <span className="text-lg">❤️</span>
-            <h1 className="font-bold text-gray-900 text-xl">
-              {data.brideName}
-            </h1>
+        {/* 날짜 */}
+        <div className="mt-6 flex items-center gap-2 text-slate-500 text-sm">
+          <CalendarDays className="h-4 w-4" />
+          <span>
+            {eventDate.toLocaleDateString('ko-KR', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })}
+          </span>
+        </div>
 
-            <button className="ml-1 rounded-full p-1 hover:bg-gray-100">
-              <Share2 className="h-4 w-4 text-gray-500" />
+        {/* 장소 + 내역보기 */}
+        {location && (
+          <div className="mt-1 flex items-center justify-between text-slate-500 text-sm">
+            <div className="flex items-center gap-2">
+              <MapPin className="h-4 w-4" />
+              <span>{location}</span>
+            </div>
+
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                router.push(`/event/${routeCategory}/${eventId.toString()}/db`);
+              }}
+              className="cursor-pointer rounded-md border px-2 py-1 font-medium hover:bg-gray-200"
+            >
+              내역보기
             </button>
           </div>
-
-          {/* Location */}
-          <div className="mb-2 flex items-start gap-2">
-            <MapPin className="mt-0.5 h-4 w-4 text-gray-400" />
-            <p className="text-gray-600 text-sm">{data.location}</p>
-          </div>
-
-          {/* Date */}
-          <div className="mb-4 flex items-start gap-2">
-            <Calendar className="mt-0.5 h-4 w-4 text-gray-400" />
-            <p className="text-gray-600 text-sm">{data.dateText}</p>
-          </div>
-
-          {/* Status */}
-          <div className="flex justify-end">
-            <div
-              className={`${STATUS_STYLE[data.status]} rounded-md px-4 py-1.5 font-semibold text-sm`}
-            >
-              {STATUS_LABEL[data.status]}
-            </div>
-          </div>
-        </div>
+        )}
       </div>
-    </div>
+
+      {/* =========================
+          상태 표시
+      ========================= */}
+      <div
+        className={`absolute right-3 bottom-3 font-semibold text-xs ${statusColor}`}
+      >
+        {statusLabel}
+      </div>
+    </button>
   );
 }
