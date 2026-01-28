@@ -1,3 +1,5 @@
+// components/notification/DateAlert.tsx
+
 /* 사용법 test코드에서,
 <DateAlert
         text="2024년 03월 10일 (금)"

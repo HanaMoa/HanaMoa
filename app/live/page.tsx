@@ -1,3 +1,4 @@
+// app/live/page.tsx
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import LiveEntryClient from './LiveEntryClient';
