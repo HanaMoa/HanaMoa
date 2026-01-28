@@ -5,6 +5,7 @@ import { PartyInfoForm } from '@/components/info/peopleInfo/PartyInfoForm';
 import { DatePlaceForm } from '@/components/info/placeInfo/DatePlaceForm';
 import { WeddingPhotoForm } from '@/components/info/weddingInfo/WeddingPhotoForm';
 import { type EventType, getRepRole, type StepCfg } from '@/lib/info/steps';
+import { useSearchParams } from 'next/navigation';
 
 type Props = {
   event: EventType;
@@ -21,6 +22,9 @@ export function StepContent({
   isPending,
   onValidChange,
 }: Props) {
+  const sp = useSearchParams();
+  const eventId = sp.get('eid') ?? '';
+
   if (event === 'funeral' && step === 2) {
     return <DeathForm onValidChange={onValidChange} disabled={isPending} />;
   }
@@ -45,7 +49,7 @@ export function StepContent({
   if (step === 4) return <DatePlaceForm onValidChange={onValidChange} />;
 
   if (event === 'wedding' && step === 5) {
-    return <WeddingPhotoForm onValidChange={onValidChange} />;
+    return <WeddingPhotoForm eventId={eventId} onValidChange={onValidChange} />;
   }
 
   return null;

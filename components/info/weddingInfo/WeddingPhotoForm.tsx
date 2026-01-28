@@ -12,11 +12,12 @@ type UploadPhoto = {
 };
 
 type Props = {
+  eventId: string;
   onValidChange?: (ok: boolean) => void;
   disabled?: boolean;
 };
 
-export function WeddingPhotoForm({ onValidChange, disabled }: Props) {
+export function WeddingPhotoForm({ eventId, onValidChange, disabled }: Props) {
   const [title, setTitle] = useState('');
   const [photos, setPhotos] = useState<UploadPhoto[]>([]);
 
@@ -51,14 +52,12 @@ export function WeddingPhotoForm({ onValidChange, disabled }: Props) {
       </label>
 
       <PhotoUpload
+        eventId={eventId}
         value={photos}
         onChange={setPhotos}
         maxCount={15}
         disabled={disabled}
       />
-
-      {/* server action으로 S3 key 배열 전달 */}
-      <input type="hidden" name="photos" value={JSON.stringify(photoKeys)} />
 
       <p className="pt-1 font-medium text-[#00A998] text-[10px] md:text-[11px] lg:text-xs">
         *첨부하신 사진은 청첩장에 사용됩니다.

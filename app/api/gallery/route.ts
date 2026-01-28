@@ -47,7 +47,7 @@ export async function GET(req: NextRequest) {
   if (mode === 'gallery') {
     // host 사진만
     whereCondition = {
-      eventId: BigInt(eventId),
+      eventId: eventIdBig,
       userId: hostId,
     };
   } else if (mode === 'reels') {
@@ -77,7 +77,7 @@ export async function GET(req: NextRequest) {
       });
 
       const url = await getSignedUrl(s3, command, {
-        expiresIn: 60,
+        expiresIn: 300,
       });
 
       return { key, url };
