@@ -1,11 +1,16 @@
 'use client';
 
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import OcrResultTable from '@/components/ocr/OcrResultTable';
 import OcrUploader from '@/components/ocr/OcrUploader';
 import type { OcrRow } from '@/lib/ocr/parseGiftRows';
 
 export default function OurPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const eventId = searchParams.get('eventId'); // querystring에서 가져오기
+
   // OCR 원본 텍스트
   const [rawText, setRawText] = useState('');
 
@@ -19,12 +24,11 @@ export default function OurPage() {
   // 저장 버튼용
   const [isSaving, setIsSaving] = useState(false);
 
-  // (선택) 합계 : amount가 null이 아닌 것만 합산
   const totalAmount = useMemo(() => {
     return rows.reduce((sum, r) => sum + (r.amount ?? 0), 0);
   }, [rows]);
 
-  // (선택) 저장 가능 여부 : 빈 이름/빈 금액 있으면 막기
+  // 저장 가능 여부 : 빈 이름/빈 금액 있으면 막기
   const canSave = useMemo(() => {
     if (rows.length === 0) return false;
 
@@ -37,8 +41,12 @@ export default function OurPage() {
 
   // 저장버튼 클릭
   const handleSave = async () => {
-    // db 저장전
     setError(null);
+
+    if (!eventId) {
+      setError('eventId가 없어요. 내역 페이지에서 다시 들어와주세요.');
+      return;
+    }
 
     if (!canSave) {
       setError('이름/금액이 비어있는 항목이 있어요. 먼저 수정해주세요.');
@@ -48,10 +56,29 @@ export default function OurPage() {
     try {
       setIsSaving(true);
 
-      //   TODO: 여기서 /api/transactions/bulk-create 같은 저장 API 호출 예정
-      //   await fetch(...)
+      // 서버가 원하는 형태로 변환 (id 제거)
+      const payloadRows = rows.map((r) => ({
+        senderName: r.senderName.trim(),
+        amount: r.amount, // canSave에서 null 아닌 거 보장
+      }));
 
-      alert('저장 로직은 다음 단계에서 붙일게요! (지금은 mock)');
+      const res = await fetch('/api/ocr/bulk-create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          eventId, // string이어도 route.ts에서 Number()로 파싱됨
+          rows: payloadRows,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || !data?.ok) {
+        throw new Error(data?.message ?? '저장에 실패했습니다.');
+      }
+
+      // ✅ 저장 성공 → 해당 이벤트 내역 페이지로 복귀
+      router.push(`/memorialweddingdb?eventId=${eventId}`);
     } catch (e) {
       setError(e instanceof Error ? e.message : '저장 중 오류가 발생했어요.');
     } finally {
