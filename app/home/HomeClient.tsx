@@ -45,14 +45,7 @@ export default function HomeClient({ userName, eventCount }: Props) {
 
   return (
     <div className="flex flex-col">
-      <MainHeader
-        variant="home"
-        onNotificationClick={() =>
-          requireAuth(() => {
-            router.push('/notification');
-          })
-        }
-      />
+      <MainHeader variant="home" />
 
       <main className="flex h-full flex-col">
         <HomeBanner name={userName} />

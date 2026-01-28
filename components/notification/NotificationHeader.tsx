@@ -18,10 +18,7 @@ export default function NotificationHeader({ hasUnread }: Props) {
       title="알림"
       showHomeBtn={true}
       showNotificationBtn={true}
-      showBadge={hasUnread} // 안 읽은 알림 있으면 뱃지 표시
-      onBackClick={() => router.back()}
-      onHomeClick={() => router.push('/home')}
-      onNotificationClick={() => router.push('/notification')} // 현재 페이지지만 기능 유지를 위해
+      showBadge={hasUnread} // 안 읽은 알림 있으면 뱃지 표시 // 현재 페이지지만 기능 유지를 위해
     />
   );
 }

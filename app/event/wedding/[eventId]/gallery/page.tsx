@@ -156,9 +156,6 @@ export default function WeddingGalleryPage() {
         subtitle="이민준 ❤️ 홍미연"
         showHomeBtn
         showNotificationBtn
-        onBackClick={() => router.back()}
-        onHomeClick={() => router.push('/')}
-        onNotificationClick={() => router.push('/notifications')}
       />
 
       <div className="px-5 py-4">
