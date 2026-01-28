@@ -6,7 +6,11 @@ import type { DropdownItem } from '@/components/common/Dropdown';
 import type { Bank } from '@/lib/bank';
 import { BANKS } from '@/lib/bank';
 import type { eventhost_role } from '@/lib/generated/prisma/client/enums';
-import { validateKorEngNameNoSpace, validateOnlyNumber } from '@/lib/regExp';
+import {
+  validateKorEngNameNoSpace,
+  validateOnlyNumber,
+  validatePhoneNumber,
+} from '@/lib/regExp';
 import {
   FUNERAL_RELATIONS,
   WEDDING_BRIDE_SIDE_EXTRA_ROLE,
@@ -42,6 +46,7 @@ export function PartyInfoForm({
 
   const [repNameError, setRepNameError] = useState<string | null>(null);
   const [repAccountError, setRepAccountError] = useState<string | null>(null);
+  const [repPhoneError, setRepPhoneError] = useState<string | null>(null);
   const [isComposing, setIsComposing] = useState(false);
 
   const label =
@@ -153,6 +158,7 @@ export function PartyInfoForm({
           onChange={(e) => {
             const onlyNum = e.target.value.replace(/[^0-9]/g, '');
             setRepPhone(onlyNum);
+            setRepPhoneError(validatePhoneNumber(onlyNum));
           }}
           placeholder="01012345678"
           inputMode="tel"
