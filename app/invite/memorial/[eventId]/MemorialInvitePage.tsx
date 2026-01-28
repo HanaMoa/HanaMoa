@@ -32,7 +32,7 @@ export default function MemorialInvitePage({ event }: Props) {
 
   return (
     <div className="flex min-h-screen w-full flex-col">
-      <MainHeader title="미리보기" onBackClick={() => router.back()} />
+      <MainHeader title="미리보기" />
 
       {/* Content */}
       <main className="relative w-full flex-1 bg-white">
