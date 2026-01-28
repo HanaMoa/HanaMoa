@@ -136,7 +136,6 @@ export async function PUT(
                 update: {
                   date: sentAt,
                   category,
-                  message,
                   name: name || '이벤트',
                 },
               },
