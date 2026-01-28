@@ -1,8 +1,8 @@
 'use client';
 
+import Image from 'next/image';
 import { ModalBottomSheet } from '@/components/common/ModalBottomSheet';
 import type { Bank } from '@/lib/bank';
-import Image from 'next/image';
 
 type Props = {
   isOpen: boolean;
@@ -40,8 +40,8 @@ export function BankSelectModal({
                 type="button"
                 onClick={() => onChange(b)}
                 className={[
-                  'relative flex w-full h-[105px] flex-col items-center justify-center rounded-2xl',
-                  'bg-[#F3F4F6] transition active:scale-[0.99] cursor-pointer hover:bg-gray-200',
+                  'relative flex h-[105px] w-full flex-col items-center justify-center rounded-2xl',
+                  'cursor-pointer bg-[#F3F4F6] transition hover:bg-gray-200 active:scale-[0.99]',
                   selected
                     ? 'border-2 border-[#1EA698]'
                     : 'border border-transparent',
