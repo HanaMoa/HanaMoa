@@ -118,7 +118,11 @@ export default function Page() {
             if (step < totalSteps) {
               router.push(`/info/${event}/step/${step + 1}?eid=${eid}`);
             } else {
-              router.push('/home');
+              if (step === 4) {
+                router.push(`/invite/memorial/${eventId}`);
+              } else {
+                router.push(`/invite/wedding/${eventId}`);
+              }
             }
           } finally {
             setIsPending(false);
