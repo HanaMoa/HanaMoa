@@ -1,3 +1,5 @@
+import { Check } from 'lucide-react';
+
 type Props = {
   current: number;
   total: number;
@@ -6,40 +8,49 @@ type Props = {
 
 export function StepIndicator({ current, total, label }: Props) {
   return (
-    <div className="px-4 pt-3 pb-6">
-      <div className="flex items-start">
+    <div>
+      <div className="flex items-center justify-center">
         {Array.from({ length: total }).map((_, i) => {
           const step = i + 1;
           const active = step <= current;
           const isCurrent = step === current;
+          const isLast = step === total;
+          const isCompleted = step < current;
 
           return (
-            <div key={step} className="relative flex flex-1 items-start">
+            <div key={step} className="relative flex items-center">
               {/* 점 */}
               <div
                 className={[
-                  'z-10 grid h-7 w-7 shrink-0 place-items-center rounded-full font-bold text-[12px]',
+                  'z-10 grid h-7 w-7 place-items-center rounded-full font-bold text-[12px]',
                   active
                     ? 'bg-[#00A998] text-white'
                     : 'bg-[#D9D9D9] text-white',
                 ].join(' ')}
               >
-                {step}
+                {/* 완료된 단계 → 체크 */}
+                {isCompleted ? (
+                  <Check className="h-4 w-4 text-white" strokeWidth={3} />
+                ) : (
+                  step
+                )}
               </div>
 
-              {/* 선 */}
-              {step !== total && (
+              {/* 선 (다음 step이 있을 때만) */}
+              {!isLast && (
                 <div
                   className={[
-                    'mx-2 mt-[13px] h-[2px] flex-1 rounded',
-                    step < current ? 'bg-[#00A998]' : 'bg-[#D9D9D9]',
+                    'w-16',
+                    step < current
+                      ? 'outline-1 outline-[#00A998]'
+                      : 'bg-[#D9D9D9] outline-dashed outline-1',
                   ].join(' ')}
                 />
               )}
 
-              {/* 현재 step 아래에만 설명이 오도록 */}
+              {/* 현재 step 설명 */}
               {isCurrent && label && (
-                <p className="absolute top-[36px] max-w-[60px] break-keep text-left font-medium text-[#00A998] text-[8px] leading-snug md:max-w-[90px] md:text-[10px] lg:max-w-[120px] lg:text-xs">
+                <p className="absolute top-[36px] right-12.5 break-keep text-center font-medium text-[#00A998] text-[8px] leading-snug md:max-w-[90px] md:text-[10px] lg:max-w-[120px] lg:text-xs">
                   {label}
                 </p>
               )}
