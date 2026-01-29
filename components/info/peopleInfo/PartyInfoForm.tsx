@@ -183,7 +183,7 @@ export function PartyInfoForm({
           <button
             type="button"
             disabled
-            className="flex h-[45px] w-[140px] shrink-0 items-center justify-between rounded-lg border border-[#E6E6E6] bg-white px-3 text-sm md:text-base lg:text-lg"
+            className="flex h-[45px] w-[140px] shrink-0 items-center justify-around rounded-lg border border-[#E6E6E6] bg-white text-sm md:text-base lg:text-lg"
             aria-label="하나은행 고정"
           >
             <div className="flex items-center gap-2">
@@ -250,7 +250,7 @@ export function PartyInfoForm({
           <button
             type="button"
             onClick={() => setIsAddOpen(true)}
-            className="grid h-16 w-16 place-items-center rounded-lg bg-[#E0E1E6]"
+            className="grid h-16 w-16 cursor-pointer place-items-center rounded-lg bg-[#E0E1E6] hover:bg-gray-300"
             aria-label="추가"
           >
             <PlusIcon className="h-6 w-6 text-white" />

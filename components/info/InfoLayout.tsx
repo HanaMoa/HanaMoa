@@ -33,7 +33,7 @@ export function InfoLayout({
     <main className="flex min-h-dvh flex-col bg-[#F6F7F9]">
       <MainHeader variant="default" title={headerTitle} />
 
-      <section className="mx-auto flex w-full max-w-[420px] flex-1 flex-col justify-center px-5 pt-4 md:max-w-[450px] lg:max-w-[480px]">
+      <section className="mx-auto flex w-full max-w-[420px] flex-1 flex-col justify-center pt-4 md:max-w-[450px] lg:max-w-[480px]">
         <div className="px-4 py-2">
           <StepIndicator
             current={currentStep}

@@ -167,7 +167,7 @@ export function AddMemberModal({
             <button
               type="button"
               onClick={() => setIsBankOpen(true)}
-              className="flex h-[45px] w-[140px] shrink-0 items-center justify-between rounded-lg border border-[#E6E6E6] bg-white px-3 text-sm focus-visible:outline-none md:text-base lg:text-lg"
+              className="flex h-[45px] w-[140px] shrink-0 cursor-pointer items-center justify-between rounded-lg border border-[#E6E6E6] bg-white px-3 text-sm hover:bg-gray-50 focus-visible:outline-none md:text-base lg:text-lg"
               aria-label="은행 선택"
             >
               <span className={bank ? 'text-black' : 'text-[#B2B2B2]'}>

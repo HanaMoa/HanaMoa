@@ -269,7 +269,7 @@ export function PhotoUpload({
             type="button"
             onClick={openPicker}
             disabled={!canAddMore}
-            className="relative aspect-square rounded-lg bg-[#E0E1E6] text-gray-400"
+            className="relative aspect-square cursor-pointer rounded-lg bg-[#E0E1E6] text-gray-400 hover:bg-gray-300"
             aria-label="사진 추가"
           >
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-1">
