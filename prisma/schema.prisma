@@ -123,7 +123,7 @@ enum NotificationType {
 
 model Gallery {
   id         BigInt            @id @default(autoincrement())
-  key        String            @map("s3_key")
+  key        String            @map("s3_key") 
   userId     BigInt            @map("user_id")
   createdAt  DateTime          @default(now()) @map("created_at")
   eventId    BigInt            @map("event_id")
