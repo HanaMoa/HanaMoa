@@ -66,7 +66,7 @@ export default function LoungeCard({
       }
     >
       {/* 썸네일 */}
-      <div className="relative h-22 w-22 shrink-0 overflow-hidden rounded-lg bg-slate-100">
+      <div className="relative min-h-full min-w-auto shrink-0 overflow-hidden rounded-lg bg-slate-100">
         {imageUrl ? (
           <Image
             src={imageUrl}
@@ -133,8 +133,8 @@ export default function LoungeCard({
 
         {/* 장소 + 내역보기 */}
         {location && (
-          <div className="mt-1 flex items-center justify-between text-slate-500 text-sm">
-            <div className="flex items-center gap-2">
+          <div className="ml-0.5 flex items-center justify-between text-slate-500 text-sm">
+            <div className="flex items-center gap-1">
               <MapPin className="h-4 w-4" />
               <span>{location}</span>
             </div>
