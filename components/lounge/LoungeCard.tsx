@@ -1,4 +1,3 @@
-// components/lounge/LoungeCard.tsx
 'use client';
 
 import { CalendarDays, MapPin, Share2 } from 'lucide-react';
@@ -6,9 +5,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import type { events_category } from '@/lib/generated/prisma/client/enums';
 
-/* =========================
-   DB category → URL segment
-========================= */
+// DB category → URL segment
 function categoryToRoute(category: events_category): 'wedding' | 'memorial' {
   switch (category) {
     case 'WEDDING':
@@ -42,9 +39,7 @@ export default function LoungeCard({
   const router = useRouter();
   const routeCategory = categoryToRoute(category);
 
-  /* =========================
-     행사 상태 계산
-  ========================= */
+  // 행사 상태 계산
   const now = new Date();
   const eventDate = new Date(date);
 
@@ -53,13 +48,13 @@ export default function LoungeCard({
 
   if (eventDate > now) {
     statusLabel = '예정';
-    statusColor = 'text-black';
+    statusColor = 'text-[#0088FF]';
   } else if (Math.abs(now.getTime() - eventDate.getTime()) < 86400000) {
     statusLabel = '진행중';
-    statusColor = 'text-[#017F70]';
+    statusColor = 'text-[#E72511]';
   } else {
     statusLabel = '종료';
-    statusColor = 'text-slate-400';
+    statusColor = 'text-slate-300';
   }
 
   return (
@@ -70,9 +65,7 @@ export default function LoungeCard({
         router.push(`/event/${routeCategory}/${eventId.toString()}`)
       }
     >
-      {/* =========================
-          썸네일
-      ========================= */}
+      {/* 썸네일 */}
       <div className="relative h-22 w-22 shrink-0 overflow-hidden rounded-lg bg-slate-100">
         {imageUrl ? (
           <Image
@@ -88,37 +81,42 @@ export default function LoungeCard({
         )}
       </div>
 
-      {/* =========================
-          본문
-      ========================= */}
+      {/* 본문 */}
       <div className="flex flex-1 flex-col justify-between">
-        {/* 제목 + 공유 + Host */}
-        <div className="flex items-center gap-2">
-          <div className="font-semibold text-[16px] text-slate-900">
-            {title}
+        <div className="flex items-center justify-between">
+          {/* 제목 + 공유 + Host */}
+          <div className="flex items-center gap-2">
+            <div className="font-semibold text-[16px] text-slate-900">
+              {title}
+            </div>
+
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                navigator.share?.({
+                  title,
+                  text: `${title} 행사에 초대합니다.`,
+                  url: `${window.location.origin}/event/${routeCategory}/${eventId.toString()}`,
+                });
+              }}
+              className="cursor-pointer rounded-full p-1 hover:bg-black/5"
+              aria-label="공유"
+            >
+              <Share2 className="h-4 w-4 text-slate-500" />
+            </button>
+
+            {isHost && (
+              <div className="rounded-full bg-[#F08300] px-2 py-0.5 font-semibold text-white text-xs">
+                Host
+              </div>
+            )}
           </div>
 
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              navigator.share?.({
-                title,
-                text: `${title} 행사에 초대합니다.`,
-                url: `${window.location.origin}/event/${routeCategory}/${eventId.toString()}`,
-              });
-            }}
-            className="cursor-pointer rounded-full p-1 hover:bg-black/5"
-            aria-label="공유"
-          >
-            <Share2 className="h-4 w-4 text-slate-500" />
-          </button>
-
-          {isHost && (
-            <div className="rounded-full bg-red-500 px-2 py-0.5 font-semibold text-white text-xs">
-              Host
-            </div>
-          )}
+          {/* 상태 표시 */}
+          <div className={`font-semibold text-xs ${statusColor}`}>
+            {statusLabel}
+          </div>
         </div>
 
         {/* 날짜 */}
@@ -153,15 +151,6 @@ export default function LoungeCard({
             </button>
           </div>
         )}
-      </div>
-
-      {/* =========================
-          상태 표시
-      ========================= */}
-      <div
-        className={`absolute right-3 bottom-3 font-semibold text-xs ${statusColor}`}
-      >
-        {statusLabel}
       </div>
     </button>
   );
