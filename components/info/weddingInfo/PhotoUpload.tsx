@@ -161,6 +161,7 @@ export function PhotoUpload({
       const keys = await upload(
         selected.map((s) => s.file),
         eventId,
+        'gallery',
       );
 
       // keys를 방금 추가한 items 순서대로 매핑
