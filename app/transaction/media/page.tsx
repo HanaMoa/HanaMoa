@@ -1,25 +1,27 @@
 'use client';
 
-import { CirclePlay, ImagePlus, Trash2 } from 'lucide-react'; // Added ImagePlus
+import { CirclePlay, ImagePlus, Trash2 } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useRef, useState } from 'react'; // Added useRef
+import { useRef, useState } from 'react';
+
 import { MainHeader } from '@/components/common/MainHeader';
 import { SingleButton } from '@/components/common/SingleButton';
+import { useImageUpload } from '@/hooks/useImageUpload';
 
 type ImageItem = {
   id: string;
   type: 'image';
   src: string;
-  file?: File; // Optional: to store actual file if needed for upload
+  file: File;
 };
 
 type VideoItem = {
   id: string;
   type: 'video';
-  src: string; // Preview URL
-  poster: string; // Same as src for simplicity in this preview context
-  file?: File;
+  src: string; // preview blob url
+  poster: string; // same as src (썸네일 대용)
+  file: File;
 };
 
 type GalleryItem = ImageItem | VideoItem;
@@ -27,11 +29,16 @@ type GalleryItem = ImageItem | VideoItem;
 export default function TransactionMediaPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
+
   const toName = searchParams.get('toName') ?? '받는분';
+  const eventId = searchParams.get('eventId');
+
+  const { upload, loading } = useImageUpload();
 
   const [allItems, setAllItems] = useState<GalleryItem[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  /* 삭제 */
   const handleDeleteItem = (id: string) => {
     setAllItems((prev) => {
       const target = prev.find((p) => p.id === id);
@@ -40,13 +47,14 @@ export default function TransactionMediaPage() {
     });
   };
 
+  /* 파일 선택 */
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;
 
     const newItems: GalleryItem[] = Array.from(files).map((file) => {
-      const id = `upload-${Date.now()}-${Math.random()}`;
       const src = URL.createObjectURL(file);
+      const id = `upload-${crypto.randomUUID()}`;
 
       if (file.type.startsWith('video/')) {
         return {
@@ -57,6 +65,7 @@ export default function TransactionMediaPage() {
           file,
         };
       }
+
       return {
         id,
         type: 'image',
@@ -66,15 +75,32 @@ export default function TransactionMediaPage() {
     });
 
     setAllItems((prev) => [...prev, ...newItems]);
-    e.target.value = ''; // Reset input
+    e.target.value = '';
   };
 
-  const handleSubmit = () => {
-    // alert('사진과 영상이 전송되었습니다.');
+  /* 보내기 */
+  const handleSubmit = async () => {
+    if (!eventId) {
+      alert('이벤트 정보가 없습니다.');
+      return;
+    }
+
+    const files = allItems.map((item) => item.file);
+
+    if (files.length === 0) return;
+
+    try {
+      // 👉 업로드 실행 (mode는 reels 고정)
+      await upload(files, eventId, 'reels');
+    } catch (e) {
+      alert((e as Error).message);
+      return;
+    }
+
+    // 👉 기존 transaction 흐름 유지
     const params = new URLSearchParams(searchParams.toString());
     params.set('lastAction', 'media');
 
-    // amount가 있거나 flow가 transaction이면 완료 화면으로 이동
     if (
       searchParams.get('amount') ||
       searchParams.get('flow') === 'transaction'
@@ -85,56 +111,58 @@ export default function TransactionMediaPage() {
     }
   };
 
+  /* 건너뛰기 */
   const handleSkip = () => {
     const params = new URLSearchParams(searchParams.toString());
+
     if (searchParams.get('hasMessage') === 'true') {
       params.set('lastAction', 'message');
     } else {
       params.set('lastAction', 'relation');
     }
 
-    // amount가 있거나 message가 있으면 완료 화면으로 이동
     if (
       searchParams.get('amount') ||
       searchParams.get('hasMessage') === 'true'
     ) {
       router.push(`/transaction/complete?${params.toString()}`);
     } else {
-      // 둘 다 없으면(3연속 스킵 등) -> 홈으로 (Transaction 진입 전)
       router.push('/home');
     }
   };
 
   return (
     <div className="flex h-dvh flex-col bg-white">
+      {/* Header */}
       <div className="relative z-10">
         <MainHeader title="사진·영상을 보낼까요?" variant="default" />
         <button
           type="button"
           onClick={handleSkip}
-          className="-translate-y-1/2 absolute top-1/2 right-5 font-medium text-gray-400 text-sm transition-colors hover:text-gray-600"
+          className="-translate-y-1/2 absolute top-1/2 right-5 font-medium text-gray-400 text-sm transition hover:text-gray-600"
         >
           건너뛰기
         </button>
       </div>
 
+      {/* Content */}
       <main className="flex min-h-0 flex-1 flex-col px-5 pt-8">
-        <h1 className="mb-2 shrink-0 font-bold text-gray-900 text-xl">
+        <h1 className="mb-2 font-bold text-gray-900 text-xl">
           {toName}님에게
           <br />
           사진이나 영상을 보낼 수 있어요
         </h1>
-        <p className="mb-6 shrink-0 text-gray-500 text-sm">
+        <p className="mb-6 text-gray-500 text-sm">
           따뜻한 추억을 함께 나누어보세요.
         </p>
 
-        {/* 갤러리 그리드 영역 (임베디드 UI) */}
+        {/* Grid */}
         <div className="scrollbar-hidden flex-1 overflow-y-auto pb-4">
           <div className="grid grid-cols-3 gap-3">
             {allItems.map((item) => (
               <div
                 key={item.id}
-                className="group relative aspect-square w-full overflow-hidden rounded-lg bg-gray-100"
+                className="group relative aspect-square overflow-hidden rounded-lg bg-gray-100"
               >
                 <Image
                   src={item.type === 'video' ? item.poster : item.src}
@@ -149,8 +177,6 @@ export default function TransactionMediaPage() {
                   </div>
                 )}
 
-                <div className="pointer-events-none absolute inset-0 bg-black/0 transition-colors group-hover:bg-black/30" />
-
                 <button
                   type="button"
                   aria-label="Delete item"
@@ -158,26 +184,27 @@ export default function TransactionMediaPage() {
                     e.stopPropagation();
                     handleDeleteItem(item.id);
                   }}
-                  className="absolute top-2 right-2 hidden cursor-pointer rounded-full bg-red-600 p-1 text-white shadow-md transition hover:bg-red-700 group-hover:block"
+                  className="absolute top-2 right-2 hidden rounded-full bg-red-600 p-1 text-white shadow-md group-hover:block"
                 >
                   <Trash2 className="h-4 w-4" />
                 </button>
               </div>
             ))}
 
-            {/* 추가 버튼 (항상 마지막에 표시) */}
+            {/* Add button */}
             <button
+              type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="group relative flex aspect-square w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg bg-black/5 transition-colors hover:bg-black/10"
+              className="flex aspect-square items-center justify-center rounded-lg bg-black/5 hover:bg-black/10"
             >
-              <ImagePlus className="h-6 w-6 text-gray-400 group-hover:text-gray-600" />
+              <ImagePlus className="h-6 w-6 text-gray-400" />
             </button>
           </div>
         </div>
 
         <input
-          type="file"
           ref={fileInputRef}
+          type="file"
           className="hidden"
           multiple
           accept="image/*,video/*"
@@ -185,13 +212,14 @@ export default function TransactionMediaPage() {
         />
       </main>
 
-      <div className="flex justify-center px-5 pt-4 pb-8">
+      {/* Footer */}
+      <div className="px-5 pt-4 pb-8">
         <SingleButton
           onClick={handleSubmit}
           className="w-full"
-          disabled={allItems.length === 0}
+          disabled={allItems.length === 0 || loading}
         >
-          보내기 (총 {allItems.length}개)
+          {loading ? '업로드 중...' : `보내기 (총 ${allItems.length}개)`}
         </SingleButton>
       </div>
     </div>

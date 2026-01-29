@@ -17,7 +17,10 @@ export async function POST(req: Request) {
 
   const results = await Promise.all(
     files.map(async ({ contentType }: { contentType: string }) => {
-      const key = `images/${randomUUID()}`;
+      const isVideo = contentType.startsWith('video/');
+      const ext = contentType.split('/')[1] ?? 'bin';
+
+      const key = `${isVideo ? 'videos' : 'images'}/${randomUUID()}.${ext}`;
 
       const command = new PutObjectCommand({
         Bucket: process.env.S3_BUCKET_NAME!,

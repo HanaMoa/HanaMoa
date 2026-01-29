@@ -74,7 +74,7 @@ export default function WeddingGalleryPage() {
 
     try {
       await upload(files, eventId, 'gallery');
-      // 👉 필요하면 여기서 fetchGallery()로 동기화
+      //
     } catch (e) {
       alert((e as Error).message);
     }
