@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useMemo, useRef, useState } from 'react';
 import AlertModal from '@/components/common/AlertModal';
 import { Input } from '@/components/common/Input';
+import { MainHeader } from '@/components/common/MainHeader';
 import { SingleButton } from '@/components/common/SingleButton';
 import { Card } from '@/components/ui/card';
 
@@ -77,26 +78,17 @@ export default function MemorialWeddingDbAddPage() {
 
   return (
     <div className="mx-auto h-dvh w-full max-w-[600px] overflow-hidden bg-[#F6F7F9] md:max-w-[720px] lg:max-w-[800px]">
-      <main className="flex h-full w-full flex-col bg-white px-6 pt-6">
+      <main className="flex h-full w-full flex-col">
         {/* 상단 헤더 */}
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => router.back()}
-            className="rounded-full p-2 hover:bg-gray-100"
-            aria-label="뒤로가기"
-          >
-            ←
-          </button>
-        </div>
+        <MainHeader
+          variant="default"
+          title="경조사비 내역 추가"
+          onCameraClick={() => router.back()}
+        />
 
-        <div className="mt-6 flex flex-1 flex-col gap-4 overflow-y-auto overscroll-contain pb-28">
-          <h2 className="text-center font-bold text-gray-900 text-xl">
-            경조사 내역 추가
-          </h2>
-
+        <div className="mx-6 mt-6 flex flex-1 flex-col gap-4 overflow-y-auto overscroll-contain">
           <form ref={formRef}>
-            <Card className="rounded-2xl border-0 bg-gray-50 p-5 shadow-none">
+            <Card className="rounded-2xl border-0 bg-transparent shadow-none">
               {/* 이름/금액 2열 */}
               <div className="grid grid-cols-2 gap-3">
                 <Input label="이름" name="name" placeholder="이름" />
@@ -184,32 +176,34 @@ export default function MemorialWeddingDbAddPage() {
               </div>
             </Card>
           </form>
+        </div>
 
-          {/* 확인 영역 */}
-          <div className="mt-2 text-center font-extrabold text-gray-900 text-xl">
-            추가하시겠습니까?
-          </div>
+        {/* 확인 영역 */}
+        <div className="mb-6 text-center font-extrabold text-gray-900 text-xl">
+          추가하시겠습니까?
+        </div>
 
-          {/* 예 / 아니오 버튼 */}
-          <div className="mt-2 flex justify-center gap-3">
-            <SingleButton
-              onClick={() => {
-                setConfirmType('yes');
-                setConfirmOpen(true);
-              }}
-            >
-              예
-            </SingleButton>
+        {/* 예 / 아니오 버튼 */}
+        <div className="flex items-center justify-between px-6">
+          <SingleButton
+            className="w-45! md:w-52! lg:w-66!"
+            onClick={() => {
+              setConfirmType('yes');
+              setConfirmOpen(true);
+            }}
+          >
+            예
+          </SingleButton>
 
-            <SingleButton
-              onClick={() => {
-                setConfirmType('no');
-                setConfirmOpen(true);
-              }}
-            >
-              아니오
-            </SingleButton>
-          </div>
+          <SingleButton
+            className="w-45! md:w-52! lg:w-66!"
+            onClick={() => {
+              setConfirmType('no');
+              setConfirmOpen(true);
+            }}
+          >
+            아니오
+          </SingleButton>
         </div>
 
         <div className="h-10" />
