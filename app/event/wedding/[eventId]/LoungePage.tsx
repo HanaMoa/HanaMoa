@@ -271,7 +271,7 @@ export default function WeddingLoungePage({ event }: Props) {
           {/* 영상 시네마 */}
           <button
             type="button"
-            onClick={() => router.push(`/event/wedding/${event.eventId}/reels`)}
+            onClick={() => router.push(`/event/wedding/${event.eventId}/feed`)}
             aria-label="영상 시네마로 이동"
             className="absolute top-[63%] right-0 z-10 w-[190px] cursor-pointer border-0 bg-transparent md:top-[62%] md:w-[210px] lg:top-[61%] lg:w-[250px]"
           >
