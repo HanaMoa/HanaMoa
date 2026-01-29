@@ -71,7 +71,7 @@ export default function HanamoaPage() {
 
   return (
     <div className="mx-auto h-dvh w-full max-w-[600px] overflow-hidden bg-[#F6F7F9] md:max-w-[720px] lg:max-w-[800px]">
-      <main className="flex h-full w-full flex-col bg-white px-6 pt-6">
+      <main className="flex h-full w-full flex-col">
         {/* 상단 헤더 */}
         <MainHeader
           variant="default"
@@ -81,7 +81,7 @@ export default function HanamoaPage() {
         />
 
         {/* 메인 계좌 카드 */}
-        <div className="flex h-full flex-col gap-6">
+        <div className="flex h-full flex-col gap-6 p-6">
           <div className="flex items-center justify-center">
             <Card className="relative mx-auto flex min-h-[30vh] w-full max-w-[420px] flex-col items-center justify-center overflow-hidden rounded-2xl border-0 bg-[#1EA698] p-4 shadow-none">
               <div className="z-10 flex flex-col items-center gap-1">
