@@ -20,7 +20,7 @@ export function EventSelectList({ items, selected, onSelect }: Props) {
             type="button"
             onClick={() => onSelect(item.key)}
             className={[
-              'flex w-full items-center gap-3 rounded-xl border px-4 py-4 text-left',
+              'flex w-full cursor-pointer items-center gap-3 rounded-xl border px-4 py-4 text-left',
               'transition',
               active
                 ? 'border-[#00A998]'

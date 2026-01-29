@@ -53,7 +53,7 @@ export default function Page() {
         <button
           type="button"
           onClick={() => router.push('/home')} // TODO: 경로 나중에 수정
-          className="mt-4 w-full text-center font-medium text-[8px] text-black/40 underline underline-offset-4 hover:text-black/60 md:text-xs lg:text-sm"
+          className="mt-4 w-full cursor-pointer text-center font-medium text-[8px] text-black/40 underline underline-offset-4 hover:text-black/60 md:text-xs lg:text-sm"
         >
           선택지가 없어요
         </button>
