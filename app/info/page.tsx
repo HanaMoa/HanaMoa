@@ -26,9 +26,9 @@ export default function Page() {
       {/* 공통 헤더 사용 */}
       <MainHeader variant="default" title="안내장 생성" />
 
-      <section className="mx-auto w-full max-w-[360px] flex-1 px-5 pt-4 md:max-w-[420px] lg:max-w-[480px]">
+      <section className="mx-auto w-full max-w-[360px] flex-1 md:max-w-[420px] lg:max-w-[480px]">
         {/* 인디케이터 */}
-        <div className="px-4 py-3">
+        <div className="py-6">
           <StepIndicator
             current={1}
             total={5}
@@ -37,7 +37,7 @@ export default function Page() {
         </div>
 
         {/* Title */}
-        <h2 className="mt-6 text-center font-semibold text-xl md:text-2xl lg:text-[32px]">
+        <h2 className="mt-12 text-center font-semibold text-xl md:text-2xl lg:text-[32px]">
           어떤 행사를
           <br />
           준비중이신가요?
