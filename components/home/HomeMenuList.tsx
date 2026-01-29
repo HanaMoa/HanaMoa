@@ -13,7 +13,7 @@ type MenuItem = {
   imgSize: {
     md: number;
     lg: number;
-  } // 단위는 px
+  }; // 단위는 px
   col?: 'right';
 };
 
@@ -32,7 +32,7 @@ export default function HomeMenuList({ onMenuClick }: Props) {
       href: '/info',
       className: 'col-start-1 row-start-1 row-span-5',
       image: '/images/home/invite.png',
-      imgSize:{md: 64, lg: 72}
+      imgSize: { md: 64, lg: 72 },
     },
     {
       key: 'event',
@@ -42,7 +42,7 @@ export default function HomeMenuList({ onMenuClick }: Props) {
       href: '/memorialweddingdb',
       className: 'col-start-2 row-start-1 row-span-4',
       image: '/images/home/history.png',
-      imgSize: {md: 50, lg: 54},
+      imgSize: { md: 50, lg: 54 },
       col: 'right',
     },
     {
@@ -53,7 +53,7 @@ export default function HomeMenuList({ onMenuClick }: Props) {
       href: '/event',
       className: 'col-start-1 row-start-6 row-span-4',
       image: '/images/home/memory.png',
-      imgSize: {md: 64, lg: 72}
+      imgSize: { md: 64, lg: 72 },
     },
     {
       key: 'transfer',
@@ -63,7 +63,7 @@ export default function HomeMenuList({ onMenuClick }: Props) {
       href: '/transaction?mode=transfer',
       className: 'col-start-2 row-start-5 row-span-5',
       image: '/images/home/transfer.png',
-      imgSize: {md: 72, lg: 84},
+      imgSize: { md: 72, lg: 84 },
       col: 'right',
     },
   ];
@@ -117,7 +117,7 @@ function MenuCard({
   titleSub: string;
   desc: string;
   image: string;
-  imgSize?: {md: number; lg: number};
+  imgSize?: { md: number; lg: number };
   col?: string;
   className: string;
   onClick: () => void;
@@ -130,12 +130,15 @@ function MenuCard({
         'h-full w-full text-left',
         'rounded-xl border border-[#E6E6E6] bg-white shadow-sm',
         'p-4 px-6 py-6',
-        'transition active:scale-[0.98]',
+        'cursor-pointer transition hover:bg-gray-50 active:scale-[0.98]',
         className,
       ].join(' ')}
     >
       <div className="flex h-full flex-col">
-        <div className="mb-3" style={{ width: imgSize?.md, height: imgSize?.md }}>
+        <div
+          className="mb-3"
+          style={{ width: imgSize?.md, height: imgSize?.md }}
+        >
           <Image
             src={image}
             alt={titleMain}
@@ -164,7 +167,9 @@ function MenuCard({
                 className={[
                   'whitespace-pre-line text-[#999999] leading-snug',
                   'text-lg md:text-lg',
-                  itemKey === 'memory' ? 'text-sm md:text-sm lg:text-lg' : 'md:text-lg'
+                  itemKey === 'memory'
+                    ? 'text-sm md:text-sm lg:text-lg'
+                    : 'md:text-lg',
                 ].join(' ')}
               >
                 {desc}
