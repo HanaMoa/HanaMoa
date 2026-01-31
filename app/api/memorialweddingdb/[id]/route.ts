@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { auth } from '@/lib/auth';
 import type { events_category as EventCategory } from '@/lib/generated/prisma/client/client';
 import { prisma } from '@/lib/prisma';
 
@@ -9,7 +10,13 @@ function toJSON<T>(data: T) {
 }
 
 // 지금은 임시 유저(시드로 넣은 temp 유저 id=1)로 고정
-const TEMP_USER_ID = BigInt(1);
+// const TEMP_USER_ID = BigInt(1);
+async function requireUserId() {
+  const session = await auth();
+  const uid = (session?.user as any)?.id;
+  if (!uid) throw new Error('UNAUTHORIZED');
+  return BigInt(uid);
+}
 
 const categoryMap: Record<string, EventCategory> = {
   결혼식: 'WEDDING',
@@ -22,12 +29,13 @@ export async function GET(
   ctx: { params: Promise<{ id: string }> },
 ) {
   try {
+    const userId = await requireUserId();
     const { id } = await ctx.params;
 
     const item = await prisma.transaction.findFirst({
       where: {
         id: BigInt(id),
-        userId: TEMP_USER_ID, // ✅ 내 것만
+        userId,
       },
       include: {
         event: {
@@ -52,6 +60,12 @@ export async function GET(
 
     return NextResponse.json({ ok: true, item: toJSON(item) });
   } catch (e: any) {
+    if (e?.message === 'UNAUTHORIZED') {
+      return NextResponse.json(
+        { ok: false, message: '로그인이 필요합니다.' },
+        { status: 401 },
+      );
+    }
     console.error(e);
     return NextResponse.json(
       { ok: false, message: e.message ?? '서버 오류' },
@@ -71,6 +85,7 @@ export async function PUT(
   ctx: { params: Promise<{ id: string }> },
 ) {
   try {
+    const userId = await requireUserId();
     const { id } = await ctx.params;
     const body = await req.json();
 
@@ -108,7 +123,7 @@ export async function PUT(
 
     // ✅ 내 거래인지 먼저 확인 (권한)
     const existing = await prisma.transaction.findFirst({
-      where: { id: BigInt(id), userId: TEMP_USER_ID },
+      where: { id: BigInt(id), userId },
       select: { id: true, eventId: true, eventHostId: true },
     });
 
@@ -159,6 +174,12 @@ export async function PUT(
 
     return NextResponse.json({ ok: true, item: toJSON(updated) });
   } catch (e: any) {
+    if (e?.message === 'UNAUTHORIZED') {
+      return NextResponse.json(
+        { ok: false, message: '로그인이 필요합니다.' },
+        { status: 401 },
+      );
+    }
     console.error(e);
     return NextResponse.json(
       { ok: false, message: e.message ?? '서버 오류' },
