@@ -1,6 +1,7 @@
 // app/api/transfer/complete/route.ts
 
 import { NextResponse } from 'next/server';
+import { auth } from '@/lib/auth';
 import type {
   events_category as EventCategory,
   eventhost_role as EventHostRole,
@@ -23,7 +24,13 @@ function parseAmount(amount: unknown) {
 }
 
 // 지금은 임시 유저(시드 temp 유저 id=1)로 고정
-const TEMP_USER_ID = BigInt(1);
+// const TEMP_USER_ID = BigInt(1);
+async function requireUserId() {
+  const session = await auth();
+  const uid = (session?.user as any)?.id;
+  if (!uid) throw new Error('UNAUTHORIZED');
+  return BigInt(uid);
+}
 
 function categoryFromEventType(eventType?: string | null): EventCategory {
   if (eventType === 'FUNERAL') return 'FUNERAL';
@@ -52,6 +59,8 @@ function defaultRoleByCategory(cat: EventCategory): EventHostRole {
  * }
  */
 export async function POST(req: Request) {
+  const userId = await requireUserId(); // userId 확보
+
   try {
     const body = await req.json();
 
@@ -88,7 +97,7 @@ export async function POST(req: Request) {
 
       const ensuredEvent = eventId
         ? await tx.event.findFirst({
-            where: { id: eventId, userId: TEMP_USER_ID },
+            where: { id: eventId, userId },
             select: { id: true },
           })
         : null;
@@ -97,7 +106,7 @@ export async function POST(req: Request) {
         ensuredEvent ??
         (await tx.event.create({
           data: {
-            userId: TEMP_USER_ID,
+            userId,
             category,
             date: sentAt,
             name: category === 'FUNERAL' ? '장례식' : '결혼식',
@@ -161,7 +170,7 @@ export async function POST(req: Request) {
       // ✅ 4-0) 먼저 같은 키( userId + accountId + amount + sentAt )가 있으면 재사용
       const existed = await tx.transaction.findFirst({
         where: {
-          userId: TEMP_USER_ID,
+          userId,
           accountId: account.id,
           amount: amountBigInt,
           sentAt,
@@ -187,7 +196,7 @@ export async function POST(req: Request) {
       try {
         const transaction = await tx.transaction.create({
           data: {
-            userId: TEMP_USER_ID,
+            userId,
             eventId: finalEvent.id,
             eventHostId: host.id,
             accountId: account.id,
@@ -217,7 +226,7 @@ export async function POST(req: Request) {
 
         const existedAfter = await tx.transaction.findFirst({
           where: {
-            userId: TEMP_USER_ID,
+            userId,
             accountId: account.id,
             amount: amountBigInt,
             sentAt,
@@ -244,6 +253,14 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: true, ...toJSON(result) }, { status: 201 });
   } catch (e: any) {
     console.error(e);
+
+    if (e?.message === 'UNAUTHORIZED') {
+      return NextResponse.json(
+        { ok: false, message: '로그인이 필요합니다.' },
+        { status: 401 },
+      );
+    }
+
     return NextResponse.json(
       { ok: false, message: e?.message ?? '서버 오류' },
       { status: 500 },

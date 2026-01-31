@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { auth } from '@/lib/auth';
 import type {
   events_category as EventCategory,
   eventhost_role as EventHostRole,
@@ -19,7 +20,14 @@ function parseAmount(amount: unknown) {
   return onlyNum ? BigInt(onlyNum) : BigInt(0);
 }
 
-const TEMP_USER_ID = BigInt(1);
+// const TEMP_USER_ID = BigInt(1);
+// user id string -> BigInt 변환
+async function requireUserId() {
+  const session = await auth();
+  const uid = (session?.user as any)?.id; // session callback에서 넣어준 id
+  if (!uid) throw new Error('UNAUTHORIZED');
+  return BigInt(uid);
+}
 
 const categoryMap: Record<string, EventCategory> = {
   결혼식: 'WEDDING',
@@ -36,8 +44,10 @@ const defaultRoleByCategory: Record<EventCategory, EventHostRole> = {
 
 export async function GET() {
   try {
+    const userId = await requireUserId();
+
     const items = await prisma.transaction.findMany({
-      where: { userId: TEMP_USER_ID },
+      where: { userId },
       orderBy: { sentAt: 'desc' },
       include: {
         event: {
@@ -46,7 +56,7 @@ export async function GET() {
             date: true,
             category: true,
             message: true,
-            location: true, // 필요 없으면 빼도 됨
+            location: true,
           },
         },
         eventHost: { select: { id: true, name: true, role: true } },
@@ -55,6 +65,12 @@ export async function GET() {
 
     return NextResponse.json({ ok: true, items: toJSON(items) });
   } catch (e: any) {
+    if (e?.message === 'UNAUTHORIZED') {
+      return NextResponse.json(
+        { ok: false, message: '로그인이 필요합니다.' },
+        { status: 401 },
+      );
+    }
     console.error(e);
     return NextResponse.json(
       { ok: false, message: e.message ?? '서버 오류' },
@@ -65,6 +81,7 @@ export async function GET() {
 
 export async function POST(req: Request) {
   try {
+    const userId = await requireUserId();
     const body = await req.json();
     const { name, amount, datetime, eventType, relation, message } = body;
 
@@ -97,7 +114,7 @@ export async function POST(req: Request) {
     const transaction = await prisma.$transaction(async (tx) => {
       const event = await tx.event.create({
         data: {
-          userId: TEMP_USER_ID,
+          userId,
           date: sentAt,
           category, // ✅ location 대신 category
           name: name?.trim(),
@@ -116,7 +133,7 @@ export async function POST(req: Request) {
 
       return tx.transaction.create({
         data: {
-          userId: TEMP_USER_ID,
+          userId,
           eventId: event.id,
           eventHostId: host.id,
           accountId: null,
@@ -140,6 +157,12 @@ export async function POST(req: Request) {
       { status: 201 },
     );
   } catch (e: any) {
+    if (e?.message === 'UNAUTHORIZED') {
+      return NextResponse.json(
+        { ok: false, message: '로그인이 필요합니다.' },
+        { status: 401 },
+      );
+    }
     console.error(e);
     return NextResponse.json(
       { ok: false, message: e.message ?? '서버 오류' },

@@ -50,6 +50,7 @@ model EventHost {
   event        Event          @relation(fields: [eventId], references: [id], onDelete: Cascade)
   transactions Transaction[]
 
+  @@unique([eventId, name], name: "uniq_eventhost_event_name")
   @@index([eventId])
   @@map("eventHost")
 }
@@ -64,6 +65,7 @@ model Account {
   eventHost    EventHost     @relation(fields: [eventHostId], references: [id], onDelete: Cascade)
   transactions Transaction[]
 
+  @@unique([eventHostId, bank, account], name: "uniq_account_host_bank_account") 
   @@index([eventHostId])
   @@map("accounts")
 }
