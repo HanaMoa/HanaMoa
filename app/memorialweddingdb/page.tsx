@@ -77,7 +77,7 @@ export default function HanamoaPage() {
           variant="default"
           title="경조사비 내역"
           showCameraBtn={true}
-          onCameraClick={() => router.push('/memorialweddingdb/ocr')}
+          onCameraClick={() => router.push('/ocr')}
         />
 
         {/* 메인 계좌 카드 */}
