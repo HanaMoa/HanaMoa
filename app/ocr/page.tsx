@@ -24,7 +24,6 @@ export default function OcrPage() {
   );
 
   const canSave = useMemo(() => {
-    if (!eventId) return false;
     if (rows.length === 0) return false;
     return !rows.some((r) => r.senderName.trim() === '' || r.amount === null);
   }, [eventId, rows]);
@@ -32,10 +31,6 @@ export default function OcrPage() {
   const handleSave = async () => {
     setError(null);
 
-    if (!eventId) {
-      setError('eventId가 없어요. 내역 페이지에서 다시 들어와주세요.');
-      return;
-    }
     if (!canSave) {
       setError('이름/금액이 비어있는 항목이 있어요. 먼저 수정해주세요.');
       return;
@@ -52,7 +47,7 @@ export default function OcrPage() {
       const res = await fetch('/api/ocr/bulk-create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ eventId, rows: payloadRows }),
+        body: JSON.stringify({ rows: payloadRows }),
       });
 
       const data = await res.json();
@@ -132,7 +127,7 @@ export default function OcrPage() {
             </span>
           </div>
 
-          {/* ✅ 원본보기는 “바 아래”로 (덜 거슬리게) */}
+          {/* 원본보기 */}
           {rawText ? (
             <details className="group mt-3 pb-5">
               <summary className="cursor-pointer select-none text-gray-500 text-xs hover:text-gray-700">
@@ -172,7 +167,7 @@ export default function OcrPage() {
             <>
               <OcrResultTable rows={rows} onChangeRows={setRows} />
 
-              {/* ✅ 총 금액 + 저장 (정돈된 바) */}
+              {/* 총 금액 + 저장  */}
               <div className="mt-4 rounded-2xl border border-black/5 bg-[#017F70]/[0.04] px-4 py-3">
                 <div className="flex items-center justify-between gap-3">
                   <div className="text-gray-700 text-sm">

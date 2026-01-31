@@ -26,13 +26,6 @@ function getUserIdFromSessionOrThrow(session: any): bigint {
   return BigInt(idStr);
 }
 
-function parseEventIdOrThrow(eventIdRaw: unknown): bigint {
-  // querystring에서 넘어오면 string일 수 있음 → number로 파싱 후 BigInt
-  const n = Number(eventIdRaw);
-  if (!Number.isFinite(n) || n <= 0) throw new Error('BAD_EVENT_ID');
-  return BigInt(n);
-}
-
 export async function POST(req: Request) {
   try {
     // 0) 로그인 체크
@@ -41,7 +34,6 @@ export async function POST(req: Request) {
 
     // 1) body 파싱
     const body = await req.json();
-    const eventId = parseEventIdOrThrow(body?.eventId);
     const rowsRaw = body?.rows;
 
     if (!Array.isArray(rowsRaw) || rowsRaw.length === 0) {
@@ -55,19 +47,6 @@ export async function POST(req: Request) {
     if (rowsRaw.length > MAX_ROWS) {
       return NextResponse.json(
         { ok: false, message: `rows는 최대 ${MAX_ROWS}개까지 가능합니다.` },
-        { status: 400 },
-      );
-    }
-
-    // 3) 이벤트 체크
-    const eventExists = await prisma.event.findUnique({
-      where: { id: eventId },
-      select: { id: true },
-    });
-
-    if (!eventExists) {
-      return NextResponse.json(
-        { ok: false, message: '존재하지 않는 eventId 입니다.' },
         { status: 400 },
       );
     }
@@ -93,17 +72,13 @@ export async function POST(req: Request) {
       );
     }
     // 5) 저장 데이터 구성
-    // - relation: 없으면 '대면'
-    // - message: 태그 붙이지 않고 그대로 저장(비어있으면 null)
-    // - name: Transaction.name(@map("ocr_name"))에 senderName 저장
     const data = rows.map((r) => ({
       userId,
-      eventId,
+      eventId: null,
       eventHostId: null,
       accountId: null,
-
       amount: toBigIntAmount(r.amount),
-      relation: DEFAULT_RELATION, // '대면'
+      relation: DEFAULT_RELATION,
       message: null,
       name: r.senderName.trim(),
     }));
@@ -114,7 +89,6 @@ export async function POST(req: Request) {
     return NextResponse.json(
       {
         ok: true,
-        eventId: eventId.toString(),
         createdCount: result.count,
       },
       { status: 201 },
@@ -126,13 +100,6 @@ export async function POST(req: Request) {
         { status: 401 },
       );
     }
-    if (e?.message === 'BAD_EVENT_ID') {
-      return NextResponse.json(
-        { ok: false, message: 'eventId 값이 올바르지 않습니다.' },
-        { status: 400 },
-      );
-    }
-
     console.error(e);
     return NextResponse.json(
       { ok: false, message: e?.message ?? '서버 오류' },
