@@ -1,9 +1,13 @@
 'use client';
 
+import { Playfair_Display } from 'next/font/google';
 import Image from 'next/image';
 import { useEffect, useMemo, useState } from 'react';
 import { MainHeader } from '@/components/common/MainHeader';
-
+export const playfair = Playfair_Display({
+  subsets: ['latin'],
+  weight: ['400', '600'],
+});
 type Props = {
   event: {
     eventId: string;
@@ -53,11 +57,11 @@ export default function WeddingInvitePage({ event }: Props) {
 
       <main className="flex-1 px-6 text-center">
         {/* 결혼식 제목 */}
-        {event.title && (
-          <h1 className="mt-10 font-[cursive] text-[#3B2F2F] text-[26px] md:text-[30px]">
-            {event.title}
-          </h1>
-        )}
+        <h1
+          className={`mt-10 text-[#C9B37E] text-[28px] tracking-wide md:text-[32px] ${playfair.className}`}
+        >
+          {event.title}
+        </h1>
 
         {/* 대표 이미지 */}
         {image && (
@@ -71,21 +75,18 @@ export default function WeddingInvitePage({ event }: Props) {
           </div>
         )}
 
-        {/* 하트 */}
-        <div className="mt-6 text-[24px] text-red-500">♥</div>
-
-        {/* 신랑 | 신부 */}
-        <p className="mt-2 font-bold text-[22px] text-black">
-          {event.groomName} | {event.brideName}
+        <p className="mt-4 flex items-center justify-center gap-3 font-bold text-[24px] text-black">
+          <span>{event.groomName}</span>
+          <span className="text-[26px] text-red-500">♥</span>
+          <span>{event.brideName}</span>
         </p>
 
-        {/* 장소 */}
-        {event.location && (
-          <p className="mt-4 text-[15px] text-black/70">{event.location}</p>
-        )}
-
-        {/* 날짜 */}
-        <p className="mt-1 text-[15px] text-black/70">{dateText}</p>
+        <p className="mt-5 font-medium text-[#6B5E57] text-[17px]">
+          {event.location}
+        </p>
+        <p className="mt-2 font-medium text-[#6B5E57] text-[17px]">
+          {dateText}
+        </p>
 
         {/* 문구 */}
         <p className="mt-8 text-[16px] text-black leading-[1.7]">
@@ -100,7 +101,7 @@ export default function WeddingInvitePage({ event }: Props) {
         <div className="mx-auto flex w-full justify-center px-4">
           <button
             type="button"
-            className="flex h-[65px] w-[360px] flex-col items-center justify-center rounded-xl bg-[#E85A71] text-white shadow-md active:scale-[0.98] md:w-[420px] lg:w-[540px]"
+            className="flex h-[65px] w-[360px] flex-col items-center justify-center rounded-xl bg-[#1EA698] text-white shadow-md active:scale-[0.98] md:w-[420px] lg:w-[540px]"
           >
             <span className="font-bold text-[17px]">청첩장 생성하기</span>
             <span className="mt-1 text-[12px] text-white/80">
