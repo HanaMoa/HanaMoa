@@ -1,10 +1,10 @@
 'use client';
 
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useState } from 'react';
 import type { DropdownItem } from '@/components/common/Dropdown';
 import Dropdown from '@/components/common/Dropdown';
 import { MainHeader } from '@/components/common/MainHeader';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useState } from 'react';
 
 type Occasion = '결혼' | '장례';
 type Relation = '친구' | '가족/친척' | '직장 동료' | '상사/선배';
@@ -92,12 +92,12 @@ export default function MessageRefinePage() {
   };
 
   return (
-    <div className="mx-auto flex min-h-dvh w-full max-w-[440px] flex-col bg-[#F6F7F9] px-5 pt-8 pb-24 lg:max-w-[530px]">
+    <div className="mx-auto flex min-h-dvh w-full flex-col bg-[#F6F7F9]">
       {/* Header */}
       <MainHeader variant="default" title="AI 글 다듬기" />
 
       {/* Title */}
-      <div className="mt-6">
+      <div className="px-6 pt-6">
         <h1 className="font-semibold text-slate-900 text-xl leading-snug">
           🪄 AI 글작성 사용하기
         </h1>
@@ -107,9 +107,9 @@ export default function MessageRefinePage() {
       </div>
 
       {/* Panel */}
-      <div className="mt-6 rounded-3xl bg-[#F2FBF9] p-5 shadow-sm">
+      <div className="mx-6 mt-6 rounded-3xl bg-[#F2FBF9] shadow-sm">
         {/* form */}
-        <div className="space-y-4">
+        <div className="space-y-4 p-6">
           <Section label="상황">
             <Dropdown
               items={occasionItems}

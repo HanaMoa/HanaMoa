@@ -1,19 +1,19 @@
 'use client';
 
-import { useRouter, useSearchParams } from 'next/navigation';
 import { MainHeader } from '@/components/common/MainHeader';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 export default function MessageEntryPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
   return (
-    <div className="mx-auto flex min-h-dvh w-full max-w-110 flex-col bg-[#F6F7F9] px-5 pt-8 pb-24 lg:max-w-132.5">
+    <div className="mx-auto flex min-h-dvh flex-col bg-[#f2fbf9]">
       {/* Top bar */}
       <MainHeader variant="default" title="메시지 작성" />
 
       {/* Title */}
-      <div className="mt-10">
+      <div className="px-6 pt-6">
         <h1 className="font-semibold text-2xl text-slate-900 leading-snug">
           메시지 작성
           <br />
@@ -25,7 +25,7 @@ export default function MessageEntryPage() {
       </div>
 
       {/* Panel */}
-      <div className="mt-8 flex-1 rounded-3xl bg-[#F2FBF9] p-6 shadow-sm">
+      <div className="px-6 pt-6 flex-1 bg-[#F2FBF9]">
         <div className="flex h-full flex-col justify-between">
           <div className="space-y-7">
             {/* generate */}

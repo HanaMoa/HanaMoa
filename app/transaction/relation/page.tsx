@@ -1,5 +1,6 @@
 'use client';
 
+import { MainHeader } from '@/components/common/MainHeader';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useMemo } from 'react';
 
@@ -38,7 +39,10 @@ export default function TransferRelationPage() {
   const fromAccount = '137-910552-78607';
 
   const amountLabel = useMemo(() => `${formatWon(amount)}원`, [amount]);
-  const topLine = useMemo(() => `${toName}님의 ${eventLabel(eventType)}`, [toName, eventType]);
+  const topLine = useMemo(
+    () => `${toName}님의 ${eventLabel(eventType)}`,
+    [toName, eventType],
+  );
 
   const baseParams = useMemo(() => {
     const p = new URLSearchParams({
@@ -67,34 +71,25 @@ export default function TransferRelationPage() {
     }
 
     if (mode === 'transfer') {
-        // 송금 모드인 경우 메시지/미디어 단계 건너뛰고 바로 완료 페이지로
-        p.set('lastAction', 'relation');
-        router.push(`/transaction/complete?${p.toString()}`);
+      // 송금 모드인 경우 메시지/미디어 단계 건너뛰고 바로 완료 페이지로
+      p.set('lastAction', 'relation');
+      router.push(`/transaction/complete?${p.toString()}`);
     } else {
-        p.set('flow', 'transaction');
-        router.push(`/message?${p.toString()}`);
+      p.set('flow', 'transaction');
+      router.push(`/message?${p.toString()}`);
     }
   };
 
   return (
-    <div className="mx-auto h-dvh w-full max-w-[600px] overflow-y-auto bg-white px-6">
-      {/* 상단 헤더 */}
-      <header className="relative flex h-14 items-center px-4">
-        <h1 className="-translate-x-1/2 absolute left-1/2 font-semibold text-[16px]">
-          이체
-        </h1>
-
-        <button
-          type="button"
-          onClick={() => router.back()}
-          className="ml-auto text-[14px] text-gray-500"
-        >
-          취소
-        </button>
-      </header>
+    <div className="mx-auto h-dvh w-full max-w-[600px] overflow-y-auto bg-white">
+      <MainHeader
+        variant="default"
+        title="이체"
+        onBackClick={() => router.back()}
+      />
 
       {/* 상단 요약 카드 */}
-      <section className="px-2 pt-1">
+      <section className="px-6 pt-6">
         <div className="rounded-2xl bg-[#F3F4F6] px-5 py-4">
           <div className="whitespace-pre-line font-semibold text-[14px] text-gray-900">
             {topLine}
@@ -110,7 +105,7 @@ export default function TransferRelationPage() {
       </section>
 
       {/* 질문 */}
-      <section className="px-2 pt-10">
+      <section className="px-6 pt-10">
         <h2 className="font-extrabold text-[26px] text-gray-900">
           어떤 사이인가요?
         </h2>
@@ -120,7 +115,7 @@ export default function TransferRelationPage() {
           <button
             type="button"
             onClick={() => goNext('FAMILY')}
-            className="flex h-28 flex-col items-center justify-center rounded-2xl bg-[#F3F4F6] text-gray-900 active:scale-[0.99]"
+            className="flex h-28 flex-col items-center justify-center rounded-2xl bg-[#F3F4F6] text-gray-900 active:scale-[0.99] cursor-pointer hover:bg-gray-200"
           >
             <div className="text-[20px]">👨‍👩‍👧‍👦</div>
             <div className="mt-2 font-semibold text-[16px]">가족</div>
@@ -129,7 +124,7 @@ export default function TransferRelationPage() {
           <button
             type="button"
             onClick={() => goNext('FRIEND')}
-            className="flex h-28 flex-col items-center justify-center rounded-2xl bg-[#F3F4F6] text-gray-900 active:scale-[0.99]"
+            className="flex h-28 flex-col items-center justify-center rounded-2xl bg-[#F3F4F6] text-gray-900 active:scale-[0.99] cursor-pointer hover:bg-gray-200"
           >
             <div className="text-[20px]">🎉</div>
             <div className="mt-2 font-semibold text-[16px]">친구</div>
@@ -138,7 +133,7 @@ export default function TransferRelationPage() {
           <button
             type="button"
             onClick={() => goNext('COLLEAGUE')}
-            className="flex h-28 flex-col items-center justify-center rounded-2xl bg-[#F3F4F6] text-gray-900 active:scale-[0.99]"
+            className="flex h-28 flex-col items-center justify-center rounded-2xl bg-[#F3F4F6] text-gray-900 active:scale-[0.99] cursor-pointer hover:bg-gray-200"
           >
             <div className="text-[20px]">🧑‍💼</div>
             <div className="mt-2 font-semibold text-[16px]">직장동료</div>
@@ -147,7 +142,7 @@ export default function TransferRelationPage() {
           <button
             type="button"
             onClick={() => goNext('ACQUAINTANCE')}
-            className="flex h-28 flex-col items-center justify-center rounded-2xl bg-[#F3F4F6] text-gray-900 active:scale-[0.99]"
+            className="flex h-28 flex-col items-center justify-center rounded-2xl bg-[#F3F4F6] text-gray-900 active:scale-[0.99] cursor-pointer hover:bg-gray-200"
           >
             <div className="text-[20px]">🙂</div>
             <div className="mt-2 font-semibold text-[16px]">지인</div>
@@ -158,7 +153,7 @@ export default function TransferRelationPage() {
         <button
           type="button"
           onClick={() => goNext('MANUAL')}
-          className="mt-4 flex h-14 w-full items-center justify-center rounded-2xl bg-[#F3F4F6] font-semibold text-[15px] text-gray-900 active:scale-[0.99]"
+          className="mt-4 flex h-14 w-full items-center justify-center rounded-2xl bg-[#F3F4F6] font-semibold text-[15px] text-gray-900 active:scale-[0.99] cursor-pointer hover:bg-gray-200"
         >
           직접 입력하기
         </button>
