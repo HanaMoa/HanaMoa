@@ -27,7 +27,8 @@ export default function WeddingGalleryPage() {
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [uploadOpen, setUploadOpen] = useState(false);
-
+  const [groomName, setGroomName] = useState('');
+  const [brideName, setBrideName] = useState('');
   const loaderRef = useRef<HTMLDivElement | null>(null);
 
   // TODO: GET /api/gallery?eventId=&mode=gallery
@@ -59,7 +60,24 @@ export default function WeddingGalleryPage() {
 
     fetchGallery();
   }, [eventId, mode]);
+  useEffect(() => {
+    async function fetchHosts() {
+      try {
+        const res = await fetch(
+          `/api/event/hosts?eventId=${eventId}&category=wedding`,
+        );
+        if (!res.ok) return;
 
+        const data = await res.json();
+        setGroomName(data.groom);
+        setBrideName(data.bride);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    fetchHosts();
+  }, [eventId]);
   const visibleItems = allItems.slice(0, visibleCount);
 
   const handleUploadConfirm = async (files: File[]) => {
@@ -82,7 +100,12 @@ export default function WeddingGalleryPage() {
 
   return (
     <>
-      <MainHeader title="갤러리" subtitle="이민준 ❤️ 홍미연" />
+      <MainHeader
+        title="갤러리"
+        subtitle={
+          groomName && brideName ? `${groomName} ❤️ ${brideName}` : '신랑 ❤️ 신부'
+        }
+      />
 
       <div className="flex justify-between px-5 py-4">
         <span>총 {allItems.length}개</span>
