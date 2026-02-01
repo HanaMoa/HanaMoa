@@ -26,8 +26,14 @@ export default function WeddingInvitePage({ event }: Props) {
   useEffect(() => {
     fetch(`/api/gallery?eventId=${event.eventId}&mode=gallery&onlyFirst=true`)
       .then((res) => res.json())
-      .then(setImage)
-      .catch(() => {});
+      .then((data: GalleryImage[]) => {
+        if (data.length > 0 && data[0].url) {
+          setImage(data[0]);
+        }
+      })
+      .catch(() => {
+        setImage(null);
+      });
   }, [event.eventId]);
 
   const dateText = useMemo(() => {

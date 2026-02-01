@@ -7,7 +7,7 @@ export default async function WeddingInvite({
 }: {
   params: { eventId: string };
 }) {
-  const { eventId } = params;
+  const { eventId } = await params;
   if (!eventId) notFound();
 
   const event = await prisma.event.findUnique({

@@ -1,13 +1,5 @@
 'use client';
 
-import {
-  notFound,
-  useParams,
-  useRouter,
-  useSearchParams,
-} from 'next/navigation';
-import { useSession } from 'next-auth/react';
-import { useEffect, useMemo, useRef, useState } from 'react';
 import { InfoLayout } from '@/components/info/InfoLayout';
 import { InfoTitle } from '@/components/info/InfoTitle';
 import { StepContent } from '@/components/info/StepContent';
@@ -20,6 +12,14 @@ import {
   parseEvent,
 } from '@/lib/info/steps';
 import { submitStep } from '@/lib/info/submitStep';
+import { useSession } from 'next-auth/react';
+import {
+  notFound,
+  useParams,
+  useRouter,
+  useSearchParams,
+} from 'next/navigation';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 export default function Page() {
   const router = useRouter();
