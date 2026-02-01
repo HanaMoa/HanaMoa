@@ -2,10 +2,21 @@
 "use client";
 
 import { useState } from "react";
-import type { User } from "@/components/common/UserProfile";
 
+/* =========================
+  View 전용 User 타입
+   ========================= */
+type FeedUser = {
+  id: number;
+  name: string;
+  profileImageUrl?: string | null;
+};
+
+/* =========================
+  Props
+   ========================= */
 type Props = {
-  user: User;
+  user: FeedUser; // ✅ 공용 User → FeedUser
   content: string;
 };
 
@@ -21,8 +32,13 @@ export function PostContent({ user, content }: Props) {
   return (
     <div className="bg-white px-4 py-3">
       <p className="text-[14px] text-black leading-[1.4]">
+        {/* 작성자 이름 */}
         <span className="mr-1 font-semibold">{user.name}</span>
+
+        {/* 본문 */}
         {displayText}
+
+        {/* 더보기 */}
         {!expanded && isLong && (
           <button
             type="button"

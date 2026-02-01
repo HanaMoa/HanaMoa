@@ -1,16 +1,17 @@
-"use client";
+// components/wedding-feed/post/header/VideoPostHeader.tsx
+'use client';
 
-import { Eye, Trash2 } from "lucide-react";
-import { useState } from "react";
-import { type User, UserProfile } from "@/components/common/UserProfile";
-import { Button } from "@/components/ui/button";
-import type { FeedPermission } from "@/lib/server/feedPermission.action";
-import DeletePostModal from "../DeletePostModal";
+import { Eye, Trash2 } from 'lucide-react';
+import { useState } from 'react';
+import { type User, UserProfile } from '@/components/common/UserProfile';
+import { Button } from '@/components/ui/button';
+import type { FeedPermission } from '@/lib/server/feedPermission.action';
+import DeletePostModal from '../DeletePostModal';
 
 type Props = {
-  user: User;
-  permission: FeedPermission; // ✅ 추가
-  onDelete?: () => void; // ✅ 추가
+  user: User; // ✅ 공통 User 타입
+  permission: FeedPermission;
+  onDelete?: () => void;
 };
 
 export function VideoPostHeader({ user, permission, onDelete }: Props) {
@@ -18,22 +19,23 @@ export function VideoPostHeader({ user, permission, onDelete }: Props) {
 
   return (
     <>
-      {/* 헤더 */}
       <header className="pointer-events-none absolute top-0 left-0 z-10 w-full px-4 pt-4">
         <div className="absolute inset-0 bg-gradient-to-b from-black/70 to-black/0" />
 
         <div className="pointer-events-auto relative flex items-center justify-between">
+          {/* 작성자 정보 */}
           <div className="flex items-center gap-3">
             <div className="origin-left scale-[0.8]">
               <UserProfile user={user} />
             </div>
+
             <span className="font-semibold text-[14px] text-white">
               {user.name}
             </span>
           </div>
 
+          {/* 액션 버튼 */}
           <div className="flex items-center gap-2">
-            {/* ✅ 행사 host만 전체 공개 */}
             {permission.canPublish && (
               <Button
                 variant="ghost"
@@ -45,7 +47,6 @@ export function VideoPostHeader({ user, permission, onDelete }: Props) {
               </Button>
             )}
 
-            {/* ✅ host 또는 작성자만 삭제 */}
             {permission.canDelete && (
               <Button
                 variant="ghost"
@@ -60,13 +61,12 @@ export function VideoPostHeader({ user, permission, onDelete }: Props) {
         </div>
       </header>
 
-      {/* ✅ 삭제 권한 있을 때만 모달 */}
       {permission.canDelete && (
         <DeletePostModal
           open={open}
           onClose={() => setOpen(false)}
           onDelete={() => {
-            onDelete?.(); // ✅ 상위 삭제 로직 호출
+            onDelete?.();
             setOpen(false);
           }}
           icon={<Trash2 className="h-7 w-7" />}
