@@ -63,7 +63,9 @@ export default function WeddingGalleryPage() {
   useEffect(() => {
     async function fetchHosts() {
       try {
-        const res = await fetch(`/api/event/hosts?eventId=${eventId}`);
+        const res = await fetch(
+          `/api/event/hosts?eventId=${eventId}&category=wedding`,
+        );
         if (!res.ok) return;
 
         const data = await res.json();
