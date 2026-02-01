@@ -1,12 +1,12 @@
 // 10-1-1. DB 내역 수정
 'use client';
-import { Calendar, ChevronDown } from 'lucide-react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
 import AlertModal from '@/components/common/AlertModal';
 import { Input } from '@/components/common/Input';
 import { SingleButton } from '@/components/common/SingleButton';
 import { Card } from '@/components/ui/card';
+import { Calendar, ChevronDown } from 'lucide-react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
 
 export default function MemorialWeddingDbEditPage() {
   const router = useRouter();
@@ -147,9 +147,9 @@ export default function MemorialWeddingDbEditPage() {
 
   return (
     <div className="mx-auto h-dvh w-full max-w-[600px] overflow-hidden bg-[#F6F7F9] md:max-w-[720px] lg:max-w-[800px]">
-      <main className="flex h-full w-full flex-col bg-white px-6 pt-6">
+      <main className="flex h-full w-full flex-col bg-white">
         {/* 상단 헤더 (PDF처럼 좌측 뒤로가기 + 타이틀) */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-6 p-6">
           <button
             type="button"
             onClick={() => router.back()}
