@@ -1,9 +1,10 @@
 // app/event/wedding/[eventId]/feed/page.tsx
 // Server Component
 
-import { notFound } from "next/navigation";
+
 import WeddingFeedCTA from "@/components/wedding-feed/post/WeddingFeedCTA";
 import { WeddingPost } from "@/components/wedding-feed/post/WeddingPost";
+
 import { auth } from "@/lib/auth";
 import {
   getGalleryForFeed,
@@ -11,34 +12,36 @@ import {
 } from "@/lib/gallery/getGalleryForFeed";
 
 type PageProps = {
-  params: Promise<{
+  params: {
     eventId: string;
-  }>;
+  };
 };
 
 export default async function WeddingFeedPage({ params }: PageProps) {
   const { eventId } = await params;
-  if (!eventId) notFound();
-
   const session = await auth();
-  if (!session?.user?.id) notFound();
+
+  const currentUserId = session?.user?.id ? Number(session.user.id) : 0;
 
   const items: WeddingFeedItem[] = await getGalleryForFeed({
     eventId,
-    viewerId: session.user.id,
+    viewerId: currentUserId,
     mode: "reels",
   });
 
   return (
     <section className="flex flex-col gap-0">
+      {/* 상단 CTA */}
       <WeddingFeedCTA eventId={eventId} />
 
+      {/* 빈 상태 */}
       {items.length === 0 && (
         <div className="py-10 text-center text-black/40 text-sm">
           아직 올라온 축하가 없어요
         </div>
       )}
 
+      {/* 피드 목록 */}
       {items.map((item) => (
         <WeddingPost
           key={item.key}
@@ -49,7 +52,10 @@ export default async function WeddingFeedPage({ params }: PageProps) {
               ? { type: "video", videoUrl: item.url }
               : { type: "image", imageUrl: item.url }
           }
-          permission={item.permission} // ✅ 여기
+          permission={item.permission}
+          galleryId={item.id}
+          currentUserId={currentUserId} // ✅ number
+          initialVisibility={item.visibility}
         />
       ))}
     </section>

@@ -97,6 +97,11 @@ export default function TransactionMediaPage() {
       alert((e as Error).message);
       return;
     }
+    
+    if (returnUrl) {
+      router.push(returnUrl);
+      return;
+    }
 
     // 👉 기존 transaction 흐름 유지
     const params = new URLSearchParams(searchParams.toString());
