@@ -1,114 +1,64 @@
 // app/event/wedding/[eventId]/feed/page.tsx
-"use client";
+// Server Component
 
-import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import type { User } from "@/components/common/UserProfile";
-import WeddingFeedCTA from "@/components/wedding-feed/post/WeddingFeedCTA";
-import { WeddingPost } from "@/components/wedding-feed/post/WeddingPost";
+import { notFound } from 'next/navigation';
+import WeddingFeedCTA from '@/components/wedding-feed/post/WeddingFeedCTA';
+import { WeddingPost } from '@/components/wedding-feed/post/WeddingPost';
+import { auth } from '@/lib/auth';
+import {
+  getGalleryForFeed,
+  type WeddingFeedItem,
+} from '@/lib/gallery/getGalleryForFeed';
 
-type FeedItem = {
-  key: string;
-  url: string;
+type PageProps = {
+  params: Promise<{
+    eventId: string;
+  }>;
 };
 
-const TEMP_USER: User = {
-  id: 0,
-  name: "",
-  userId: "",
-  profileImageUrl: undefined,
-};
+export default async function WeddingFeedPage({ params }: PageProps) {
+  // 1️⃣ params (Next 16 → Promise)
+  const { eventId } = await params;
+  if (!eventId) notFound();
 
-const users: User[] = [
-  { id: 1, name: "별돌이", userId: "stardol" },
-  { id: 2, name: "유민정", userId: "mj-you" },
-  { id: 3, name: "김민수", userId: "minsu123" },
-];
+  // 2️⃣ 로그인 세션
+  const session = await auth();
+  if (!session?.user?.id) notFound();
 
-export default function WeddingFeedPage() {
-  const params = useParams();
-  const eventId = params.eventId as string;
-
-  const [items, setItems] = useState<FeedItem[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (!eventId) return;
-
-    async function loadFeed() {
-      try {
-        const res = await fetch(`/api/gallery?eventId=${eventId}&mode=reels`);
-
-        if (!res.ok) return;
-
-        const data: FeedItem[] = await res.json();
-        setItems(data);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    loadFeed();
-  }, [eventId]);
+  // 3️⃣ 서버 로직 직접 호출 (API fetch ❌)
+  const items: WeddingFeedItem[] = await getGalleryForFeed({
+    eventId,
+    viewerId: session.user.id,
+    mode: 'reels',
+  });
 
   return (
-    <section className="flex flex-col gap-0 divide-y-0">
-      {/* CTA 카드 */}
+    <section className="flex flex-col gap-0">
+      {/* CTA */}
       <WeddingFeedCTA eventId={eventId} />
 
-      {/* Feed */}
-      {loading && (
-        <div className="py-10 text-center text-black/40 text-sm">
-          피드를 불러오는 중이에요…
-        </div>
-      )}
-
-      {!loading && items.length === 0 && (
+      {/* Empty State */}
+      {items.length === 0 && (
         <div className="py-10 text-center text-black/40 text-sm">
           아직 올라온 축하가 없어요
         </div>
       )}
 
-      <WeddingPost
-        user={users[0]}
-        media={{
-          type: "video",
-          videoUrl: "/videos/wedding-feed/feedVideo01.mp4",
-        }}
-        content="별돌 삼촌! 저 콩콩이에요 🐾 결혼 정말 축하드려요! 앞으로 저 간식 많이 사주셔야 해요!"
-        permission={{
-          canDelete: false,
-          canPublish: true,
-        }}
-      />
-
-      <WeddingPost
-        user={users[1]}
-        media={{
-          type: "image",
-          imageUrl: "/images/wedding-feed/feed01.jpg",
-        }}
-        content="하나야… 10년지기 친구가 결혼이라니 믿기지가 않아. 벌써부터 눈물 나려고 해. 진짜 너무너무 축하해 💐"
-        permission={{
-          canDelete: true,
-          canPublish: false,
-        }}
-      />
-
+      {/* Feed */}
       {items.map((item) => (
         <WeddingPost
           key={item.key}
-          user={TEMP_USER}
-          content="" // 아직 content 없음
-          media={{
-            type: "image", // reels는 현재 이미지/영상 구분 없음 → 추후 확장
-            imageUrl: item.url,
-          }}
+          user={item.user}
+          content={item.content ?? '결혼 축하해! 앞으로도 행복하길 바랄게'}
+          media={
+            item.mediaType === 'video'
+              ? { type: 'video', videoUrl: item.url }
+              : { type: 'image', imageUrl: item.url }
+          }
           permission={{
-            canDelete: true,
+            canDelete: false, // TODO: 서버 권한 계산
             canPublish: true,
           }}
-          // permission={permission}  //TODO: 서버 컴포넌트로 수정 후 권한 전달
         />
       ))}
     </section>
