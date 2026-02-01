@@ -97,8 +97,8 @@ export default function MemorialGalleryPage() {
   };
 
   return (
-    <>
-      <MainHeader title="갤러리" subtitle={`故 ${deceased}`} />
+    <div className="min-h-screen bg-black text-white">
+      <MainHeader title="추억관" subtitle={`故 ${deceased}`} />
 
       <div className="flex justify-between px-5 py-4">
         <span>총 {allItems.length}개</span>
@@ -148,6 +148,6 @@ export default function MemorialGalleryPage() {
           onClose={() => setSelectedIndex(null)}
         />
       )}
-    </>
+    </div>
   );
 }
