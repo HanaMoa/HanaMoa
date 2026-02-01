@@ -4,6 +4,7 @@ import { Playfair_Display } from 'next/font/google';
 import Image from 'next/image';
 import { useEffect, useMemo, useState } from 'react';
 import { MainHeader } from '@/components/common/MainHeader';
+
 export const playfair = Playfair_Display({
   subsets: ['latin'],
   weight: ['400', '600'],
@@ -23,7 +24,26 @@ type GalleryImage = {
   key: string;
   url: string;
 };
+const WEEKDAY_MAP = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
 
+function formatWeddingDate(date: Date) {
+  const d = new Date(date);
+
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+
+  const weekday = WEEKDAY_MAP[d.getDay()];
+
+  let hour = d.getHours();
+  const minute = String(d.getMinutes()).padStart(2, '0');
+
+  const ampm = hour < 12 ? 'AM' : 'PM';
+  hour = hour % 12 || 12;
+  const hourText = String(hour).padStart(2, '0');
+
+  return `${year}.${month}.${day}. ${weekday}, ${ampm} ${hourText}:${minute}`;
+}
 export default function WeddingInvitePage({ event }: Props) {
   const [image, setImage] = useState<GalleryImage | null>(null);
 
@@ -41,14 +61,7 @@ export default function WeddingInvitePage({ event }: Props) {
   }, [event.eventId]);
 
   const dateText = useMemo(() => {
-    return Intl.DateTimeFormat('ko-KR', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      weekday: 'long',
-      hour: '2-digit',
-      minute: '2-digit',
-    }).format(new Date(event.date));
+    return formatWeddingDate(event.date);
   }, [event.date]);
 
   return (
