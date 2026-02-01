@@ -9,6 +9,16 @@ type WeddingFeedCTAProps = {
 export default function WeddingFeedCTA({ eventId }: WeddingFeedCTAProps) {
   const router = useRouter();
 
+  const handleClick = () => {
+    const returnUrl = `/event/wedding/${eventId}/feed`; // 👈 릴스로 복귀
+
+    router.push(
+      `/transaction/media?eventId=${eventId}&eventType=wedding&returnUrl=${encodeURIComponent(
+        returnUrl,
+      )}`,
+    );
+  };
+
   return (
     <div className="mx-4 mt-3 mb-4 rounded-2xl border border-black/5 bg-white px-4 py-5 text-center shadow-sm">
       <div className="mb-2 font-medium text-[15px] text-black/80">
@@ -24,9 +34,7 @@ export default function WeddingFeedCTA({ eventId }: WeddingFeedCTAProps) {
       <button
         type="button"
         className="mx-auto w-full max-w-[280px] rounded-xl bg-[#EA596E] py-3 font-semibold text-[15px] text-white active:scale-[0.98]"
-        onClick={() =>
-          router.push(`/transaction/media?eventId=${eventId}&eventType=wedding`)
-        }
+        onClick={handleClick}
       >
         나도 참여하기
       </button>

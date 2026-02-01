@@ -32,6 +32,7 @@ export default function TransactionMediaPage() {
 
   const toName = searchParams.get('toName') ?? '받는분';
   const eventId = searchParams.get('eventId');
+  const returnUrl = searchParams.get("returnUrl"); 
 
   const { upload, loading } = useImageUpload();
 
@@ -113,6 +114,11 @@ export default function TransactionMediaPage() {
 
   /* 건너뛰기 */
   const handleSkip = () => {
+    if (returnUrl) {
+      router.push(returnUrl);
+      return;
+    }
+    
     const params = new URLSearchParams(searchParams.toString());
 
     if (searchParams.get('hasMessage') === 'true') {
