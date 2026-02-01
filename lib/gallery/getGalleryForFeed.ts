@@ -2,26 +2,39 @@
 
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+
 /* =========================
-   Imports & Types
+  Imports & Types
 ========================= */
 import type { User } from '@/components/common/UserProfile';
+import { GalleryVisibility } from '@/lib/generated/prisma/client/enums';
 import { prisma } from '@/lib/prisma';
 import type { FeedPermission } from '@/lib/server/feedPermission.action';
 
+/* =========================
+  Types
+========================= */
 export type WeddingFeedItem = {
+  /** Gallery 식별자 (삭제/공개 토글에 필수) */
+  id: number;
+
   key: string;
   mediaType: 'image' | 'video';
   content: string | null;
   user: User;
   url: string;
+
+  /** 공개 여부 */
+  visibility: GalleryVisibility;
+
+  /** 버튼 노출 권한 */
   permission: FeedPermission;
 };
 
 type GalleryMode = 'gallery' | 'reels';
 
 /* =========================
-   S3 Client
+  S3 Client
 ========================= */
 const s3 = new S3Client({
   region: process.env.AWS_REGION!,
@@ -32,19 +45,20 @@ const s3 = new S3Client({
 });
 
 /* =========================
-   Main Function
+  Main Function
 ========================= */
 export async function getGalleryForFeed(params: {
   eventId: string;
-  viewerId: string;
+  viewerId: number;
   mode: GalleryMode;
 }): Promise<WeddingFeedItem[]> {
   const { eventId, viewerId, mode } = params;
 
   const eventIdBig = BigInt(eventId);
+  const viewerIdBig = BigInt(viewerId);
 
   /* =========================
-     Event & Host 조회
+  Event 조회 (host 확인)
   ========================= */
   const event = await prisma.event.findUnique({
     where: { id: eventIdBig },
@@ -53,17 +67,18 @@ export async function getGalleryForFeed(params: {
 
   if (!event) return [];
 
-  const hostId = event.userId;
+  const hostIdBig = event.userId;
+  const hostId = Number(hostIdBig);
 
   /* =========================
-     Gallery 조회 조건
+  Gallery 조회 조건
   ========================= */
   let whereCondition: any = {};
 
   if (mode === 'gallery') {
     whereCondition = {
       eventId: eventIdBig,
-      userId: hostId,
+      userId: hostIdBig,
     };
   }
 
@@ -72,21 +87,22 @@ export async function getGalleryForFeed(params: {
       eventId: eventIdBig,
       type: 'REEL_ADDED',
       OR: [
-        { visibility: 'PUBLIC' },
+        { visibility: GalleryVisibility.PUBLIC },
         {
-          visibility: 'PRIVATE',
-          OR: [{ userId: BigInt(viewerId) }, { userId: hostId }],
+          visibility: GalleryVisibility.PRIVATE,
+          OR: [{ userId: viewerIdBig }, { userId: hostIdBig }],
         },
       ],
     };
   }
 
   /* =========================
-     Gallery 조회
+  Gallery 조회
   ========================= */
   const galleries = await prisma.gallery.findMany({
     where: whereCondition,
     select: {
+      id: true,
       key: true,
       visibility: true,
       userId: true,
@@ -98,19 +114,22 @@ export async function getGalleryForFeed(params: {
         },
       },
     },
+    orderBy: {
+      createdAt: 'desc',
+    },
   });
 
-
   /* =========================
-     Feed Item 변환 + 권한 계산
+  Feed Item 변환 + 권한 계산
   ========================= */
   return Promise.all(
     galleries.map(async (item) => {
-      const viewer = Number(viewerId);
-      const host = Number(hostId);
-      const owner = Number(item.userId);
+      const ownerId = Number(item.userId);
 
+      const isHost = viewerId === hostId;
+      const isOwner = viewerId === ownerId;
 
+      /* S3 Signed URL */
       const command = new GetObjectCommand({
         Bucket: process.env.S3_BUCKET_NAME!,
         Key: item.key,
@@ -120,12 +139,12 @@ export async function getGalleryForFeed(params: {
         expiresIn: 3600,
       });
 
-      const mediaType = item.key.startsWith("videos/") ? "video" : "image";
-
-      const isHost = viewer === host;
-      const isOwner = viewer === owner;
+      const mediaType: 'image' | 'video' = item.key.startsWith('videos/')
+        ? 'video'
+        : 'image';
 
       return {
+        id: Number(item.id), // ✅ Gallery.id
         key: item.key,
         mediaType,
         content: null,
@@ -135,12 +154,12 @@ export async function getGalleryForFeed(params: {
           userId: item.user.userId,
         },
         url,
+        visibility: item.visibility, // ✅ PUBLIC | PRIVATE
         permission: {
           canDelete: isHost || isOwner,
-          canPublish: isHost && item.visibility === "PRIVATE",
+          canPublish: isHost && item.visibility === GalleryVisibility.PRIVATE,
         },
       };
     }),
   );
-
 }

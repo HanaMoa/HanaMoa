@@ -2,6 +2,8 @@
 'use client';
 
 import type { User } from '@/components/common/UserProfile';
+import type { GalleryVisibility } from '@/lib/generated/prisma/client/enums';
+import type { FeedPermission } from '@/lib/server/feedPermission.action';
 import { ImagePostHeader } from './header/ImagePostHeader';
 import { VideoPostHeader } from './header/VideoPostHeader';
 import { PostContent } from './PostContent';
@@ -12,19 +14,19 @@ type Media =
   | { type: 'image'; imageUrl: string }
   | { type: 'video'; videoUrl: string };
 
-/* 권한 정보 */
-type FeedPermission = {
-  canDelete: boolean;
-  canPublish: boolean;
-};
-
 /* WeddingPost Props */
 type WeddingPostProps = {
-  user: User; // ✅ 공통 User 타입만 사용
+  user: User;
   media: Media;
   content: string;
+
+  /** 권한 */
   permission: FeedPermission;
-  onDelete?: () => void;
+
+  /** 서버 연동용 */
+  galleryId: number;
+  currentUserId: number; // session.user.id
+  initialVisibility: GalleryVisibility;
 };
 
 export function WeddingPost({
@@ -32,7 +34,9 @@ export function WeddingPost({
   media,
   content,
   permission,
-  onDelete,
+  galleryId,
+  currentUserId,
+  initialVisibility,
 }: WeddingPostProps) {
   return (
     <article className="w-full bg-transparent">
@@ -41,8 +45,10 @@ export function WeddingPost({
         <>
           <ImagePostHeader
             user={user}
-            permission={{ canDelete: true, canPublish: true }}
-            onDelete={onDelete}
+            permission={permission}
+            galleryId={galleryId}
+            currentUserId={currentUserId}
+            initialVisibility={initialVisibility}
           />
           <PostMedia type="image" imageUrl={media.imageUrl} />
         </>
@@ -55,7 +61,9 @@ export function WeddingPost({
           <VideoPostHeader
             user={user}
             permission={permission}
-            onDelete={onDelete}
+            galleryId={galleryId}
+            currentUserId={currentUserId}
+            initialVisibility={initialVisibility}
           />
         </div>
       )}
