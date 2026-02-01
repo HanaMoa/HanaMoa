@@ -1,11 +1,11 @@
 'use client';
 
-import { X } from 'lucide-react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useMemo, useState } from 'react';
 import { BankSelectButton } from '@/components/common/BankSelectButton';
 import { BankSelectModal } from '@/components/common/BankSelectModal';
+import { MainHeader } from '@/components/common/MainHeader';
 import NumberKeypad from '@/components/common/NumberKeypad';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useMemo, useState } from 'react';
 
 // 프로젝트에 이미 있을 가능성이 높은 Bank 타입/은행목록 사용
 // BankSelectModal/Button가 동일 타입을 쓰고 있음:contentReference[oaicite:3]{index=3}:contentReference[oaicite:4]{index=4}
@@ -65,35 +65,25 @@ export default function TransactionPage() {
 
   return (
     <div className="flex h-dvh w-full max-w-[800px] flex-col bg-white">
-      {/* 상단 헤더 */}
-      <header className="relative flex h-14 items-center px-4">
-        <button
-          type="button"
-          onClick={() => router.back()}
-          className="cursor-pointer rounded-full p-2 hover:bg-gray-100"
-          aria-label="닫기"
-        >
-          <X className="h-6 w-6" />
-        </button>
-
-        <h1 className="-translate-x-1/2 absolute left-1/2 font-semibold text-[17px]">
-          누구에게 보낼까요?
-        </h1>
-
-        {/* 오른쪽: 건너뛰기 (전송 모드일 때는 숨김) */}
-        {!isTransferMode && (
-          <button
-            type="button"
-            onClick={handleSkip}
-            className="ml-auto text-[14px] text-gray-500"
-          >
-            건너뛰기
-          </button>
-        )}
-      </header>
+      {/* 헤더 */}
+      <MainHeader
+        title="하나모아"
+        showHomeBtn={false}
+        rightElement={
+          !isTransferMode && (
+            <button
+              type="button"
+              onClick={handleSkip}
+              className="cursor-pointer text-[14px] text-gray-500 hover:text-gray-700"
+            >
+              건너뛰기
+            </button>
+          )
+        }
+      />
 
       {/* 본문 */}
-      <main className="px-5 py-3">
+      <main className="p-6">
         {/* 계좌번호 입력(키패드 입력이므로 readOnly) */}
         <div className="space-y-3">
           <label className="sr-only" htmlFor="accountNumber">
@@ -152,8 +142,10 @@ export default function TransactionPage() {
             type="button"
             onClick={handleDone}
             disabled={!canSubmit}
-            className={`cursor-pointer rounded-full font-semibold text-[14px] ${
-              canSubmit ? 'text-[#1EA698]' : 'text-gray-300'
+            className={`rounded-full font-semibold text-[14px] ${
+              canSubmit
+                ? 'cursor-pointer text-[#1EA698] hover:text-[#16756b]'
+                : 'text-gray-300'
             }`}
           >
             완료

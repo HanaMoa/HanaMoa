@@ -2,6 +2,7 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useMemo, useState } from 'react';
+import { MainHeader } from '@/components/common/MainHeader';
 import NumberKeypad from '@/components/common/NumberKeypad';
 
 function formatWon(n: string) {
@@ -99,39 +100,30 @@ export default function TransferAmountPage() {
 
   return (
     <div className="flex h-dvh flex-col bg-white">
-      {/* 상단 헤더 */}
-      <header className="relative flex h-14 items-center px-4">
-        <h1 className="-translate-x-1/2 absolute left-1/2 font-semibold text-[16px]">
-          이체
-        </h1>
-
-        <button
-          type="button"
-          onClick={() => router.back()}
-          className="ml-auto text-[14px] text-gray-500"
-        >
-          취소
-        </button>
-      </header>
+      <MainHeader
+        variant="default"
+        title="이체"
+        onBackClick={() => router.back()}
+      />
 
       {/* 받는 사람/계좌 정보 */}
-      <section className="px-6 pt-2">
+      <section className="flex flex-col gap-1 px-6 pt-6">
         <div className="font-semibold text-[14px] text-gray-900">
           {toName}님에게
         </div>
-        <div className="mt-1 text-[12px] text-gray-500">
+        <div className="text-[12px] text-gray-500">
           {bank} {account}
         </div>
       </section>
 
       {/* 메인 질문 */}
-      <section className="px-6 pt-10">
+      <section className="flex flex-col justify-center px-6 pt-10">
         <h2 className="text-center font-extrabold text-[24px] text-gray-900">
           얼마를 보낼까요?
         </h2>
 
         {/* 금액 표시 영역 */}
-        <div className="mx-auto mt-8 w-full max-w-[520px] rounded-2xl bg-[#F3F4F6] px-5 py-4">
+        <div className="mt-8 w-full rounded-2xl bg-[#F3F4F6] px-5 py-4">
           <div className="flex items-center justify-between">
             <div className="font-semibold text-[13px] text-gray-700">
               {bank} {account}
@@ -166,7 +158,7 @@ export default function TransferAmountPage() {
                 key={b.label}
                 type="button"
                 onClick={() => setAmount((p) => addAmount(p, b.add))}
-                className="h-10 rounded-xl bg-[#F3F4F6] font-semibold text-[13px] text-gray-800 active:scale-[0.98]"
+                className="h-10 cursor-pointer rounded-xl bg-[#F3F4F6] font-semibold text-[13px] text-gray-800 hover:bg-gray-200 active:scale-[0.98]"
               >
                 {b.label}
               </button>
@@ -175,7 +167,7 @@ export default function TransferAmountPage() {
             <button
               type="button"
               onClick={() => setAmount('0')}
-              className="h-10 rounded-xl bg-[#F3F4F6] font-semibold text-[13px] text-gray-800 active:scale-[0.98]"
+              className="h-10 cursor-pointer rounded-xl bg-[#F3F4F6] font-semibold text-[13px] text-gray-800 hover:bg-gray-200 active:scale-[0.98]"
             >
               전액
             </button>
@@ -188,8 +180,10 @@ export default function TransferAmountPage() {
             type="button"
             onClick={handleDone}
             disabled={!canSubmit}
-            className={`cursor-pointer rounded-full font-semibold text-[14px] ${
-              canSubmit ? 'text-[#1EA698]' : 'text-gray-300'
+            className={`rounded-full font-semibold text-[14px] ${
+              canSubmit
+                ? 'cursor-pointer text-[#1EA698] hover:text-[#16756b]'
+                : 'text-gray-300'
             }`}
           >
             완료

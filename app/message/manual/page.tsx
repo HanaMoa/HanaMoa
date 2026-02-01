@@ -1,8 +1,8 @@
 'use client';
 
+import { MainHeader } from '@/components/common/MainHeader';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
-import { MainHeader } from '@/components/common/MainHeader';
 
 export default function MessageManualPage() {
   const router = useRouter();
@@ -39,12 +39,12 @@ export default function MessageManualPage() {
   };
 
   return (
-    <div className="mx-auto flex min-h-dvh w-full max-w-110 flex-col bg-[#F6F7F9] px-5 pb-24 lg:max-w-132.5">
+    <div className="mx-auto flex min-h-dvh w-full flex-col bg-[#F6F7F9]">
       {/* Header */}
       <MainHeader variant="default" title="직접 작성하기" />
 
       {/* Title/Desc (기존 Title 영역 유지하되 간격만 조정) */}
-      <div className="pt-3">
+      <div className="px-6 pt-6">
         <h1 className="font-semibold text-slate-900 text-xl">
           ✏️ 직접 작성하기
         </h1>
@@ -54,8 +54,8 @@ export default function MessageManualPage() {
       </div>
 
       {/* Panel */}
-      <div className="mt-6 rounded-3xl bg-[#F2FBF9] p-5 shadow-sm">
-        <div className="space-y-3">
+      <div className="mx-6 mt-6 rounded-3xl bg-[#F2FBF9] shadow-sm">
+        <div className="space-y-3 p-6">
           <div className="font-medium text-slate-700 text-sm">메시지</div>
 
           <textarea

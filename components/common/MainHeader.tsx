@@ -1,9 +1,9 @@
 'use client';
 
+import { cn } from '@/lib/utils';
 import { Bell, Camera, ChevronLeft, Home, LogOut } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { cn } from '@/lib/utils';
 import { Button } from '../ui/button';
 
 /*
@@ -55,6 +55,9 @@ type MainHeaderProps = {
 
   // color 등 header 속성 추가
   className?: string; // ex) bg-[#222327]
+  
+  // Custom right content
+  rightElement?: React.ReactNode;
 };
 
 export function MainHeader({
@@ -70,6 +73,7 @@ export function MainHeader({
   onCameraClick,
   onLogoutClick,
   className,
+  rightElement,
 }: MainHeaderProps) {
   const router = useRouter();
 
@@ -190,6 +194,9 @@ export function MainHeader({
               <Camera className={`h-6 w-6 ${iconColor}`} />
             </Button>
           )}
+
+          {/* Custom Right Element */}
+          {rightElement}
         </div>
       </div>
     </header>
