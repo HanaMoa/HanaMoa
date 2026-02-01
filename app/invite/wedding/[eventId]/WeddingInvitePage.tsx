@@ -1,6 +1,6 @@
 'use client';
 
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { MainHeader } from '@/components/common/MainHeader';
 
 export default function WeddingInvitePage() {

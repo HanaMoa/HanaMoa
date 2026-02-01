@@ -36,6 +36,7 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const eventId = searchParams.get('eventId');
   const mode = searchParams.get('mode'); // gallery | reels
+  const onlyFirst = searchParams.get('onlyFirst') === 'true';
 
   if (!eventId) {
     return NextResponse.json({ error: 'eventId required' }, { status: 400 });
@@ -85,13 +86,26 @@ export async function GET(req: NextRequest) {
   } else {
     return NextResponse.json({ error: 'invalid mode' }, { status: 400 });
   }
+  let images: { key: string }[] = [];
 
-  // 5️ 갤러리 조회
-  const images = await prisma.gallery.findMany({
-    where: whereCondition,
-    select: { key: true },
-  });
-
+  if (mode === 'gallery' && onlyFirst) {
+    const image = await prisma.gallery.findFirst({
+      where: whereCondition,
+      orderBy: {
+        id: 'asc',
+      },
+      select: { key: true },
+    });
+    if (image) {
+      images = [image]; // 배열로 만들어준다.
+    }
+  } else {
+    // 5️ 갤러리 조회
+    images = await prisma.gallery.findMany({
+      where: whereCondition,
+      select: { key: true },
+    });
+  }
   // 6️ presigned GET URL
   const results = await Promise.all(
     images.map(async ({ key }) => {
