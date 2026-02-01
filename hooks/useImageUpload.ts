@@ -1,3 +1,4 @@
+// hooks/useImageUpload.ts
 import { useState } from 'react';
 
 export function useImageUpload() {

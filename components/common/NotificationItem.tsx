@@ -1,3 +1,4 @@
+// src/components/common/NotificationItem.tsx
 'use client';
 
 import { motion, type PanInfo, useAnimation } from 'framer-motion';
@@ -5,18 +6,10 @@ import { Share2, Trash2 } from 'lucide-react';
 import Image from 'next/image';
 import { useEffect, useMemo, useState } from 'react';
 import { formatTime } from '@/app/utils/time';
-import { UserProfile } from '@/components/common/UserProfile'; // 👈 UserProfile import
-import type { NotificationType } from '@/types/notification';
+import { UserProfile } from '@/components/common/UserProfile';
+import type { NotificationType, NotificationUser } from '@/types/notification';
 
 const PUBLISHABLE_TYPES: NotificationType[] = ['GALLERY_ADDED', 'REEL_ADDED'];
-
-// ✅ UserProfile 컴포넌트의 Props 타입에 맞게 User 인터페이스 수정
-interface NotificationUser {
-  id: number;
-  name: string;
-  userId: string; // UserProfile에서 색상 해시 생성을 위해 필요
-  profileImageUrl?: string | null; // null 허용 (DB 호환)
-}
 
 interface NotificationItemProps {
   user: NotificationUser;
@@ -45,10 +38,10 @@ export default function NotificationItem({
   const controls = useAnimation();
   const ACTION_WIDTH = 100;
 
-  // ... (드래그 핸들러 로직은 기존과 동일하므로 생략 가능, 코드는 유지) ...
-  const handleDragEnd = async (event: any, info: PanInfo) => {
+  const handleDragEnd = async (_event: any, info: PanInfo) => {
     const offset = info.offset.x;
     const velocity = info.velocity.x;
+
     if (offset > ACTION_WIDTH / 2 || velocity > 500) {
       await controls.start({ x: ACTION_WIDTH });
     } else if (
@@ -63,7 +56,7 @@ export default function NotificationItem({
 
   const handleItemClick = () => {
     controls.start({ x: 0 });
-    if (onItemClick) onItemClick();
+    onItemClick?.();
   };
 
   const createdAtIso = useMemo(() => {
@@ -84,17 +77,17 @@ export default function NotificationItem({
     return () => window.clearInterval(id);
   }, [createdAtIso]);
 
-  // 🚨 UserProfile에 넘겨줄 user 객체 변환 (profileImageUrl undefined/string 처리)
   const userProfileData = {
     ...user,
-    profileImageUrl: user.profileImageUrl ?? undefined, // UserProfile은 undefined를 원할 수 있음
+    profileImageUrl: user.profileImageUrl ?? undefined,
   };
 
   return (
     <div className="relative w-full overflow-hidden border-gray-100 border-b bg-white">
-      {/* Background Layer (삭제/공개 버튼) - 기존과 동일 */}
+      {/* 삭제 */}
       <div className="absolute inset-y-0 left-0 w-[100px] bg-red-500">
         <button
+          type="button"
           onClick={() => {
             onDelete();
             controls.start({ x: 0 });
@@ -106,9 +99,11 @@ export default function NotificationItem({
         </button>
       </div>
 
+      {/* 공개 */}
       {isPublishable && (
         <div className="absolute inset-y-0 right-0 w-[100px] bg-[#00897B]">
           <button
+            type="button"
             onClick={() => {
               onPublish();
               controls.start({ x: 0 });
@@ -121,7 +116,6 @@ export default function NotificationItem({
         </div>
       )}
 
-      {/* Foreground Layer (실제 컨텐츠) */}
       <motion.div
         animate={controls}
         drag="x"
@@ -132,21 +126,17 @@ export default function NotificationItem({
         dragElastic={0.1}
         onDragEnd={handleDragEnd}
         onClick={handleItemClick}
-        // ✅ [수정] 배경색 로직 삭제 (Red Dot으로 대체하므로 항상 흰 배경)
         className="relative z-10 flex h-20 w-full cursor-pointer items-center gap-3 bg-white p-4 shadow-sm active:cursor-grabbing"
       >
-        {/* 1. 프로필 영역 (UserProfile + Red Dot) */}
+        {/* 프로필 + unread dot */}
         <div className="relative shrink-0">
-          {/* UserProfile 컴포넌트 사용 */}
-          <UserProfile user={userProfileData} />
-
-          {/* 🔴 [NEW] 읽지 않음 표시 (Red Dot) */}
+          <UserProfile user={userProfileData as any} />
           {!isRead && (
             <span className="absolute top-0 right-0 block h-3 w-3 rounded-full bg-red-500 ring-2 ring-white" />
           )}
         </div>
 
-        {/* 2. 텍스트 정보 */}
+        {/* 텍스트 */}
         <div className="pointer-events-none min-w-0 flex-1 select-none">
           <p className="text-[14px] text-gray-900 leading-snug">
             <span className="font-bold">{user.name}</span>님이 {message}
@@ -156,7 +146,7 @@ export default function NotificationItem({
           </span>
         </div>
 
-        {/* 3. 썸네일 (S3 Image) */}
+        {/* 썸네일 */}
         {thumbnailUrl && (
           <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-md border border-gray-200 bg-gray-50">
             <Image

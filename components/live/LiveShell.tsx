@@ -1,209 +1,92 @@
-"use client";
+'use client';
 
-/**
- * [LiveShell]
- * 라이브 방송의 전체 레이아웃 프레임워크와 LiveKit 세션을 총괄하는 최상위 컨테이너입니다.
- * * * 주요 설계 원칙:
- * 1. 레이아웃 제어: 비디오(16:9)와 하단 영역의 경계점(overlayRect)을 실시간 측정하여 하위 컴포넌트에 전달
- * 2. 몰입형 경험: 브라우저 Fullscreen API를 연동하여 모바일/데스크탑 환경에 맞는 전체화면 모드 지원
- * 3. 훅 안정성: 환경변수 체크 등 예외 상황에서도 React Hook 호출 순서가 보장되도록 구조화
- */
-
-import {
-  LiveKitRoom,
-  useRoomContext, // ✅ 추가
-} from "@livekit/components-react";
-import "@livekit/components-styles";
-import type { Room } from "livekit-client"; // ✅ 추가
-import { Maximize2, Minimize2 } from "lucide-react";
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-
-import ChatPanel from "@/components/live/ChatPanel";
-import LivePlayer from "@/components/live/LivePlayer";
-
-type UserRole = "host" | "viewer";
-
-// 채팅창이 덮어야 할 하단 영역의 뷰포트 상대 좌표 정보
-type OverlayRect = {
-  top: number;
-  left: number;
-  width: number;
-  height: number;
-};
+import { Maximize2, Minimize2 } from 'lucide-react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import type { OverlayRect } from '@/types/live';
+import LiveVideo from './LiveVideo';
 
 type Props = {
-  token: string;
-  roomName: string;
-  userRole: UserRole;
-  frameMaxWidth?: number;
-  backgroundImageUrl?: string;
   children?: React.ReactNode;
-
-  onRoomReady?: (room: Room) => void; // ✅ 추가
+  onOverlayRectChange?: (rect: OverlayRect) => void;
+  videoOverlay?: React.ReactNode;
 };
 
-/**
- * LiveKit Room 객체를 외부로 전달하기 위한 브리지 컴포넌트
- */
-function RoomBridge({ onRoomReady }: { onRoomReady?: (room: Room) => void }) {
-  const room = useRoomContext(); // ✅ 추가
-
-  useEffect(() => {
-    if (room && onRoomReady) {
-      onRoomReady(room); // ✅ 추가
-    }
-  }, [room, onRoomReady]);
-
-  return null;
-}
-
 export default function LiveShell({
-  token,
-  roomName,
-  userRole,
-  frameMaxWidth = 560,
-  backgroundImageUrl = "/images/live/wedding.png",
   children,
-  onRoomReady, // ✅ 추가
+  onOverlayRectChange,
+  videoOverlay,
 }: Props) {
-  // 1. [환경 설정] LiveKit 서버 URL 메모이제이션
-  const serverUrl = useMemo(
-    () => process.env.NEXT_PUBLIC_LIVEKIT_URL ?? "",
-    [],
-  );
-
-  // 2. [DOM 참조] 레이아웃 측정을 위한 핵심 Ref
-  const frameRef = useRef<HTMLDivElement | null>(null);
-  const lowerWrapRef = useRef<HTMLDivElement | null>(null);
-
-  // 3. [상태 관리] 레이아웃 좌표 및 전체화면 상태
-  const [frameWidth, setFrameWidth] = useState<number>(frameMaxWidth);
-  const [overlayRect, setOverlayRect] = useState<OverlayRect | null>(null);
+  const frameRef = useRef<HTMLDivElement>(null);
+  const lowerRef = useRef<HTMLDivElement>(null);
   const [isFullScreen, setIsFullScreen] = useState(false);
 
   const measure = () => {
-    const frameEl = frameRef.current;
-    const lowerEl = lowerWrapRef.current;
-    if (!frameEl || !lowerEl) return;
-
-    const frame = frameEl.getBoundingClientRect();
-    const lower = lowerEl.getBoundingClientRect();
-
-    setFrameWidth(frame.width);
-    setOverlayRect({
-      top: lower.top,
-      left: frame.left,
-      width: frame.width,
-      height: lower.height,
-    });
-  };
-
-  const toggleFullScreen = async () => {
-    const target = frameRef.current;
-    if (!target) return;
-
-    try {
-      if (!document.fullscreenElement) {
-        await target.requestFullscreen?.();
-      } else {
-        await document.exitFullscreen?.();
-      }
-    } catch (err) {
-      console.error("Fullscreen Toggle Error:", err);
+    if (frameRef.current && lowerRef.current && onOverlayRectChange) {
+      const frame = frameRef.current.getBoundingClientRect();
+      const lower = lowerRef.current.getBoundingClientRect();
+      onOverlayRectChange({
+        top: lower.top,
+        left: frame.left,
+        width: frame.width,
+        height: lower.height,
+      });
     }
   };
 
+  useLayoutEffect(() => measure(), []);
   useEffect(() => {
-    const onFsChange = () => {
-      setIsFullScreen(Boolean(document.fullscreenElement));
-      setTimeout(measure, 100);
-    };
-    document.addEventListener("fullscreenchange", onFsChange);
-    return () => document.removeEventListener("fullscreenchange", onFsChange);
+    window.addEventListener('resize', measure);
+    return () => window.removeEventListener('resize', measure);
   }, []);
 
-  useLayoutEffect(() => {
-    measure();
-  }, []);
-
-  useEffect(() => {
-    const onResize = () => measure();
-    window.addEventListener("resize", onResize);
-    window.addEventListener("scroll", onResize, { passive: true });
-    return () => {
-      window.removeEventListener("resize", onResize);
-      window.removeEventListener("scroll", onResize);
-    };
-  }, []);
-
-  if (!serverUrl) {
-    return (
-      <div className="flex min-h-dvh items-center justify-center p-6 text-black/70">
-        NEXT_PUBLIC_LIVEKIT_URL 설정이 필요합니다.
-      </div>
-    );
-  }
+  const toggleFullScreen = () => {
+    if (!document.fullscreenElement) {
+      frameRef.current?.requestFullscreen();
+      setIsFullScreen(true);
+    } else {
+      document.exitFullscreen();
+      setIsFullScreen(false);
+    }
+  };
 
   return (
-    <div className="w-full flex-1 bg-white">
+    <div className="flex h-full w-full justify-center bg-gray-100">
       <div
         ref={frameRef}
-        className="mx-auto flex h-full w-full flex-col overflow-hidden bg-white shadow-xl"
-        style={{ maxWidth: isFullScreen ? "none" : frameMaxWidth }}
+        className="relative flex h-full w-full max-w-[560px] flex-col overflow-hidden bg-white shadow-2xl"
       >
-        <LiveKitRoom
-          serverUrl={serverUrl}
-          token={token}
-          connect={true}
-          video={true}
-          audio={true}
-          data-lk-theme="default"
-          style={{ width: "100%", height: "100%" }}
-        >
-          {/* ✅ LiveKit Room 객체 외부 전달 */}
-          <RoomBridge onRoomReady={onRoomReady} /> {/* ✅ 추가 */}
-          {/* SECTION 1: 🎥 비디오 영역 */}
-          <div className="relative aspect-video w-full bg-black">
-            <LivePlayer preferScreen={true} />
+        {/* 🎥 비디오 영역 */}
+        <div className="group relative aspect-video w-full overflow-hidden bg-black">
+          {/* Layer 1: 비디오 (가장 밑바닥) */}
+          <div className="absolute inset-0 z-0">
+            <LiveVideo />
+          </div>
 
-            <button
-              type="button"
-              onClick={toggleFullScreen}
-              className="absolute top-4 right-4 z-50 flex h-10 w-10 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-sm transition-all hover:bg-black/60 active:scale-95"
-            >
-              {isFullScreen ? (
-                <Minimize2 className="h-6 w-6" />
-              ) : (
-                <Maximize2 className="h-6 w-6" />
-              )}
-            </button>
+          {/* Layer 2: UI 오버레이 (무조건 위로!) */}
+          {/* z-50으로 비디오를 확실히 덮습니다 */}
+          {/* pointer-events-none: 배경 클릭은 뚫고 지나가게 설정 */}
+          <div className="pointer-events-none absolute inset-0 z-50 flex flex-col justify-between p-4">
+            {/* flex-col justify-between p-4를 주어 내부 배치를 돕습니다 */}
+            {videoOverlay}
           </div>
-          {/* SECTION 2: 💬 채팅 */}
-          <ChatPanel
-            userRole={userRole}
-            frameWidth={frameWidth}
-            overlayRect={overlayRect}
-            isFullScreen={isFullScreen}
-          />
-          {/* SECTION 3: 🖼 하단 컨텐츠 */}
-          <div
-            ref={lowerWrapRef}
-            className="relative z-10 flex-1 overflow-hidden bg-white"
-            /* 🚀 z-index를 낮게 설정하여 ChatPanel(45) 아래로 보냅니다. */
+
+          {/* Layer 3: 전체화면 버튼 (최상단) */}
+          <button
+            type="button"
+            onClick={toggleFullScreen}
+            className="pointer-events-auto absolute top-4 right-4 z-[60] rounded-full bg-black/40 p-2 text-white/90 opacity-0 transition-all hover:bg-black/60 group-hover:opacity-100"
           >
-            {children ? (
-              children
-            ) : (
-              <div
-                className="absolute inset-0 bg-cover bg-top bg-no-repeat"
-                style={{
-                  backgroundImage: `url(${backgroundImageUrl})`,
-                  imageRendering: "pixelated",
-                }}
-              />
-            )}
-          </div>
-        </LiveKitRoom>
+            {isFullScreen ? <Minimize2 size={20} /> : <Maximize2 size={20} />}
+          </button>
+        </div>
+
+        {/* 하단 영역 */}
+        <div
+          ref={lowerRef}
+          className="relative flex-1 overflow-hidden bg-white"
+        >
+          {children}
+        </div>
       </div>
     </div>
   );

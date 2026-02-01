@@ -97,8 +97,8 @@ export async function POST(req: Request) {
 
       const ensuredEvent = eventId
         ? await tx.event.findFirst({
-            where: { id: eventId, userId },
-            select: { id: true },
+            where: { id: eventId },
+            select: { id: true, userId: true },
           })
         : null;
 
@@ -113,7 +113,7 @@ export async function POST(req: Request) {
             message: null,
             location: null,
           },
-          select: { id: true },
+          select: { id: true, userId: true },
         }));
 
       // 2) EventHost 확보 (동일 이벤트+이름 host 있으면 재사용)
@@ -167,7 +167,7 @@ export async function POST(req: Request) {
         };
       }>;
 
-      // ✅ 4-0) 먼저 같은 키( userId + accountId + amount + sentAt )가 있으면 재사용
+      // 4-0) 먼저 같은 키( userId + accountId + amount + sentAt )가 있으면 재사용
       const existed = await tx.transaction.findFirst({
         where: {
           userId,
@@ -190,7 +190,7 @@ export async function POST(req: Request) {
       });
 
       if (existed) {
-        return { transaction: existed };
+        return { transaction: existed, receiverId: finalEvent.userId }; // 추가) 알림 receiver(이벤트 host) 반환
       }
 
       try {
@@ -220,9 +220,9 @@ export async function POST(req: Request) {
           },
         });
 
-        return { transaction }; // ✅ 여기서 바로 return
+        return { transaction, receiverId: finalEvent.userId }; // 추가) 알림 receiver(이벤트 host) 반환
       } catch (e: any) {
-        if (e?.code !== 'P2002') throw e; // ✅ 유니크 충돌만 처리
+        if (e?.code !== 'P2002') throw e; // 유니크 충돌만 처리
 
         const existedAfter = await tx.transaction.findFirst({
           where: {
@@ -246,9 +246,21 @@ export async function POST(req: Request) {
         });
 
         if (!existedAfter) throw e;
-        return { transaction: existedAfter }; // ✅ 여기서 return
+        return { transaction: existedAfter, receiverId: finalEvent.userId }; // 추가) 알림 receiver(이벤트 host) 반환
       }
     });
+
+    // // 추가) TRANSFER_SENT 알림 생성
+    // // - receiverId: 이벤트 host (알림을 받는 사람)
+    // // - actorId: 송금한 사람(현재 로그인)
+    // // - transactionId: 방금 생성/재사용된 트랜잭션 연결
+    // await createNotification({
+    //   type: 'TRANSFER_SENT',
+    //   receiverId: BigInt(result.receiverId),
+    //   actorId: userId,
+    //   transactionId: BigInt(result.transaction.id),
+    //   // text 생략 시 템플릿 문구 사용
+    // });
 
     return NextResponse.json({ ok: true, ...toJSON(result) }, { status: 201 });
   } catch (e: any) {

@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 // components/live/GuestStage/GuestStage.tsx
 /**
@@ -10,11 +10,11 @@
  * - 최대 AVATAR_COUNT명까지만 화면에 표시된다.
  */
 
-import { useMemo } from "react";
-import { pickDistributedSlots } from "@/app/utils/pickDistributeSlots";
-import { AVATAR_COUNT, avatarSrc } from "./avatar.constants";
-import GuestAvatar from "./GuestAvatar";
-import { GUEST_POSITIONS } from "./guestPositions";
+import { useMemo } from 'react';
+import { pickDistributedSlots } from '@/app/utils/pickDistributeSlots';
+import { AVATAR_COUNT, avatarSrc } from './avatar.constants';
+import GuestAvatar from './GuestAvatar';
+import { GUEST_POSITIONS } from './guestPositions';
 
 /**
  * 하객 정보
