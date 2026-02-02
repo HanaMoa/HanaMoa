@@ -126,8 +126,9 @@ git checkout -b feature/app/login origin/dev
 
 
 
-## ERD(0126 2.0 version)
-<img width="1276" height="1396" alt="image" src="https://github.com/user-attachments/assets/23aec6bf-f9de-4493-8d18-0b97d591abe3" />
+## ERD
+<img width="1390" height="1496" alt="image" src="https://github.com/user-attachments/assets/b5940ed8-a655-4983-978a-ae296930db69" />
+
 
 ## setting
 ```
