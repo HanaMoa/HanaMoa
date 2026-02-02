@@ -7,10 +7,12 @@ import NumberKeypad from '@/components/common/NumberKeypad';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useMemo, useState } from 'react';
 
+// 프로젝트에 이미 있을 가능성이 높은 Bank 타입/은행목록 사용
+// BankSelectModal/Button가 동일 타입을 쓰고 있음:contentReference[oaicite:3]{index=3}:contentReference[oaicite:4]{index=4}
 import type { Bank } from '@/lib/bank';
 import { BANKS } from '@/lib/bank';
 
-export default function TransactionClient() {
+export default function TransactionPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const isTransferMode = searchParams.get('mode') === 'transfer';
@@ -22,6 +24,8 @@ export default function TransactionClient() {
 
   // 계좌번호는 숫자만 입력 + 최대 20자리
   const handleKeypadInput = (value: string) => {
+    // NumberKeypad에서 "+*#" 버튼은 onInput('+')로 전달됨:contentReference[oaicite:5]{index=5}
+    // 계좌번호 화면에서는 숫자만 허용
     if (!/^\d$/.test(value)) return;
     setAccountNumber((prev) => (prev + value).slice(0, 20));
   };
@@ -30,15 +34,28 @@ export default function TransactionClient() {
     setAccountNumber((prev) => prev.slice(0, -1));
   };
 
-  // 스킵버튼
+  // 스킵버튼 function
   const handleSkip = () => {
-    router.push('/message?flow=transaction');
+    // 건너뛰기 시 메시지 페이지로 이동 (flow=transaction)
+    const params = new URLSearchParams();
+    params.set('flow', 'transaction');
+    
+    const eventId = searchParams.get('eventId');
+    if (eventId) params.set('eventId', eventId);
+    
+    const toNameParam = searchParams.get('toName');
+    if (toNameParam) params.set('toName', toNameParam);
+
+    router.push(`/message?${params.toString()}`);
   };
 
   const canSubmit = useMemo(() => {
-    return toName.trim().length > 0 && accountNumber.length >= 8 && !!selectedBank;
-  }, [toName, accountNumber, selectedBank]);
+    return (
+      toName.trim().length > 0 && accountNumber.length >= 8 && !!selectedBank
+    );
+  }, [accountNumber, selectedBank]);
 
+  // amount page router.push
   const handleDone = () => {
     if (!canSubmit) return;
 
@@ -57,6 +74,7 @@ export default function TransactionClient() {
 
   return (
     <div className="flex h-dvh w-full max-w-[800px] flex-col bg-white">
+      {/* 헤더 */}
       <MainHeader
         title="하나모아"
         showHomeBtn={false}
@@ -73,21 +91,23 @@ export default function TransactionClient() {
         }
       />
 
+      {/* 본문 */}
       <main className="p-6">
+        {/* 계좌번호 입력(키패드 입력이므로 readOnly) */}
         <div className="space-y-3">
           <label className="sr-only" htmlFor="accountNumber">
             계좌번호 입력
           </label>
-
           <input
             id="accountNumber"
             value={accountNumber}
-            onChange={(e) => setAccountNumber(e.target.value.replace(/[^0-9]/g, ''))}
+            onChange={(e) =>
+              setAccountNumber(e.target.value.replace(/[^0-9]/g, ''))
+            }
             inputMode="numeric"
             placeholder="계좌번호 입력"
             className="h-12 w-full cursor-text rounded-xl border border-gray-200 px-5 text-[16px] outline-none focus:ring-2 focus:ring-[#7fd1c8]"
           />
-
           <input
             value={toName}
             onChange={(e) => setToName(e.target.value)}
@@ -95,11 +115,12 @@ export default function TransactionClient() {
             className="h-12 w-full rounded-xl border border-gray-200 px-5 text-[16px] outline-none focus:ring-2 focus:ring-[#7fd1c8]"
           />
 
-          <p className="mb-4 mt-2 px-2 text-[12px] text-gray-400">
+          <p className="mt-2 mb-4 px-2 text-[12px] text-gray-400">
             숫자 키패드로 입력해 주세요.
           </p>
         </div>
 
+        {/* 은행 선택: BankSelectButton 사용 */}
         <div className="flex items-center gap-3">
           <BankSelectButton
             value={selectedBank}
@@ -109,6 +130,7 @@ export default function TransactionClient() {
         </div>
       </main>
 
+      {/* 은행 선택: BankSelectModal 사용 */}
       <BankSelectModal
         isOpen={bankOpen}
         onClose={() => setBankOpen(false)}
@@ -121,7 +143,9 @@ export default function TransactionClient() {
         }}
       />
 
+      {/* 하단 고정: 완료 + 키패드 */}
       <div className="mt-auto">
+        {/* 완료 바 */}
         <div className="flex items-center justify-end border-gray-100 border-t px-4 py-2">
           <button
             type="button"
@@ -137,7 +161,11 @@ export default function TransactionClient() {
           </button>
         </div>
 
-        <NumberKeypad onInput={handleKeypadInput} onDelete={handleKeypadDelete} />
+        {/* 키패드 */}
+        <NumberKeypad
+          onInput={handleKeypadInput}
+          onDelete={handleKeypadDelete}
+        />
       </div>
     </div>
   );
