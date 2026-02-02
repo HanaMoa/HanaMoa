@@ -7,7 +7,7 @@ import { MainHeader } from '@/components/common/MainHeader';
 import { SingleButton } from '@/components/common/SingleButton';
 import AccountDropdown from '@/components/event/AccountDropdown';
 import SpeechBubble from '@/components/event/SpeechBubble';
-import { eventhost_role } from '@/lib/generated/prisma/enums';
+import type { eventhost_role } from '@/lib/generated/prisma/enums';
 
 // image 경로
 const BG_SRC = '/images/event/memorial/lounge_bg.png';
@@ -113,7 +113,11 @@ export default function MemorialLoungePage({ event }: Props) {
   return (
     <div className="flex min-h-screen w-full flex-col">
       {/* 헤더 */}
-      <MainHeader title="하나모아" showHomeBtn={true} />
+      <MainHeader
+        title="하나모아"
+        showHomeBtn={true}
+        onBackClick={() => router.push('/event')}
+      />
 
       {/* 라운지 */}
       <main className="w-full flex-1">
