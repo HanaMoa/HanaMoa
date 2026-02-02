@@ -21,6 +21,16 @@ export default function TransferAmountClient() {
   const router = useRouter();
   const sp = useSearchParams();
 
+  const handleSkip = () => {
+    const params = new URLSearchParams();
+    params.set('flow', 'transaction');
+    if (eventId) params.set('eventId', eventId);
+    if (toName) params.set('toName', toName);
+    if (eventType) params.set('eventType', eventType);
+
+    router.push(`/message?${params.toString()}`);
+  };
+
   // 이전 페이지에서 넘어오는 값들(없으면 기본값)
   const toName = sp.get('toName') ?? '';
   const bank = sp.get('bank') ?? '국민은행';
@@ -81,6 +91,17 @@ export default function TransferAmountClient() {
         variant="default"
         title="이체"
         onBackClick={() => router.back()}
+        rightElement={
+          !mode && (
+            <button
+              type="button"
+              onClick={handleSkip}
+              className="cursor-pointer text-[14px] text-gray-500 hover:text-gray-700"
+            >
+              건너뛰기
+            </button>
+          )
+        }
       />
 
       {/* 받는 사람/계좌 정보 */}
