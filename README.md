@@ -1,4 +1,5 @@
-# 하나모아 (HanaMoa)
+# 💚 HanaMoa 💚
+**하나모아**는 '디지털 경조사 플랫폼'으로서, 경조사의 복잡함은 줄이고 감정과 관계에 집중할 수 있는 서비스
 <img width="512" height="134" alt="image" src="https://github.com/user-attachments/assets/401b8c48-a6f1-4b62-ae1c-5b33a22d9bcc" />
 
 <br>
@@ -153,24 +154,4 @@ pnpm prisma migrate deploy //rds반영
 ### DB 확인
 ```
 pnpm prisma studio
-```
-
-
-
-## .env
-```
-DATABASE_URL="mysql://hanamoa:12345678@127.0.0.1:3333/hanamoadb"
-SHADOW_DATABASE_URL="mysql://root:root@127.0.0.1:3333/hanamoadb_shadow"
-
-DATABASE_HOST="127.0.0.1"
-DATABASE_PORT="3333"
-DATABASE_USER="hanamoa"
-DATABASE_PASSWORD="12345678"
-DATABASE_NAME="hanamoadb"
-
-AWS_REGION=ap-northeast-2
-AWS_ACCESS_KEY_ID=AKIAYS2MXSMDBGB5HVLV
-AWS_SECRET_ACCESS_KEY=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
-S3_BUCKET_NAME=hanamoa-gallery
-
 ```
