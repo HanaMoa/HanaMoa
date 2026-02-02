@@ -1,8 +1,10 @@
-# 💚 HanaMoa 💚
+# <img width="147" height="38" alt="image" src="https://github.com/user-attachments/assets/c6edbe7f-3fc3-4fb0-96a3-753cf44feec5" />
 **하나모아**는 '디지털 경조사 플랫폼'으로서, 경조사의 복잡함은 줄이고 감정과 관계에 집중할 수 있는 서비스
-<img width="512" height="134" alt="image" src="https://github.com/user-attachments/assets/401b8c48-a6f1-4b62-ae1c-5b33a22d9bcc" />
 
 <br>
+
+---
+## 📚 주요 기능
 
 
 
