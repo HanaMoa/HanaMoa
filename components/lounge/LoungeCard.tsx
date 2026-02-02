@@ -1,12 +1,12 @@
 'use client';
 
-import AlertModal from '@/components/common/AlertModal';
-import { Button } from '@/components/ui/button';
-import type { events_category } from '@/lib/generated/prisma/enums';
 import { CalendarDays, MapPin, Share2, Trash2 } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import AlertModal from '@/components/common/AlertModal';
+import { Button } from '@/components/ui/button';
+import type { events_category } from '@/lib/generated/prisma/enums';
 
 // DB category → URL segment
 function categoryToRoute(category: events_category): 'wedding' | 'memorial' {
@@ -184,9 +184,7 @@ export default function LoungeCard({
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
-                  router.push(
-                    `/event/${routeCategory}/${eventId.toString()}/db`,
-                  );
+                  router.push('/memorialweddingdb');
                 }}
                 className="cursor-pointer rounded-md border px-2 py-1 font-medium hover:bg-gray-200"
               >
