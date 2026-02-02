@@ -188,7 +188,9 @@ export default function WeddingLoungePage({ event }: Props) {
               ) : isHost ? (
                 <button
                   type="button"
-                  onClick={() => router.push('/live')}
+                  onClick={() =>
+                    router.push(`/event/wedding/${event.eventId}/live`)
+                  }
                   className="group w-full rounded-xl border border-black/10 bg-[#F3C4CB24] px-4 py-3 shadow-sm backdrop-blur"
                 >
                   <div className="flex items-center gap-2">

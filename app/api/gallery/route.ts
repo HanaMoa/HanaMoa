@@ -1,8 +1,11 @@
+// app/api/gallery/route.ts
+
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { type NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { createNotification } from '@/lib/server/notification.action';
 
 const s3 = new S3Client({
   region: process.env.AWS_REGION!,
@@ -156,10 +159,10 @@ export async function POST(req: Request) {
   const userIdBig = BigInt(userId);
   const eventIdBig = BigInt(eventId);
 
-  // 3️⃣ 이벤트 존재 확인
+  // 3️⃣ 이벤트 존재 확인 + host(userId)까지 가져와야 알림 receiver 지정 가능
   const event = await prisma.event.findUnique({
     where: { id: eventIdBig },
-    select: { id: true },
+    select: { id: true, userId: true },
   });
 
   if (!event) {
@@ -174,6 +177,18 @@ export async function POST(req: Request) {
       eventId: eventIdBig,
       type: getNotificationType(mode),
     })),
+  });
+
+  // 5 알림 생성 (핵심)
+  // - receiverId: host
+  // - actorId: 업로드한 사람
+  // - targetId: 썸네일로 쓸 "첫 번째 key"를 저장 (S3 key)
+  // receiverId = host, actorId = uploader, targetId = 첫 key (S3 key)
+  await createNotification({
+    type: getNotificationType(mode),
+    receiverId: event.userId,
+    actorId: userIdBig,
+    targetId: keys[0], // ✅ 썸네일용 key
   });
 
   return NextResponse.json({ ok: true });

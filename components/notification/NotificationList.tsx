@@ -18,7 +18,7 @@ interface NotificationListProps {
     thumbnailUrl?: string;
     user: NotificationUser;
   }>;
-  // ⭐️ 핵심: 서버 액션 함수를 Props로 받음
+  // 서버 액션 함수를 Props로 받음
   onDeleteAction: (id: number) => Promise<void>;
   onPublishAction: (id: number) => Promise<void>;
 }
@@ -39,7 +39,7 @@ export default function NotificationList({
           message={n.message}
           createdAt={n.createdAt}
           isRead={n.isRead}
-          thumbnailUrl={n.thumbnailUrl}
+          thumbnailUrl={n.thumbnailUrl ?? null}
           // ⭐️ 함수 연결: 서버 액션을 여기서 호출
           onDelete={() => onDeleteAction(n.id)}
           onPublish={() => onPublishAction(n.id)}

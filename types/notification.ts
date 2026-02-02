@@ -6,19 +6,18 @@ export type NotificationType =
   | 'ORNAMENT_ADDED';
 
 export interface NotificationUser {
-  id: number; // Prisma Int 타입에 맞춤
+  id: number;
   name: string;
   userId: string;
   profileImageUrl: string | null;
 }
 
-export interface NotificationItemProps {
-  user: NotificationUser;
+export type NotificationDTO = {
+  id: number;
   type: NotificationType;
   message: string;
-  createdAt: string | Date;
+  createdAt: string; // ISO string
   isRead: boolean;
-  thumbnailUrl?: string;
-  onDelete: () => void;
-  onPublish: () => void;
-}
+  thumbnailUrl: string | null;
+  user: NotificationUser; // actor
+};

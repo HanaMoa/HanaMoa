@@ -1,3 +1,4 @@
+// components/live/GuestStage/guestPositions.ts
 /**
  * 결혼식 라이브 하객 스테이지에 배치될 "전체 좌석 좌표(Seat Blueprint)"를 정의한다..
  */
