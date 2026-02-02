@@ -14,16 +14,16 @@ type VideoItem = {
   poster: string;
 };
 
-type GalleryItem = ImageItem | VideoItem;
-
-type Props = {
-  item: GalleryItem;
-  onClose: () => void;
-  onPrev?: () => void;
-  onNext?: () => void;
-};
+// ... types
 
 export default function GalleryModal({ item, onClose, onPrev, onNext }: Props) {
+  const [isLoading, setIsLoading] = useState(true);
+
+  // 아이템이 바뀌면 로딩 상태 초기화
+  useEffect(() => {
+    setIsLoading(true);
+  }, [item]);
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* 배경 오버레이 (닫기) */}
@@ -59,9 +59,23 @@ export default function GalleryModal({ item, onClose, onPrev, onNext }: Props) {
         )}
 
         {/* 콘텐츠 */}
-        <div className="bg-white px-6 pt-8 pb-30">
+        <div className="bg-white px-6 pt-8 pb-30 text-center">
           {item.type === 'image' ? (
-            <Image src={item.src} alt="gallery" width={420} height={560} />
+            <div className="relative">
+              {isLoading && (
+                <div className="flex h-[560px] w-[420px] items-center justify-center bg-gray-100 text-gray-500">
+                  불러오는 중...
+                </div>
+              )}
+              <Image
+                src={item.src}
+                alt="gallery"
+                width={420}
+                height={560}
+                className={isLoading ? 'hidden' : 'block'}
+                onLoad={() => setIsLoading(false)}
+              />
+            </div>
           ) : (
             <video
               src={item.src}
