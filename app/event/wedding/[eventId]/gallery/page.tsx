@@ -3,8 +3,9 @@
 import { Plus } from 'lucide-react';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
+import { InfiniteScroll } from '@/components/common/InfiniteScroll';
 import { MainHeader } from '@/components/common/MainHeader';
 import GalleryModal from '@/components/event/GalleryModal';
 import GalleryUploadModal from '@/components/event/GalleryUploadModal';
@@ -29,7 +30,7 @@ export default function WeddingGalleryPage() {
   const [uploadOpen, setUploadOpen] = useState(false);
   const [groomName, setGroomName] = useState('');
   const [brideName, setBrideName] = useState('');
-  const loaderRef = useRef<HTMLDivElement | null>(null);
+  const [hasMore, setHasMore] = useState(true);
 
   // TODO: GET /api/gallery?eventId=&mode=gallery
   useEffect(() => {
@@ -60,6 +61,7 @@ export default function WeddingGalleryPage() {
 
     fetchGallery();
   }, [eventId, mode]);
+
   useEffect(() => {
     async function fetchHosts() {
       try {
@@ -78,6 +80,24 @@ export default function WeddingGalleryPage() {
 
     fetchHosts();
   }, [eventId]);
+
+  // Handle load more
+  const handleLoadMore = () => {
+    setVisibleCount((prev) => {
+      const next = prev + PAGE_SIZE;
+      if (next >= allItems.length) {
+        setHasMore(false);
+        return allItems.length;
+      }
+      return next;
+    });
+  };
+
+  // Reset hasMore when items change
+  useEffect(() => {
+    setHasMore(allItems.length > visibleCount);
+  }, [allItems.length, visibleCount]);
+
   const visibleItems = allItems.slice(0, visibleCount);
 
   const handleUploadConfirm = async (files: File[]) => {
@@ -99,46 +119,66 @@ export default function WeddingGalleryPage() {
   };
 
   return (
-    <>
+    <div className="flex h-screen flex-col bg-white">
       <MainHeader
         title="갤러리"
         subtitle={
-          groomName && brideName ? `${groomName} ❤️ ${brideName}` : '신랑 ❤️ 신부'
+          groomName && brideName
+            ? `${groomName} ❤️ ${brideName}`
+            : '신랑 ❤️ 신부'
         }
       />
 
-      <div className="flex justify-between px-5 py-4">
-        <span>총 {allItems.length}개</span>
-        <Button onClick={() => setUploadOpen(true)}>
-          사진·영상 추가하기 <Plus className="h-4 w-4" />
+      <div className="flex shrink-0 justify-between px-5 py-4">
+        <span className="text-black/60 text-sm">
+          총{' '}
+          <span className="font-medium text-[#017F70] text-lg">
+            {allItems.length}
+          </span>
+          개
+        </span>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="border bg-white px-2 text-sm"
+          onClick={() => setUploadOpen(true)}
+        >
+          사진·영상 추가하기 <Plus className="ml-1 h-4 w-4 text-[#017F70]" />
         </Button>
       </div>
 
-      <div className="columns-2 gap-2 px-5 sm:columns-3">
-        {visibleItems.map((item, index) => (
-          <div
-            key={item.id}
-            role="button"
-            tabIndex={0}
-            aria-label="Open gallery item"
-            onClick={() => setSelectedIndex(index)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                setSelectedIndex(index);
-              }
-            }}
-            className="mb-2 cursor-pointer overflow-hidden rounded-lg rounded-lg focus:outline-none"
-          >
-            <Image
-              src={item.type === 'image' ? item.src : item.poster}
-              alt=""
-              width={600}
-              height={800}
-              unoptimized
-            />
-          </div>
-        ))}
+      {/* Internal Scrollable Div */}
+      <div className="scrollbar-hidden flex-1 overflow-y-auto px-5 pb-5">
+        <div className="columns-2 gap-2 sm:columns-3">
+          {visibleItems.map((item, index) => (
+            <div
+              key={item.id}
+              role="button"
+              tabIndex={0}
+              aria-label="Open gallery item"
+              onClick={() => setSelectedIndex(index)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  setSelectedIndex(index);
+                }
+              }}
+              className="mb-2 break-inside-avoid cursor-pointer overflow-hidden rounded-lg focus:outline-none"
+            >
+              <Image
+                src={item.type === 'image' ? item.src : item.poster}
+                alt=""
+                width={600}
+                height={800}
+                unoptimized
+                className="h-auto w-full object-cover"
+              />
+            </div>
+          ))}
+        </div>
+
+        {/* Infinite Scroll Trigger */}
+        <InfiniteScroll hasMore={hasMore} onLoadMore={handleLoadMore} />
       </div>
 
       {uploadOpen && (
@@ -153,8 +193,18 @@ export default function WeddingGalleryPage() {
         <GalleryModal
           item={visibleItems[selectedIndex]}
           onClose={() => setSelectedIndex(null)}
+          onPrev={
+            selectedIndex > 0
+              ? () => setSelectedIndex(selectedIndex - 1)
+              : undefined
+          }
+          onNext={
+            selectedIndex < visibleItems.length - 1
+              ? () => setSelectedIndex(selectedIndex + 1)
+              : undefined
+          }
         />
       )}
-    </>
+    </div>
   );
 }

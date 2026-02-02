@@ -2,6 +2,7 @@
 
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import Image from 'next/image';
+import { useEffect, useState } from 'react';
 
 type ImageItem = {
   type: 'image';
@@ -23,7 +24,15 @@ type Props = {
   onNext?: () => void;
 };
 
+
 export default function GalleryModal({ item, onClose, onPrev, onNext }: Props) {
+  const [isLoading, setIsLoading] = useState(true);
+
+  // 아이템이 바뀌면 로딩 상태 초기화
+  useEffect(() => {
+    setIsLoading(true);
+  }, [item]);
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* 배경 오버레이 (닫기) */}
@@ -41,9 +50,9 @@ export default function GalleryModal({ item, onClose, onPrev, onNext }: Props) {
           <button
             type="button"
             onClick={onPrev}
-            className="-left-10.5 absolute bottom-60 cursor-pointer rounded-full border bg-white p-4 hover:bg-white/60"
+            className="fixed top-1/2 left-4 z-50 -translate-y-1/2 cursor-pointer rounded-full bg-white/80 p-3 hover:bg-white md:absolute md:left-[-60px]"
           >
-            <ChevronLeft className="h-8 w-8" />
+            <ChevronLeft className="h-8 w-8 text-black" />
           </button>
         )}
 
@@ -52,16 +61,30 @@ export default function GalleryModal({ item, onClose, onPrev, onNext }: Props) {
           <button
             type="button"
             onClick={onNext}
-            className="-right-10.5 absolute bottom-60 cursor-pointer rounded-full border bg-white p-4 hover:bg-white/60"
+            className="fixed top-1/2 right-4 z-50 -translate-y-1/2 cursor-pointer rounded-full bg-white/80 p-3 hover:bg-white md:absolute md:right-[-60px]"
           >
-            <ChevronRight className="h-8 w-8" />
+            <ChevronRight className="h-8 w-8 text-black" />
           </button>
         )}
 
         {/* 콘텐츠 */}
-        <div className="bg-white px-6 pt-8 pb-30">
+        <div className="bg-white px-6 pt-8 pb-30 text-center">
           {item.type === 'image' ? (
-            <Image src={item.src} alt="gallery" width={420} height={560} />
+            <div className="relative">
+              {isLoading && (
+                <div className="flex h-[560px] w-[420px] items-center justify-center bg-gray-100 text-gray-500">
+                  불러오는 중...
+                </div>
+              )}
+              <Image
+                src={item.src}
+                alt="gallery"
+                width={420}
+                height={560}
+                className={isLoading ? 'hidden' : 'block'}
+                onLoad={() => setIsLoading(false)}
+              />
+            </div>
           ) : (
             <video
               src={item.src}
