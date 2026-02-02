@@ -1,10 +1,11 @@
 'use client';
 
-import { MainHeader } from '@/components/common/MainHeader';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
+import { MainHeader } from '@/components/common/MainHeader';
 
-export default function MessageManualPage() {
+// 실제 로직이 들어가는 컴포넌트 (ManualContent)
+function ManualContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const isTransactionFlow = searchParams.get('flow') === 'transaction';
@@ -76,5 +77,14 @@ export default function MessageManualPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+// 메인 페이지 컴포넌트
+export default function MessageManualPage() {
+  return (
+    <Suspense fallback={<div className="min-h-dvh w-full bg-[#F6F7F9]" />}>
+      <ManualContent />
+    </Suspense>
   );
 }
