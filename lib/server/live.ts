@@ -54,6 +54,7 @@ export async function saveLiveToGallery(eventId: string, videoKey: string) {
         userId: event.userId, // 이벤트 주인의 갤러리에 추가
         eventId: BigInt(eventId),
         visibility: 'PRIVATE', // 기본값 비공개
+        type: 'GALLERY_ADDED',
       },
     });
 

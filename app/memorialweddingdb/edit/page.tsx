@@ -1,21 +1,24 @@
 // 10-1-1. DB 내역 수정
 'use client';
+
+import { Calendar, ChevronDown } from 'lucide-react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Suspense, useEffect, useRef, useState } from 'react';
 import AlertModal from '@/components/common/AlertModal';
 import { Input } from '@/components/common/Input';
 import { SingleButton } from '@/components/common/SingleButton';
 import { Card } from '@/components/ui/card';
-import { Calendar, ChevronDown } from 'lucide-react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
 
-export default function MemorialWeddingDbEditPage() {
+// ✅ 실제 로직이 들어가는 컴포넌트 (EditContent)
+function EditContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const id = searchParams.get('id'); // ✅ 여기서 id를 받아와야 아래 로직들이 정상 작동합니다.
+
   // 확인 모달창 인자
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [confirmType, setConfirmType] = useState<'yes' | 'no' | null>(null);
-  // 라우터 파라미터 인자
-  const searchParams = useSearchParams();
-  const id = searchParams.get('id'); // /memorialweddingdb/edit?id=123
+
   const formRef = useRef<HTMLFormElement | null>(null);
 
   // 초기값: PDF 예시와 비슷하게 세팅 (원하면 비워도 됨)
@@ -328,5 +331,14 @@ export default function MemorialWeddingDbEditPage() {
         />
       </main>
     </div>
+  );
+}
+
+// ✅ 메인 페이지 컴포넌트 (Suspense로 감싸줌)
+export default function MemorialWeddingDbEditPage() {
+  return (
+    <Suspense fallback={<div className="h-dvh w-full bg-white" />}>
+      <EditContent />
+    </Suspense>
   );
 }
