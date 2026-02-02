@@ -28,8 +28,10 @@ export default function ManualClient() {
       }),
     });
 
-    if (eventType === 'wedding') router.push(`/event/wedding/${eventId}/dashboard`);
-    else if (eventType === 'memorial') router.push(`/event/memorial/${eventId}/dashboard`);
+    if (eventType === 'wedding')
+      router.push(`/event/wedding/${eventId}/dashboard`);
+    else if (eventType === 'memorial')
+      router.push(`/event/memorial/${eventId}/dashboard`);
     else router.push('/home');
   };
 
@@ -38,7 +40,9 @@ export default function ManualClient() {
       <MainHeader variant="default" title="직접 작성하기" />
 
       <div className="px-6 pt-6">
-        <h1 className="font-semibold text-slate-900 text-xl">✏️ 직접 작성하기</h1>
+        <h1 className="font-semibold text-slate-900 text-xl">
+          ✏️ 직접 작성하기
+        </h1>
         <p className="mt-2 text-slate-500 text-sm">
           전달하고 싶은 메시지를 자유롭게 작성해 주세요.
         </p>
