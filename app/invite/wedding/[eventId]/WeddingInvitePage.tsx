@@ -2,6 +2,7 @@
 
 import { Playfair_Display } from 'next/font/google';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { MainHeader } from '@/components/common/MainHeader';
 
@@ -45,6 +46,7 @@ function formatWeddingDate(date: Date) {
   return `${year}.${month}.${day}. ${weekday}, ${ampm} ${hourText}:${minute}`;
 }
 export default function WeddingInvitePage({ event }: Props) {
+  const router = useRouter();
   const [image, setImage] = useState<GalleryImage | null>(null);
 
   useEffect(() => {
@@ -114,6 +116,7 @@ export default function WeddingInvitePage({ event }: Props) {
         <div className="mx-auto flex w-full justify-center px-4">
           <button
             type="button"
+            onClick={() => router.push('/home')}
             className="flex h-[65px] w-[360px] flex-col items-center justify-center rounded-xl bg-[#1EA698] text-white shadow-md active:scale-[0.98] md:w-[420px] lg:w-[540px]"
           >
             <span className="font-bold text-[17px]">청첩장 생성하기</span>
