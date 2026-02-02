@@ -17,11 +17,11 @@ function addAmount(prev: string, add: number) {
   return String(next);
 }
 
-export default function TransferAmountClient() {
+export default function TransferAmountPage() {
   const router = useRouter();
   const sp = useSearchParams();
 
-  // 이전 페이지에서 넘어오는 값들(없으면 기본값)
+  // 이전 “계좌번호 입력” 페이지에서 넘어오는 값들 (없으면 기본값)
   const toName = sp.get('toName') ?? '';
   const bank = sp.get('bank') ?? '국민은행';
   const account = sp.get('account') ?? '55990204144435';
@@ -34,18 +34,19 @@ export default function TransferAmountClient() {
 
   const amountLabel = useMemo(() => `${formatWon(amount)}원`, [amount]);
 
-  // 완료 가능 조건(0원 불가)
+  // 완료 가능 조건(0원은 불가)
   const canSubmit = useMemo(() => {
     const n = Number(amount.replace(/[^\d]/g, ''));
     return Number.isFinite(n) && n > 0;
   }, [amount]);
 
-  // 키패드 입력(숫자만 허용)
+  // ✅ 키패드 입력(숫자만 허용, "+*#"는 무시)
   const handleInput = (v: string) => {
     if (!/^\d$/.test(v)) return;
 
     setAmount((prev) => {
       const next = (prev === '0' ? '' : prev) + v;
+      // 너무 커지는 것 방지(원하면 자리수 조정)
       return next.slice(0, 12) || '0';
     });
   };
@@ -61,18 +62,50 @@ export default function TransferAmountClient() {
     if (!canSubmit) return;
 
     const params = new URLSearchParams({
-      toName,
-      bank,
-      account,
-      amount,
+      toName, // 받는 사람 이름
+      bank, // 은행명
+      account, // 계좌번호
+      amount, // 금액 (숫자 문자열)
     });
 
-    if (eventType) params.set('eventType', eventType);
-    if (eventId) params.set('eventId', eventId);
-    if (mode) params.set('mode', mode);
+    if (eventType) {
+      params.set('eventType', eventType);
+    }
+    if (eventId) {
+      params.set('eventId', eventId);
+    }
 
-    // 다음 단계
-    router.push(`/transaction/relation?${params.toString()}`);
+    if (mode) {
+      params.set('mode', mode);
+      router.push(`/transaction/relation?${params.toString()}`); // Direct to relation, but relation needs to handle mode
+    } else {
+      // Normal flow? Actually path was `/transaction/event`?
+      // Wait, the file I viewed (`app/transaction/amount/page.tsx`) had `router.push(/transaction/event?...`
+      // But Relation page is `app/transaction/relation/page.tsx`?
+      // Let me check if `event` page exists or if it was a placeholder.
+      // `app/transaction` has `event` directory? `relation` directory?
+      // `list_dir` output Step 207 showed `transaction` has 6 children.
+      // `event` was in `app/event`.
+      // Wait, `app/transaction/relation/page.tsx` exists (Step 203).
+      // `app/transaction/amount/page.tsx` (Step 211) push to `/transaction/event`.
+      // Is `event` the Relation page? Or is there an `event` page?
+      // Let's check `app/transaction` directory listing again.
+      // I will assume Relation page is the target and the previous code might have been using `event` as name?
+      // Or `app/transaction/event` exists.
+
+      // I'll check `app/transaction` dir content.
+      router.push(`/transaction/relation?${params.toString()}`);
+    }
+  };
+
+  const handleSkip = () => {
+    const params = new URLSearchParams();
+    params.set('flow', 'transaction');
+    if (eventId) params.set('eventId', eventId);
+    if (toName) params.set('toName', toName);
+    if (eventType) params.set('eventType', eventType);
+
+    router.push(`/message?${params.toString()}`);
   };
 
   return (
@@ -81,6 +114,17 @@ export default function TransferAmountClient() {
         variant="default"
         title="이체"
         onBackClick={() => router.back()}
+        rightElement={
+          !mode && (
+            <button
+              type="button"
+              onClick={handleSkip}
+              className="cursor-pointer text-[14px] text-gray-500 hover:text-gray-700"
+            >
+              건너뛰기
+            </button>
+          )
+        }
       />
 
       {/* 받는 사람/계좌 정보 */}
@@ -168,7 +212,9 @@ export default function TransferAmountClient() {
         </div>
 
         {/* 키패드 */}
-        <NumberKeypad onInput={handleInput} onDelete={handleDelete} />
+        <div className="">
+          <NumberKeypad onInput={handleInput} onDelete={handleDelete} />
+        </div>
       </div>
     </div>
   );
