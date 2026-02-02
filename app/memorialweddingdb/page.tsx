@@ -2,11 +2,11 @@
 
 'use client';
 
+import { MainHeader } from '@/components/common/MainHeader';
+import { Card } from '@/components/ui/card';
 import { Download, Plus, Search } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
-import { MainHeader } from '@/components/common/MainHeader';
-import { Card } from '@/components/ui/card';
 
 export default function HanamoaPage() {
   const router = useRouter();
@@ -68,6 +68,12 @@ export default function HanamoaPage() {
 
     return '';
   }, [selectedPeriod]);
+
+  const categoryLabel = (category?: string) => {
+    if (category === 'WEDDING') return '결혼식';
+    if (category === 'FUNERAL') return '장례식';
+    return '경조사';
+  };
 
   return (
     <div className="mx-auto h-dvh w-full max-w-[600px] overflow-hidden bg-[#F6F7F9] md:max-w-[720px] lg:max-w-[800px]">
@@ -219,7 +225,7 @@ export default function HanamoaPage() {
                       <div className="flex w-full items-start justify-between">
                         <div className="flex flex-col items-start gap-1">
                           <span className="rounded-md px-1 font-medium text-[12px]">
-                            {it.event?.location ?? '경조사'}
+                            {categoryLabel(it.event?.category)}
                           </span>
                         </div>
 

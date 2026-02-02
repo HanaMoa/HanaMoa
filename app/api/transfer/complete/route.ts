@@ -1,6 +1,5 @@
 // app/api/transfer/complete/route.ts
 
-import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import type {
   events_category as EventCategory,
@@ -8,6 +7,7 @@ import type {
   Prisma,
 } from '@/lib/generated/prisma/client';
 import { prisma } from '@/lib/prisma';
+import { NextResponse } from 'next/server';
 
 // BigInt → JSON 변환
 function toJSON<T>(data: T) {
@@ -102,6 +102,13 @@ export async function POST(req: Request) {
           })
         : null;
 
+        const defaultLocationByCategory = (cat: EventCategory) => {
+          if (cat === 'FUNERAL') return '빈소';
+          if (cat === 'WEDDING') return '예식장';
+          return null;
+        };
+
+
       const finalEvent =
         ensuredEvent ??
         (await tx.event.create({
@@ -111,7 +118,7 @@ export async function POST(req: Request) {
             date: sentAt,
             name: category === 'FUNERAL' ? '장례식' : '결혼식',
             message: null,
-            location: null,
+            location: defaultLocationByCategory(category),
           },
           select: { id: true, userId: true },
         }));
@@ -163,7 +170,7 @@ export async function POST(req: Request) {
           relation: true;
           sentAt: true;
           createdAt: true;
-          name: true;
+          ocr_name: true;
         };
       }>;
 
