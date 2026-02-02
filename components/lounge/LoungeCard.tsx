@@ -2,7 +2,7 @@
 
 import AlertModal from '@/components/common/AlertModal';
 import { Button } from '@/components/ui/button';
-import type { events_category } from '@/lib/generated/prisma/client/enums';
+import type { events_category } from '@/lib/generated/prisma/enums';
 import { CalendarDays, MapPin, Share2, Trash2 } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';

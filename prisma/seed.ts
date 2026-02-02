@@ -1,5 +1,5 @@
+import { PrismaClient } from '@/lib/generated/prisma/client';
 import { PrismaMariaDb } from '@prisma/adapter-mariadb';
-import { PrismaClient } from '../lib/generated/prisma/client/client';
 
 // .env 값 그대로 사용
 const adapter = new PrismaMariaDb({

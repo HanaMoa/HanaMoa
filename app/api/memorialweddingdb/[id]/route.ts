@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
-import type { events_category as EventCategory } from '@/lib/generated/prisma/client/client';
+import type { events_category as EventCategory } from '@/lib/generated/prisma/client';
 import { prisma } from '@/lib/prisma';
 
 function toJSON<T>(data: T) {

@@ -46,7 +46,7 @@ export default function HomeClient({ userName, eventCount, isAuthed }: Props) {
     // 이미 로그인
     if (session?.user) return action();
 
-    // 세션 한 번 강제 갱신해보고 다시 판단
+    // 세션 한 번 강제 갱신해보고 다시 판단하기
     const fresh = await update();
     if (fresh?.user) return action();
 

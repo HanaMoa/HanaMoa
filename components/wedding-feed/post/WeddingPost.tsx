@@ -2,12 +2,12 @@
 'use client';
 
 import type { User } from '@/components/common/UserProfile';
-import type { GalleryVisibility } from '@/lib/generated/prisma/client/enums';
+import type { GalleryVisibility } from '@/lib/generated/prisma/enums';
 import type { FeedPermission } from '@/lib/server/feedPermission.action';
-import { ImagePostHeader } from './header/ImagePostHeader';
-import { VideoPostHeader } from './header/VideoPostHeader';
 import { PostContent } from './PostContent';
 import { PostMedia } from './PostMedia';
+import { ImagePostHeader } from './header/ImagePostHeader';
+import { VideoPostHeader } from './header/VideoPostHeader';
 
 /* 이미지 / 영상 미디어 타입 */
 type Media =

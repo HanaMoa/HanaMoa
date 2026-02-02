@@ -2,7 +2,7 @@
 
 import { z } from 'zod';
 import { auth } from '../auth';
-import type { eventhost_role } from '../generated/prisma/client/enums';
+import type { eventhost_role } from '../generated/prisma/enums';
 import { prisma } from '../prisma';
 
 function isEventHostRole(v: unknown): v is eventhost_role {

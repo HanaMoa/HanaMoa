@@ -7,7 +7,7 @@ import { MainHeader } from '@/components/common/MainHeader';
 import { SingleButton } from '@/components/common/SingleButton';
 import AccountDropdown from '@/components/event/AccountDropdown';
 import SpeechBubble from '@/components/event/SpeechBubble';
-import type { eventhost_role } from '@/lib/generated/prisma/client/enums';
+import { eventhost_role } from '@/lib/generated/prisma/enums';
 
 // image 경로
 const BG_SRC = '/images/event/memorial/lounge_bg.png';

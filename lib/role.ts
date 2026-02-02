@@ -1,5 +1,5 @@
 import type { DropdownItem } from '@/components/common/Dropdown';
-import type { eventhost_role } from '@/lib/generated/prisma/client/enums';
+import type { eventhost_role } from '@/lib/generated/prisma/enums';
 
 // 장례식: 대표(상주) = CHIEF_MOURNER / 추가 = MOURNER
 export const FUNERAL_REP_ROLE: DropdownItem[] = [

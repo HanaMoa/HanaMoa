@@ -3,7 +3,7 @@ import { auth } from '@/lib/auth';
 import type {
   events_category as EventCategory,
   eventhost_role as EventHostRole,
-} from '@/lib/generated/prisma/client/client';
+} from '@/lib/generated/prisma/client';
 import { prisma } from '@/lib/prisma';
 
 // BigInt → JSON 변환용
