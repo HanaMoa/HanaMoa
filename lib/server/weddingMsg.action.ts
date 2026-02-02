@@ -61,7 +61,7 @@ export async function saveWeddingTitle(_: unknown, formData: FormData) {
   await prisma.event.update({
     where: { id: eventId },
     data: {
-      message: JSON.stringify(messageObj),
+      message: title.trim(),
     },
   });
 
