@@ -1,113 +1,62 @@
 # <img width="151" height="39" alt="image" src="https://github.com/user-attachments/assets/c6edbe7f-3fc3-4fb0-96a3-753cf44feec5" />
-**하나모아**는 '디지털 경조사 플랫폼'으로서, 경조사의 복잡함은 줄이고 감정과 관계에 집중할 수 있는 서비스
+**하나모아**는 '디지털 경조사 금융 플랫폼'으로서, 경조사의 복잡함은 줄이고 감정과 관계에 집중할 수 있는 서비스
 
 <br>
 
----
-## 📚 주요 기능
-* 
-
-<br>
 
 ---
 ## 🧑🏻‍💻 팀원 구성
 
 | **김선주** | **박성원** | **설지윤** | **유지현** | **이동현** | **전유진** | **정그린** | **허 혁** |
 | :------: |  :------: | :------: | :------: | :------: | :------: | :------: | :------: |
-| [<img src="https://avatars.githubusercontent.com/u/157812913?v=4" height=150 width=150> <br/>](https://github.com/seonjuuu) | [<img src="https://avatars.githubusercontent.com/u/153745270?v=4" height=150 width=150> <br/>](https://github.com/Solid9966) | [<img src="https://avatars.githubusercontent.com/u/85937340?v=4" height=150 width=150> <br/>](https://github.com/SeolJiyun) | [<img src="https://avatars.githubusercontent.com/u/95465048?v=4" height=150 width=150> <br/>](https://github.com/ujii) | [<img src="https://avatars.githubusercontent.com/u/117627976?v=4" height=150 width=150> <br/>](https://github.com/dhlee777) | [<img src="https://avatars.githubusercontent.com/u/122861956?v=4" height=150 width=150> <br/>](https://github.com/Yujin0827) | [<img src="https://avatars.githubusercontent.com/u/139318504?v=4" height=150 width=150> <br/>](https://github.com/Green-JEONG) | [<img src="https://avatars.githubusercontent.com/u/121746158?v=4" height=150 width=150> <br/>](https://github.com/hyeok1028) |
-
-## 📌 Git convention
-
-### ✓ Branch 구조
-```
-main
-├─ dev
-│  ├─ feature/app/login-add-user-profile
-│  ├─ feature/components/login-form
-│  ├─ fix/app/login-add-user-profile
-│  ├─ hotfix/app/login-add-user-profile
-```
-
-### ✓ Commit Type
-```
-`feat` : 기능 추가
-`fix` : 에러 수정, 버그 수정
-`chore` : gradle 세팅, 빌드 업무 수정 등 이외의 모든 것
-`main` : 최종 배포, 메인 브랜치
-`refactor` : 코드 리팩토링
-`test` : 테스트 코드 추가
-`revert` : 이전 커밋 되돌리기
-`remove` : 파일 삭제
-`rename` : 파일 또는 폴더 이름 수정
-`ci` : CI 설정 파일 및 스크립트 변경 (ex. GitHub Actions, CircleCI 등)
-```
-
-
-### ✓ branch 규칙
-
-#### ▶︎ branch 네이밍 규칙
-```
-- 영소문자 사용 : 모든 브랜치 이름은 영어 + 소문자로 작성합니다.
-- 하이픈(-) 사용 : 단어 구분은 하이픈(-)으로 합니다 (예: `feature-login`).
-- 간결하고 의미 있게 : 브랜치의 목적을 명확히 드러내도록 간결하게 짓습니다.
-```
-
-#### ▶︎ 기본 원칙
-```
-커밋 타입/브랜치명
-※ 단, hotfix일 경우, 이슈로 관리 → hotfix/#이슈번호/브랜치명
-
-* 예시 *
-기능 추가: feature/add-user-profile
-버그 수정: fix/fix-login-error
-문서 작업: docs/update-readme
-hotfix: fix/#1/hotfix-login-error
-```
-
-#### ▶︎ 하위 브랜치 만드는 방법
-##### 1️⃣ 로컬 dev 브랜치에서 pull 받아서 시작
-```
-1) dev 브랜치에서 시작
-git checkout dev
-git pull
-
-2) feature 브랜치 생성
-git checkout -b feature/app/login
-or
-git switch -c feature/app/login
-```
-##### 2️⃣ 원격 dev 브랜치 가지고 오기
-```
-git checkout -b feature브랜치 원격브랜치
-git checkout -b feature/app/login origin/dev
-```
-⇒ 병합 끝나면 삭제.
-
-<br>
-
-### ✓ commit 메시지 규칙
-```
-커밋 타입: 커밋 메시지
-
-→ `feat: 로그인 기능 추가`
-→ `refactor: 일부 코드 리팩토링`
-```
-
-### ✓ issue 이름 규칙
-```
-[커밋 타입] 이슈 제목
-```
+| [<img src="https://avatars.githubusercontent.com/u/157812913?v=4" height=150 width=150> <br/>](https://github.com/seonjuuu) | [<img src="https://avatars.githubusercontent.com/u/153745270?v=4" height=150 width=150> <br/>](https://github.com/Solid9966) | [<img src="https://avatars.githubusercontent.com/u/85937340?v=4" height=150 width=150> <br/>](https://github.com/SeolJiyun) | [<img src="https://avatars.githubusercontent.com/u/95465048?v=4" height=150 width=150> <br/>](https://github.com/ujii) | [<img src="https://avatars.githubusercontent.com/u/117627976?v=4" height=150 width=150> <br/>](https://github.com/dhlee777) | [<img src="https://avatars.githubusercontent.com/u/83286706?v=4" height=150 width=150> <br/>](https://github.com/Yujin0827) | [<img src="https://avatars.githubusercontent.com/u/139318504?v=4" height=150 width=150> <br/>](https://github.com/Green-JEONG) | [<img src="https://avatars.githubusercontent.com/u/121746158?v=4" height=150 width=150> <br/>](https://github.com/hyeok1028) |
 
 <br>
 
 
+---
+## 📚 프로젝트 개요
+**하나모아**는 결혼과 장례 등 경조사 라이프 이벤트를 하나로 연결하는 '디지털 경조사 금융 플랫폼'입니다. <br>
+기존의 단순 송금 중심 경조사 경험에서 벗어나, 송금 · 메시지 · 기록 · 관계 관리를 하나의 흐름으로 통합합니다.
 
-## 📄 서비스 소개
+현대의 경조사는 모바일 청첩장, 메신저, 계좌 송금, 수기 기록 등 여러 서비스로 분산되어 있어 경험과 맥락이 단절되어 왔습니다. <br>
+그 결과, 감정이 중심이 되어야 할 순간에 오히려 복잡함과 피로감이 커지고 있습니다.
+
+하나모아는 이러한 문제를 해결하기 위해 경조사의 중심에 있는 **송금**을 기준으로 메시지, 참여 기록, 관계 정보를 자동으로 연결·저장하는 구조를 설계했습니다.
+
+이를 통해 사용자는
+* 함께하지 못해도 마음과 감정을 전달할 수 있고
+* 경조사 이후에도 기록과 관계를 지속적으로 관리할 수 있으며
+* 반복되는 라이프 이벤트 속에서 자연스러운 재방문 경험을 얻게 됩니다.
+
+하나모아는 MZ세대의 라이프 이벤트를 출발점으로, 장기 고객 전환과 가족 단위 확장까지 고려한 라이프 이벤트 기반 금융·비금융 통합 플랫폼을 목표로 합니다.
 
 <br>
 
 
+---
+## ✨ 핵심 기능
 
+#### 1️⃣ 경조사 전용 이벤트 공간 생성
+* 결혼식 · 장례식 등 경조사별 전용 이벤트 페이지를 생성하여 행사 유형에 따라 맞춤 UI와 플로우를 제공합니다.
+* 이벤트별 정보(날짜, 장소, 주최자 등)를 한 번에 관리할 수 있습니다.
+* 송금과 함께 축하·추모 메시지를 직접 작성할 수 있습니다.
+* 참여자가 남긴 메시지는 시각적 요소(오브젝트 등)로 표현되어 참여감과 감정 전달을 강화합니다.
+
+#### 2️⃣ 온라인 참여 및 실시간 스트리밍
+* 현장에 참석하지 못한 경우에도 온라인 스트리밍을 통해 실시간 참여가 가능합니다.
+* 실시간 채팅, 메시지 참여를 통해 물리적 거리와 관계없이 행사에 함께하는 경험을 제공합니다.
+* 특히 장례식의 경우, 비대면 추모 수단으로 활용할 수 있습니다.
+
+#### 3️⃣ 경조사 기록 자동 관리 (디지털 치부)
+* 송금, 메시지, 참여 이력이 자동으로 경조사 DB에 기록됩니다.
+* 수동으로 관리하던 치부책을 대체하여 누락·오류 없는 경조사 기록 관리가 가능합니다.
+* 향후 정산, 관계 관리, 가계부 기능으로 확장 가능한 구조입니다.
+
+<br>
+
+
+---
 ## 🛠️ Tech Stack
 <div>
   <img src="https://img.shields.io/badge/Next.js-000000" />
@@ -129,39 +78,38 @@ git checkout -b feature/app/login origin/dev
 <br>
 
 
-
+---
 ## ⚙️ 시스템 구성도
-<img width="768" height="512" alt="image" src="https://github.com/user-attachments/assets/73587f8f-8883-4b93-8d10-0d40f752f4fe" />
+<img width="2491" height="860" alt="image" src="https://github.com/user-attachments/assets/ed6ef3ac-f1ce-4a09-9535-51cc832e3e34" />
+
 
 <br>
 
 
-
+---
 ## ERD
 <img width="1390" height="1496" alt="image" src="https://github.com/user-attachments/assets/b5940ed8-a655-4983-978a-ae296930db69" />
 
-
-## setting
-```
-pnpm install
-→ pnpm version : 10.21.0
-```
-
-### docker
-```
-docker compose up -d
-```
-
-### prisma setting
-```
-pnpm prisma migrate dev   //로컬 DB에 적용
-pnpm prisma generate  //Prisma Client 재생성
-pnpm prisma migrate deploy //rds반영
-```
+<br>
 
 
+---
+## 📌 Git convention
 
-### DB 확인
+#### ✓ Commit Type
 ```
-pnpm prisma studio
+`feat` : 기능 추가
+`fix` : 에러 수정, 버그 수정
+`chore` : gradle 세팅, 빌드 업무 수정 등 이외의 모든 것
+`main` : 최종 배포, 메인 브랜치
+`refactor` : 코드 리팩토링
+`test` : 테스트 코드 추가
+`revert` : 이전 커밋 되돌리기
+`remove` : 파일 삭제
+`rename` : 파일 또는 폴더 이름 수정
+`ci` : CI 설정 파일 및 스크립트 변경 (ex. GitHub Actions, CircleCI 등)
 ```
+
+<br>
+
+
