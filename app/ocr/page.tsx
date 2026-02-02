@@ -65,14 +65,14 @@ export default function OcrPage() {
   };
 
   return (
-    <div className="mx-auto min-h-dvh max-w-xl pb-24">
+    <div className="min-h-dvh pb-24">
       <MainHeader
         variant="default"
         title="OCR로 장부 등록"
         onBackClick={() => router.back()}
       />
 
-      <div className="space-y-5 px-5 pt-5">
+      <div className="space-y-5 px-6 pt-6">
         {/* 설명 */}
         <div className="space-y-1">
           <p className="text-gray-700 text-sm">
