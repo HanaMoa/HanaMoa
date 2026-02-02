@@ -193,6 +193,16 @@ export default function WeddingGalleryPage() {
         <GalleryModal
           item={visibleItems[selectedIndex]}
           onClose={() => setSelectedIndex(null)}
+          onPrev={
+            selectedIndex > 0
+              ? () => setSelectedIndex(selectedIndex - 1)
+              : undefined
+          }
+          onNext={
+            selectedIndex < visibleItems.length - 1
+              ? () => setSelectedIndex(selectedIndex + 1)
+              : undefined
+          }
         />
       )}
     </div>
