@@ -1,12 +1,9 @@
 'use client';
 
-import { PlusIcon, XIcon } from 'lucide-react';
-import Image from 'next/image';
-import { useEffect, useMemo, useState } from 'react';
 import type { DropdownItem } from '@/components/common/Dropdown';
 import type { Bank } from '@/lib/bank';
 import { BANKS } from '@/lib/bank';
-import type { eventhost_role } from '@/lib/generated/prisma/client/enums';
+import type { eventhost_role } from '@/lib/generated/prisma/enums';
 import {
   validateKorEngNameNoSpace,
   validateOnlyNumber,
@@ -17,6 +14,9 @@ import {
   WEDDING_BRIDE_SIDE_EXTRA_ROLE,
   WEDDING_GROOM_SIDE_EXTRA_ROLE,
 } from '@/lib/role';
+import { PlusIcon, XIcon } from 'lucide-react';
+import Image from 'next/image';
+import { useEffect, useMemo, useState } from 'react';
 import { AddMemberModal, type PartyMemberPayload } from './AddMemberModal';
 
 // 대표는 무조건 하나은행

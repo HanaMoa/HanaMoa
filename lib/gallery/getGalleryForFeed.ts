@@ -7,7 +7,7 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
   Imports & Types
 ========================= */
 import type { User } from '@/components/common/UserProfile';
-import { GalleryVisibility } from '@/lib/generated/prisma/client/enums';
+import { GalleryVisibility } from '@/lib/generated/prisma/enums';
 import { prisma } from '@/lib/prisma';
 import type { FeedPermission } from '@/lib/server/feedPermission.action';
 

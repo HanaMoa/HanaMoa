@@ -3,8 +3,8 @@
 'use server';
 
 import { prisma } from '@/lib/prisma';
-import { GalleryVisibility } from '../generated/prisma/client/enums';
 import { getFeedPermission } from './feedPermission.action';
+import { GalleryVisibility } from '../generated/prisma/enums';
 
 export async function toggleFeedVisibility(galleryId: bigint, userId: bigint) {
   const permission = await getFeedPermission(galleryId, userId);

@@ -7,7 +7,7 @@ import { useState } from 'react';
 
 import { type User, UserProfile } from '@/components/common/UserProfile';
 import { Button } from '@/components/ui/button';
-import { GalleryVisibility } from '@/lib/generated/prisma/client/enums';
+import { GalleryVisibility } from '@/lib/generated/prisma/enums';
 import { deleteFeed } from '@/lib/server/deleteFeed.action';
 import type { FeedPermission } from '@/lib/server/feedPermission.action';
 import { toggleFeedVisibility } from '@/lib/server/toggleFeedVisibility.action';
