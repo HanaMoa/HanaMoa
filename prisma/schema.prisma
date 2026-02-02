@@ -65,7 +65,7 @@ model Account {
   eventHost    EventHost     @relation(fields: [eventHostId], references: [id], onDelete: Cascade)
   transactions Transaction[]
 
-  @@unique([eventHostId, bank, account], name: "uniq_account_host_bank_account") 
+  @@unique([eventHostId, bank, account], name: "uniq_account_host_bank_account")
   @@index([eventHostId])
   @@map("accounts")
 }
@@ -116,16 +116,9 @@ model Notification {
   @@map("notifications")
 }
 
-enum NotificationType {
-  GALLERY_ADDED
-  REEL_ADDED
-  TRANSFER_SENT
-  ORNAMENT_ADDED
-}
-
 model Gallery {
   id         BigInt            @id @default(autoincrement())
-  key        String            @map("s3_key") 
+  key        String            @map("s3_key")
   userId     BigInt            @map("user_id")
   createdAt  DateTime          @default(now()) @map("created_at")
   eventId    BigInt            @map("event_id")
@@ -140,7 +133,12 @@ model Gallery {
   @@map("gallery")
 }
 
-
+enum NotificationType {
+  GALLERY_ADDED
+  REEL_ADDED
+  TRANSFER_SENT
+  ORNAMENT_ADDED
+}
 
 enum events_category {
   WEDDING
