@@ -75,6 +75,7 @@ export default function MemorialInvitePage({ event }: Props) {
           <div className="mx-auto flex w-full justify-center px-4">
             <button
               type="button"
+              onClick={() => router.push('/home')}
               className="flex h-[65px] w-[360px] flex-col items-center justify-center rounded-xl bg-[#4FA79A] text-white shadow-md active:scale-[0.98] md:w-[420px] lg:w-[540px]"
             >
               <span className="font-bold text-[17px]">부고장 생성하기</span>
