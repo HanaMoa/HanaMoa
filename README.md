@@ -3,14 +3,20 @@
 
 <br>
 
+
+
 ## 📌 Git convention
+
+### ✓ Branch 구조
 ```
 main
-├─ feature
-│  ├─ feature/login
-│  ├─ feature/login/add-user-profile
-├─ fix
+├─ dev
+│  ├─ feature/app/login-add-user-profile
+│  ├─ feature/components/login-form
+│  ├─ fix/app/login-add-user-profile
+│  ├─ hotfix/app/login-add-user-profile
 ```
+
 ### ✓ Commit Type
 ```
 `feat` : 기능 추가
@@ -25,21 +31,17 @@ main
 `ci` : CI 설정 파일 및 스크립트 변경 (ex. GitHub Actions, CircleCI 등)
 ```
 
-### ✓ issue 이름 규칙
-```
-[커밋 타입] 이슈 제목
-```
 
 ### ✓ branch 규칙
 
-#### branch 네이밍 규칙
+#### ▶︎ branch 네이밍 규칙
 ```
 - 영소문자 사용 : 모든 브랜치 이름은 영어 + 소문자로 작성합니다.
 - 하이픈(-) 사용 : 단어 구분은 하이픈(-)으로 합니다 (예: `feature-login`).
 - 간결하고 의미 있게 : 브랜치의 목적을 명확히 드러내도록 간결하게 짓습니다.
 ```
 
-#### 기본 원칙
+#### ▶︎ 기본 원칙
 ```
 커밋 타입/브랜치명
 ※ 단, hotfix일 경우, 이슈로 관리 → hotfix/#이슈번호/브랜치명
@@ -50,7 +52,27 @@ main
 문서 작업: docs/update-readme
 hotfix: fix/#1/hotfix-login-error
 ```
-</aside>
+
+#### ▶︎ 하위 브랜치 만드는 방법
+##### 1️⃣ 로컬 dev 브랜치에서 pull 받아서 시작
+```
+1) dev 브랜치에서 시작
+git checkout dev
+git pull
+
+2) feature 브랜치 생성
+git checkout -b feature/app/login
+or
+git switch -c feature/app/login
+```
+##### 2️⃣ 원격 dev 브랜치 가지고 오기
+```
+git checkout -b feature브랜치 원격브랜치
+git checkout -b feature/app/login origin/dev
+```
+⇒ 병합 끝나면 삭제.
+
+<br>
 
 ### ✓ commit 메시지 규칙
 ```
@@ -60,11 +82,20 @@ hotfix: fix/#1/hotfix-login-error
 → `refactor: 일부 코드 리팩토링`
 ```
 
+### ✓ issue 이름 규칙
+```
+[커밋 타입] 이슈 제목
+```
+
 <br>
+
+
 
 ## 📄 서비스 소개
 
 <br>
+
+
 
 ## 🛠️ Tech Stack
 <div>
@@ -86,11 +117,18 @@ hotfix: fix/#1/hotfix-login-error
 
 <br>
 
+
+
 ## ⚙️ 시스템 구성도
 <img width="768" height="512" alt="image" src="https://github.com/user-attachments/assets/73587f8f-8883-4b93-8d10-0d40f752f4fe" />
 
 <br>
-<br>
+
+
+
+## ERD
+<img width="1390" height="1496" alt="image" src="https://github.com/user-attachments/assets/b5940ed8-a655-4983-978a-ae296930db69" />
+
 
 ## setting
 ```
@@ -98,7 +136,41 @@ pnpm install
 → pnpm version : 10.21.0
 ```
 
-### .env
+### docker
+```
+docker compose up -d
+```
+
+### prisma setting
+```
+pnpm prisma migrate dev   //로컬 DB에 적용
+pnpm prisma generate  //Prisma Client 재생성
+pnpm prisma migrate deploy //rds반영
+```
+
+
+
+### DB 확인
+```
+pnpm prisma studio
+```
+
+
+
+## .env
 ```
 DATABASE_URL="mysql://hanamoa:12345678@127.0.0.1:3333/hanamoadb"
+SHADOW_DATABASE_URL="mysql://root:root@127.0.0.1:3333/hanamoadb_shadow"
+
+DATABASE_HOST="127.0.0.1"
+DATABASE_PORT="3333"
+DATABASE_USER="hanamoa"
+DATABASE_PASSWORD="12345678"
+DATABASE_NAME="hanamoadb"
+
+AWS_REGION=ap-northeast-2
+AWS_ACCESS_KEY_ID=AKIAYS2MXSMDBGB5HVLV
+AWS_SECRET_ACCESS_KEY=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
+S3_BUCKET_NAME=hanamoa-gallery
+
 ```
