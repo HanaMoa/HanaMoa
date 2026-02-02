@@ -2,6 +2,7 @@
 
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import Image from 'next/image';
+import { useEffect, useState } from 'react';
 
 type ImageItem = {
   type: 'image';
@@ -14,7 +15,15 @@ type VideoItem = {
   poster: string;
 };
 
-// ... types
+type GalleryItem = ImageItem | VideoItem;
+
+type Props = {
+  item: GalleryItem;
+  onClose: () => void;
+  onPrev?: () => void;
+  onNext?: () => void;
+};
+
 
 export default function GalleryModal({ item, onClose, onPrev, onNext }: Props) {
   const [isLoading, setIsLoading] = useState(true);
@@ -41,9 +50,9 @@ export default function GalleryModal({ item, onClose, onPrev, onNext }: Props) {
           <button
             type="button"
             onClick={onPrev}
-            className="-left-10.5 absolute bottom-60 cursor-pointer rounded-full border bg-white p-4 hover:bg-white/60"
+            className="fixed top-1/2 left-4 z-50 -translate-y-1/2 cursor-pointer rounded-full bg-white/80 p-3 hover:bg-white md:absolute md:left-[-60px]"
           >
-            <ChevronLeft className="h-8 w-8" />
+            <ChevronLeft className="h-8 w-8 text-black" />
           </button>
         )}
 
@@ -52,9 +61,9 @@ export default function GalleryModal({ item, onClose, onPrev, onNext }: Props) {
           <button
             type="button"
             onClick={onNext}
-            className="-right-10.5 absolute bottom-60 cursor-pointer rounded-full border bg-white p-4 hover:bg-white/60"
+            className="fixed top-1/2 right-4 z-50 -translate-y-1/2 cursor-pointer rounded-full bg-white/80 p-3 hover:bg-white md:absolute md:right-[-60px]"
           >
-            <ChevronRight className="h-8 w-8" />
+            <ChevronRight className="h-8 w-8 text-black" />
           </button>
         )}
 
