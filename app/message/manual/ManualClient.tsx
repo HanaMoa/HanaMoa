@@ -1,8 +1,8 @@
 'use client';
 
-import { MainHeader } from '@/components/common/MainHeader';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
+import { MainHeader } from '@/components/common/MainHeader';
 
 export default function ManualClient() {
   const router = useRouter();
@@ -35,8 +35,10 @@ export default function ManualClient() {
       return;
     }
 
-    if (eventType === 'wedding') router.push(`/event/wedding/${eventId}/dashboard`);
-    else if (eventType === 'memorial') router.push(`/event/memorial/${eventId}/dashboard`);
+    if (eventType === 'wedding')
+      router.push(`/event/wedding/${eventId}/dashboard`);
+    else if (eventType === 'memorial')
+      router.push(`/event/memorial/${eventId}/dashboard`);
     else router.push('/home');
   };
 

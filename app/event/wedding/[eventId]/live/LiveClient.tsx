@@ -1,12 +1,12 @@
 // app/event/wedding/[eventId]/live/LiveClient.tsx
 'use client';
 
-import { LiveKitRoom } from '@livekit/components-react';
-import { useEffect, useState } from 'react';
 import GuestStage from '@/components/live/GuestStage/GuestStage';
 import LiveChat from '@/components/live/LiveChat';
 import LiveControls from '@/components/live/LiveControls';
 import LiveHeader from '@/components/live/LiveHeader';
+import { LiveKitRoom } from '@livekit/components-react';
+import { useEffect, useState } from 'react';
 
 import LiveShell from '@/components/live/LiveShell';
 import LiveStatus from '@/components/live/LiveStatus';
@@ -37,6 +37,7 @@ export default function LiveClient({
   useEffect(() => {
     (async () => {
       try {
+        console.log('[LiveClient] Joining room:', roomName);
         const t = await createLiveToken(roomName, identity, userName, role);
         setToken(t);
       } catch (e) {

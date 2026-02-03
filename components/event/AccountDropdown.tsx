@@ -1,12 +1,12 @@
 'use client';
 
+import { Button } from '@/components/ui/button';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { useMemo, useState } from 'react';
-import { Button } from '@/components/ui/button';
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuTrigger,
 } from '../ui/dropdown-menu';
 
 type AccountItem = {
@@ -44,6 +44,7 @@ export default function AccountDropdown({
       {/* Trigger */}
       <DropdownMenuTrigger asChild disabled={isDisabled}>
         <button
+          id="account-selector-trigger"
           type="button"
           aria-label="계좌 선택"
           className="inline-flex h-[30px] w-fit items-center gap-2 rounded-xl bg-[#F6F7F9]/80 px-4 text-[#4b4b4b] shadow-sm ring-1 ring-black/10 hover:bg-[#F6F7F9] active:bg-[#F6F7F9] disabled:cursor-not-allowed disabled:opacity-70"

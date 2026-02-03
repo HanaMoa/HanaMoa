@@ -9,13 +9,25 @@ const roomService = new RoomServiceClient(
 
 const ROOM_NAME = 'demo-room';
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const { searchParams } = new URL(request.url);
+    const roomName = searchParams.get('roomName') || ROOM_NAME;
+
+    console.log('[API] Checking status for room:', roomName);
+
     const rooms = await roomService.listRooms();
-    const isLive = rooms.some((room) => room.name === ROOM_NAME);
+    console.log(
+      '[API] Active rooms:',
+      rooms.map((r) => r.name),
+    );
+
+    const isLive = rooms.some((room) => room.name === roomName);
+    console.log('[API] isLive:', isLive);
 
     return NextResponse.json({ isLive });
   } catch (e) {
+    console.error('[API] Error checking status:', e);
     return NextResponse.json({ isLive: false });
   }
 }
