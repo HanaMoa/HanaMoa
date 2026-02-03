@@ -1,8 +1,8 @@
 // app/event/wedding/[eventId]/live/page.tsx
 
-import { notFound } from 'next/navigation';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { notFound } from 'next/navigation';
 import LiveClient from './LiveClient';
 
 interface Props {
@@ -42,8 +42,8 @@ export default async function LivePage({ params }: Props) {
 
   return (
     <LiveClient
-      eventId={params.eventId}
-      roomName={`event-${params.eventId}`}
+      eventId={rawEventId}
+      roomName={`event-${rawEventId}`}
       role={isHost ? 'host' : 'viewer'}
       identity={identity} // ✅ 새로 추가: 시스템 ID (viewer-...)
       userName={displayName} // ✅ 기존 유지: 표시 이름 (홍길동)

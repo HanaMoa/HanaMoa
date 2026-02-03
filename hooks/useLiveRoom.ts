@@ -1,7 +1,7 @@
+import { saveLiveToGallery } from '@/lib/server/live';
 import { useRoomContext } from '@livekit/components-react';
 import { RoomEvent } from 'livekit-client';
 import { useCallback, useEffect, useState } from 'react';
-import { saveLiveToGallery } from '@/lib/server/live';
 
 export function useLiveRoom(eventId: string) {
   const room = useRoomContext();
@@ -10,7 +10,19 @@ export function useLiveRoom(eventId: string) {
   // 🔥 [기능 1] 실시간 하객 수 카운팅
   useEffect(() => {
     if (!room) return;
-    const updateCount = () => setViewerCount(room.remoteParticipants.size + 1);
+    const updateCount = () => {
+      let count = 0;
+      // 1. 원격 참여자 중 'viewer-'로 시작하는 사람만 카운트
+      Array.from(room.remoteParticipants.values()).forEach((p) => {
+        if (p.identity.startsWith('viewer-')) count++;
+      });
+      // 2. 나(로컬)도 'viewer-'라면 카운트
+      if (room.localParticipant.identity.startsWith('viewer-')) {
+        count++;
+      }
+      // 3. 기본 20명 추가
+      setViewerCount(count + 20);
+    };
 
     updateCount();
     room.on(RoomEvent.ParticipantConnected, updateCount);

@@ -1,18 +1,18 @@
 // app/event/wedding/[eventId]/live/LiveClient.tsx
 'use client';
 
-import { LiveKitRoom } from '@livekit/components-react';
-import { useEffect, useState } from 'react';
 import GuestStage from '@/components/live/GuestStage/GuestStage';
 import LiveChat from '@/components/live/LiveChat';
 import LiveControls from '@/components/live/LiveControls';
 import LiveHeader from '@/components/live/LiveHeader';
+import { LiveKitRoom } from '@livekit/components-react';
+import { useEffect, useState } from 'react';
 
 import LiveShell from '@/components/live/LiveShell';
 import LiveStatus from '@/components/live/LiveStatus';
 import { useLiveGuests } from '@/hooks/useLiveGuests';
 import { useLiveRoom } from '@/hooks/useLiveRoom';
-import { createLiveToken } from '@/lib/server/live';
+import { createLiveToken, startLiveStream } from '@/lib/server/live';
 import type { LiveRole, OverlayRect } from '@/types/live';
 
 type Props = {
@@ -33,12 +33,17 @@ export default function LiveClient({
   eventTitle,
 }: Props) {
   const [token, setToken] = useState('');
-
   useEffect(() => {
     (async () => {
       try {
+        console.log('[LiveClient] Joining room:', roomName);
         const t = await createLiveToken(roomName, identity, userName, role);
         setToken(t);
+
+        // [Host] 방송 시작 시각 초기화 (Timer Sync)
+        if (role === 'host') {
+          await startLiveStream(roomName);
+        }
       } catch (e) {
         console.error('토큰 발급 실패:', e);
       }

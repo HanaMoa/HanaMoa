@@ -1,28 +1,44 @@
 'use client';
 
 import { useRoomContext } from '@livekit/components-react';
+import { RoomEvent } from 'livekit-client';
 import { useEffect, useState } from 'react';
 
 export default function LiveStatus() {
   const room = useRoomContext();
   const [elapsed, setElapsed] = useState('00:00');
 
+  const [metadata, setMetadata] = useState(room.metadata);
+
   useEffect(() => {
-    // 1. 시작 시간 결정 (메타데이터 우선, 없으면 현재 접속 시간 fallback)
+    // 메타데이터 변경 감지
+    const onMetadataChanged = (meta: string | undefined) => {
+      setMetadata(meta);
+      console.log('[LiveStatus] Metadata changed:', meta);
+    };
+
+    room.on(RoomEvent.RoomMetadataChanged, onMetadataChanged);
+    return () => {
+      room.off(RoomEvent.RoomMetadataChanged, onMetadataChanged);
+    };
+  }, [room]);
+
+  useEffect(() => {
+    // 1. 시작 시간 결정
     let startedAt = Date.now();
 
     try {
-      if (room.metadata) {
-        const meta = JSON.parse(room.metadata);
-        // 메타데이터에 시작 시간이 있으면 그 시간으로 덮어씀
+      if (metadata) {
+        const meta = JSON.parse(metadata);
         if (meta.startedAt) {
           startedAt = meta.startedAt;
+          console.log('[LiveStatus] Synced startedAt:', startedAt);
         }
       }
     } catch (e) {
-      // 파싱 에러 무시
+      console.error('[LiveStatus] Metadata parse error:', e);
     }
-
+    
     // 2. 1초마다 경과 시간 갱신
     const interval = setInterval(() => {
       const now = Date.now();
@@ -52,7 +68,7 @@ export default function LiveStatus() {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [room, room.metadata]); // 메타데이터가 업데이트되면(방송 시작 등) 재계산
+  }, [metadata]);
 
   return (
     <div className="absolute top-4 left-4 z-20 flex items-center gap-2 rounded-lg bg-black/40 px-3 py-1.5 backdrop-blur-md">
