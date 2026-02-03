@@ -1,7 +1,7 @@
+import { LIVE_TOPICS, type LiveRole } from '@/types/live';
 import { useRoomContext } from '@livekit/components-react';
 import { type RemoteParticipant, RoomEvent } from 'livekit-client';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { LIVE_TOPICS, type LiveRole } from '@/types/live';
 
 export interface GuestSeat {
   id: string;
@@ -62,10 +62,18 @@ export function useLiveGuests(role: LiveRole) {
         .filter((id) => id.startsWith('viewer-'))
         .slice(0, MAX_SEATS);
 
-      const initialSeats: GuestSeat[] = existingViewers.map((id, index) => ({
+      // 👻 [Fake User] 25명 추가
+      const fakeGuests = Array.from({ length: 20 }, (_, i) => ({
+        id: `viewer-fake-${i}`,
+        seatIndex: seatOrder[MAX_SEATS - 1 - i], // 뒤쪽 좌석부터 채움
+      }));
+
+      const realGuests = existingViewers.map((id, index) => ({
         id,
         seatIndex: seatOrder[index],
       }));
+
+      const initialSeats: GuestSeat[] = [...fakeGuests, ...realGuests].slice(0, MAX_SEATS);
 
       setGuests(initialSeats);
       broadcastGuests(initialSeats);

@@ -1,10 +1,10 @@
 // lib/server/live.ts
 'use server';
 
-import { AccessToken } from 'livekit-server-sdk';
 import { auth } from '@/lib/auth'; // auth 설정 경로에 맞게 수정
 import { prisma } from '@/lib/prisma';
 import type { LiveRole } from '@/types/live';
+import { AccessToken } from 'livekit-server-sdk';
 
 // 1. 토큰 발급
 export async function createLiveToken(
@@ -61,6 +61,29 @@ export async function saveLiveToGallery(eventId: string, videoKey: string) {
     return { success: true };
   } catch (error) {
     console.error('Failed to save to gallery:', error);
+    return { success: false, error };
+  }
+}
+
+// 3. 방송 시작 (메타데이터 설정)
+export async function startLiveStream(roomName: string) {
+  try {
+    const RoomServiceClient = (await import('livekit-server-sdk')).RoomServiceClient;
+    const roomService = new RoomServiceClient(
+      process.env.LIVEKIT_URL!,
+      process.env.LIVEKIT_API_KEY!,
+      process.env.LIVEKIT_API_SECRET!,
+    );
+
+    const metadata = JSON.stringify({
+      startedAt: Date.now(),
+    });
+
+    await roomService.updateRoomMetadata(roomName, metadata);
+    console.log(`[Server] Room ${roomName} metadata updated:`, metadata);
+    return { success: true };
+  } catch (error) {
+    console.error('Failed to update room metadata:', error);
     return { success: false, error };
   }
 }
