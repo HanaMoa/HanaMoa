@@ -28,6 +28,13 @@ export default function ManualClient() {
       }),
     });
 
+    if (isTransactionFlow) {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set('hasMessage', 'true');
+      router.push(`/transaction/media?${params.toString()}`);
+      return;
+    }
+
     if (eventType === 'wedding') router.push(`/event/wedding/${eventId}/dashboard`);
     else if (eventType === 'memorial') router.push(`/event/memorial/${eventId}/dashboard`);
     else router.push('/home');

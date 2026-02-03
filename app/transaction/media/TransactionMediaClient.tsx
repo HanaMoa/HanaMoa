@@ -208,7 +208,7 @@ export default function TransactionMediaClient() {
       <div className="px-5 pb-8 pt-4">
         <SingleButton
           onClick={handleSubmit}
-          className="w-full"
+          className="w-full md:w-full lg:w-full"
           disabled={allItems.length === 0 || loading}
         >
           {loading ? '업로드 중...' : `보내기 (총 ${allItems.length}개)`}
