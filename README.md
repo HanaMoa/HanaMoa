@@ -9,7 +9,24 @@
 
 | **김선주** | **박성원** | **설지윤** | **유지현** | **이동현** | **전유진** | **정그린** | **허 혁** |
 | :------: |  :------: | :------: | :------: | :------: | :------: | :------: | :------: |
+| 팀원 | 팀원 | 팀장 | 팀원 | 팀원 | 부팀장 | 팀원 | 팀원 |
 | [<img src="https://avatars.githubusercontent.com/u/157812913?v=4" height=150 width=150> <br/>](https://github.com/seonjuuu) | [<img src="https://avatars.githubusercontent.com/u/153745270?v=4" height=150 width=150> <br/>](https://github.com/Solid9966) | [<img src="https://avatars.githubusercontent.com/u/85937340?v=4" height=150 width=150> <br/>](https://github.com/SeolJiyun) | [<img src="https://avatars.githubusercontent.com/u/95465048?v=4" height=150 width=150> <br/>](https://github.com/ujii) | [<img src="https://avatars.githubusercontent.com/u/117627976?v=4" height=150 width=150> <br/>](https://github.com/dhlee777) | [<img src="https://avatars.githubusercontent.com/u/83286706?v=4" height=150 width=150> <br/>](https://github.com/Yujin0827) | [<img src="https://avatars.githubusercontent.com/u/139318504?v=4" height=150 width=150> <br/>](https://github.com/Green-JEONG) | [<img src="https://avatars.githubusercontent.com/u/121746158?v=4" height=150 width=150> <br/>](https://github.com/hyeok1028) |
+
+<br>
+
+
+---
+## 👩🏻‍💻 Roles & Responsibilities
+| 이름 | R & R |
+|---|---|
+| 김선주 | - 프로젝트 초기 ERD 및 DB 구조 설계<br>- 경조사 대시보드 UI 및 메시지 DB 연동 구현<br>- AI 메시지 추천 프롬프트 설계 및 OpenAI API 연동<br>- OCR 기반 경조사 내역 등록 기능 구현<br>- 사용자 시나리오 기반 발표 자료(PPT·스크립트) 제작 |
+| 박성원 | - 경조사비 관리 기능 설계 및 구현<br>- 경조사 송금 기능 DB 연동 및 비즈니스 로직 구현<br>- 송금·이벤트 도메인 ERD 설계 및 DB 리팩토링<br>- GitHub Actions 기반 CI 파이프라인 구축<br>- 프로젝트 시연 영상 제작 |
+| 설지윤 | - 프로젝트 총괄 및 기술·기획 조율<br>- 프로젝트 구조 설계<br>- 라이브 스트리밍 캐릭터 동기화 구현<br>- 결혼식 영상·사진 피드 구현<br>- 사용자 시나리오 기반 발표 자료(PPT·스크립트) 제작<br>- 발표 |
+| 유지현 | - 스플래시 화면 자동 전환 로직 구현<br>- 온보딩·홈·경조사 등록 UI 및 DB 연동<br>- 소셜 로그인(Google, Kakao) 기반 인증 구현<br>- 인증 상태별 접근 제어 및 로그인 처리<br>- 사용자 시나리오 기반 발표 자료(PPT·스크립트) 제작<br>- Vercel 배포 및 환경 변수 설정 |
+| 이동현 | - 모바일 청첩장 UI 구현 및 DB 연동<br>- AWS S3 인프라 구축<br>- 경조사 갤러리 사진·영상 업로드/조회 기능 구현<br>- 경조사 리스트 UI 구현<br>- 프로젝트 시연 영상 제작 |
+| 전유진 | - 서비스 기획 및 개발 전반적인 방향성 설정<br>- 프로젝트 초기 세팅 및 브랜치 전략 수립<br>- 개발 인프라 구축 및 GitHub 운영 관리<br>- 라운지 메인 UI 구현 및 DB 연동<br>- 초대장(부고장) UI 구현 및 DB 연동<br>- 프로젝트 시연 영상 기획 및 제작 |
+| 정그린 | - 경조사 참여 리스트 구현<br>- 갤러리 로딩·정렬·무한 스크롤 구현<br>- 녹음·헌화 인터랙션 기능 개발<br>- 경조사 송금 콘텐츠 조회 기능 구현<br>- Figma 인터랙티브 프로토타입 제작 및 설계 |
+| 허혁 | - LiveKit·WebRTC 기반 실시간 스트리밍 인프라 구축<br>- 실시간 알림 시스템 구현<br>- Figma 인터랙티브 프로토타입 제작 및 설계 |
 
 <br>
 
