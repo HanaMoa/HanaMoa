@@ -1,13 +1,13 @@
 'use client';
 
-import Image from 'next/image';
-import { useRouter } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
 import { MainHeader } from '@/components/common/MainHeader';
 import { SingleButton } from '@/components/common/SingleButton';
 import AccountDropdown from '@/components/event/AccountDropdown';
 import SpeechBubble from '@/components/event/SpeechBubble';
 import type { eventhost_role } from '@/lib/generated/prisma/enums';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { useEffect, useMemo, useState } from 'react';
 
 // image 경로
 const BG_SRC = '/images/event/wedding/lounge_bg.png';
@@ -113,7 +113,10 @@ export default function WeddingLoungePage({ event }: Props) {
 
     const fetchStatus = async () => {
       try {
-        const res = await fetch('/api/live/status', { cache: 'no-store' });
+        const res = await fetch(
+          `/api/live/status?roomName=event-${event.eventId}`,
+          { cache: 'no-store' },
+        );
         if (!res.ok) throw new Error('status not ok');
         const data: { isLive?: boolean } = await res.json();
         if (mounted) setIsLive(Boolean(data.isLive));
@@ -129,7 +132,7 @@ export default function WeddingLoungePage({ event }: Props) {
       mounted = false;
       if (timer) window.clearInterval(timer);
     };
-  }, []);
+  }, [event.eventId]);
 
   return (
     <div className="flex min-h-screen w-full flex-col">
@@ -167,7 +170,10 @@ export default function WeddingLoungePage({ event }: Props) {
               {isLive ? (
                 <button
                   type="button"
-                  onClick={() => router.push('/live')}
+                  // ✨ [수정됨] viewer도 해당 이벤트의 라이브 페이지로 이동하도록 경로 수정
+                  onClick={() =>
+                    router.push(`/event/wedding/${event.eventId}/live`)
+                  }
                   className="group w-full rounded-xl border border-black/10 bg-[#F3C4CB24] px-4 py-3 shadow-sm backdrop-blur"
                 >
                   <div className="flex items-center gap-2">
@@ -182,10 +188,6 @@ export default function WeddingLoungePage({ event }: Props) {
                     </div>
                     <div className="flex-1 text-left font-medium text-[15px] text-black/80 md:text-[16px] lg:text-[17px]">
                       현재 결혼식 라이브 진행 중 ...
-                      {/* <br />
-                      <span className="font-normal text-black/60">
-                      ({event.streamingText ?? '30분'})
-                    </span> */}
                     </div>
                   </div>
                 </button>
@@ -210,10 +212,6 @@ export default function WeddingLoungePage({ event }: Props) {
                     <div className="flex-1 text-left font-medium text-[15px] text-black md:text-[16px] lg:text-[17px]">
                       결혼식 라이브 시작하기
                       <span className="text-red-500"> START</span>
-                      {/* <br />
-                      <span className="font-normal text-black/60">
-                      ({event.streamingText ?? '30분'})
-                    </span> */}
                     </div>
                   </div>
                 </button>
