@@ -1,5 +1,14 @@
-# <img width="151" height="39" alt="image" src="https://github.com/user-attachments/assets/c6edbe7f-3fc3-4fb0-96a3-753cf44feec5" />
-**하나모아**는 '디지털 경조사 금융 플랫폼'으로서, 경조사의 복잡함은 줄이고 감정과 관계에 집중할 수 있는 서비스
+<img width="1920" height="1080" alt="하나모아" src="https://github.com/user-attachments/assets/170536d0-ccc2-4f01-81c5-ff1ff3bcb213" />
+
+<div align="center">
+  
+<br>
+  
+<img width="151" height="39" alt="image" src="https://github.com/user-attachments/assets/c6edbe7f-3fc3-4fb0-96a3-753cf44feec5" /> 란?
+
+'디지털 경조사 금융 플랫폼'으로서, 경조사의 복잡함은 줄이고 감정과 관계에 집중할 수 있는 서비스
+
+</div>
 
 <br>
 
@@ -130,3 +139,7 @@
 <br>
 
 
+---
+## 👀 시연 영상
+
+[![hanamoa](https://img.youtube.com/vi/8FC5gLbmgaM/0.jpg)](https://youtu.be/8FC5gLbmgaM?si=zbLhpK1LhgXWvp4E&t=18)
